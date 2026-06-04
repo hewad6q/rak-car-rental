@@ -1,0 +1,6 @@
+{
+  "name": "Speed Rental RAK",
+  "description": "Premium car rental agency in Ras Al Khaimah, UAE. Fleet of luxury, SUV, sedan, and economy cars with instant booking, free city delivery, and 24/7 support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
