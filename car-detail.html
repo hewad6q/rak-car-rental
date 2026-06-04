@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed Rental RAK</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            bebas: ['Bebas Neue', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Specifications Spacing Fixes */
+    .specs-container {
+      border: 1px solid #E0E0E0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    @media (max-width: 600px) {
+      .specs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .spec-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 12px;
+      border-bottom: 1px solid #F0F0F0;
+      min-height: 56px;
+    }
+    .spec-icon-container {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      background: #F5F5F5;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #0A0A0A;
+    }
+    .spec-text-block {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .spec-label {
+      font-size: 11px;
+      color: #AAAAAA;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .spec-value {
+      font-size: 14px;
+      color: #0A0A0A;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .specs-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0A0A0A;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #0A0A0A;
+      display: block;
+    }
+
+    /* Features pills */
+    .features-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .feature-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #F5F5F5;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0A0A0A;
+      line-height: 1;
+    }
+
+    /* Pricing Section */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 640px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .pricing-box {
+      padding: 16px 12px;
+      border-radius: 10px;
+      border: 1px solid #E0E0E0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pricing-box-label {
+      font-size: 10px;
+      color: #888888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pricing-box-price {
+      font-size: 26px;
+      color: #0A0A0A;
+      font-weight: 700;
+    }
+    .pricing-box-subtext {
+      font-size: 11px;
+      color: #888888;
+    }
+
+    /* Dividers and section labels */
+    .right-column-divider {
+      margin: 20px 0;
+      height: 1px;
+      background: #F0F0F0;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0A0A0A;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    /* Custom Transitions */
+    .fade-transition {
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-white text-[#0A0A0A] font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- [A] SIMPLE TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-[999] bg-white border-b border-[#E0E0E0] h-18 sm:h-20 flex items-center shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-between items-center">
+      <div class="flex items-center gap-4 sm:gap-6">
+        <!-- Logo -->
+        <a href="index.html" class="font-bebas text-2xl sm:text-3xl tracking-widest text-[#0A0A0A] hover:opacity-80 transition leading-none">
+          SPEED RENTAL RAK
+        </a>
+        <div class="h-5 w-[1px] bg-neutral-300 hidden sm:block"></div>
+        <!-- Back Button -->
+        <a href="index.html#fleet" class="text-xs font-semibold text-neutral-500 hover:text-black hover:underline transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i> Back to Fleet
+        </a>
+      </div>
+      <div>
+        <button id="nav-book-btn" class="bg-black hover:bg-[#2E2E2E] text-white font-sans font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-[6px] transition cursor-pointer">
+          Book Now
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ERROR / CAR NOT FOUND CONTAINER -->
+  <div id="error-container" class="hidden flex-1 flex flex-col justify-center items-center p-8 text-center max-w-md mx-auto">
+    <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center text-2xl text-neutral-400 mb-4">
+      <i class="fa-solid fa-car-bang"></i>
+    </div>
+    <h2 class="text-xl font-bold text-[#0A0A0A] mb-2">Car Not Found</h2>
+    <p class="text-sm text-neutral-500 mb-6">The requested premium car identifier could not be located in our current fleet directories.</p>
+    <a href="index.html#fleet" class="px-5 py-3 bg-black hover:bg-neutral-800 text-white text-xs uppercase tracking-wider font-bold rounded-[6px] transition">
+      ← Back to Fleet Page
+    </a>
+  </div>
+
+  <!-- MAIN DETAILS LAYOUT CONTAINER -->
+  <main id="main-content" class="flex-1">
+    
+    <!-- [B] MAIN CONTENT — TWO COLUMN GRID -->
+    <div class="max-w-[1140px] mx-auto px-6 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-14">
+        
+        <!-- LEFT COLUMN — IMAGE GALLERY -->
+        <div class="flex flex-col gap-4">
+          <!-- Main Image wrapper -->
+          <div class="h-[420px] w-full rounded-2xl overflow-hidden bg-[#F5F5F5] border border-neutral-200 relative flex items-center justify-center shadow-sm">
+            <img id="main-gallery-image" src="" alt="Premium Fleet Car" class="w-full h-full object-cover fade-transition" onerror="handleImageLoadError(this)" />
+            <div id="gallery-fallback-icon" class="hidden flex-col items-center gap-2 text-neutral-400">
+              <i class="fa-solid fa-car text-5xl"></i>
+              <span class="text-xs font-semibold">Image Unavailable</span>
+            </div>
+          </div>
+          <!-- Thumbnail Strip row -->
+          <div id="thumbnail-strip" class="flex gap-3 overflow-x-auto py-1 scrollbar-thin">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN — ALL CAR DETAILS -->
+        <div class="flex flex-col text-left">
+          
+          <!-- Heading metadata -->
+          <div class="mb-5">
+            <div class="flex items-center gap-2.5 mb-2.5 flex-wrap">
+              <!-- Category badge -->
+              <span id="car-category-badge" class="px-3 py-1 rounded bg-[#F5F5F5] text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+                Category
+              </span>
+              <!-- Status element -->
+              <span id="car-status-badge" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white">
+                Status
+              </span>
+            </div>
+            <h1 id="car-name-heading" class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#0A0A0A] mb-1">
+              Car Name
+            </h1>
+            <p id="car-year-subtitle" class="text-sm text-neutral-400 font-medium">Model Year: <span>2023</span></p>
+          </div>
+
+          <div class="right-column-divider"></div>
+
+          <!-- PRICING BOXES SECTION -->
+          <div>
+            <span class="section-label">Rental Daily Rates</span>
+            <div class="pricing-grid">
+              
+              <!-- Daily box -->
+              <div class="pricing-box">
+                <span class="pricing-box-label">Daily rate</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xs font-semibold text-[#0A0A0A]">AED</span>
+                  <span id="price-daily-value" class="pricing-box-price font-mono">0</span>
+                </div>
+                <span class="pricing-box-subtext">per day</span>
+              </div>
+
+              <!-- Weekly box -->
+              <div class="pricing-box bg-[#FAF9F5] border-amber-200">
+                <span class="pricing-box-label text-amber-800">Weekly flat</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xs font-semibold text-amber-900">AED</span>
+                  <span id="price-weekly-value" class="pricing-box-price font-mono text-amber-950">0</span>
+                </div>
+                <span class="pricing-box-subtext text-amber-800">save ~15%</span>
+              </div>
+
+              <!-- Monthly box -->
+              <div class="pricing-box bg-[#F5FAF5] border-emerald-200">
+                <span class="pricing-box-label text-emerald-800">Monthly flat</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xs font-semibold text-emerald-900">AED</span>
+                  <span id="price-monthly-value" class="pricing-box-price font-mono text-emerald-950">0</span>
+                </div>
+                <span class="pricing-box-subtext text-emerald-800">save ~30%</span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="right-column-divider"></div>
+
+          <!-- SPECIFICATIONS LIST GRID -->
+          <div>
+            <span class="specs-header">Specifications</span>
+            <div class="specs-container">
+              <div class="specs-grid" id="specs-grid-contents">
+                
+                <!-- Spec 1: Passengers -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-users"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Passengers</span>
+                    <span class="spec-value" id="spec-val-seats">5 Passengers</span>
+                  </div>
+                </div>
+
+                <!-- Spec 2: Doors -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-door-closed"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Doors</span>
+                    <span class="spec-value" id="spec-val-doors">4 Doors</span>
+                  </div>
+                </div>
+
+                <!-- Spec 3: Transmission -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-gears"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Transmission</span>
+                    <span class="spec-value" id="spec-val-transmission">Automatic</span>
+                  </div>
+                </div>
+
+                <!-- Spec 4: Fuel Type -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-gas-pump"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Fuel Type</span>
+                    <span class="spec-value" id="spec-val-fuel">Petrol</span>
+                  </div>
+                </div>
+
+                <!-- Spec 5: Air Conditioning -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-snowflake"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Air Conditioning</span>
+                    <span class="spec-value" id="spec-val-ac">Full AC</span>
+                  </div>
+                </div>
+
+                <!-- Spec 6: Year -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-calendar-days"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Year</span>
+                    <span class="spec-value" id="spec-val-year">2023</span>
+                  </div>
+                </div>
+
+                <!-- Spec 7: Color -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-palette"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Color</span>
+                    <span class="spec-value" id="spec-val-color">White</span>
+                  </div>
+                </div>
+
+                <!-- Spec 8: Insurance -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-shield-halved"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Insurance</span>
+                    <span class="spec-value" id="spec-val-insurance">Fully Insured</span>
+                  </div>
+                </div>
+
+                <!-- Spec 9: Security Deposit -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-wallet"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Security Deposit</span>
+                    <span class="spec-value" id="spec-val-deposit">AED 1,000 Refundable</span>
+                  </div>
+                </div>
+
+                <!-- Spec 10: Mileage -->
+                <div class="spec-item">
+                  <div class="spec-icon-container"><i class="fa-solid fa-road"></i></div>
+                  <div class="spec-text-block">
+                    <span class="spec-label">Mileage</span>
+                    <span class="spec-value" id="spec-val-mileage">Unlimited</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="right-column-divider"></div>
+
+          <!-- PREMIUM FEATURES PILLS -->
+          <div>
+            <span class="section-label">Premium Amenities</span>
+            <div class="features-container" id="features-pills-contents">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="right-column-divider"></div>
+
+          <!-- ABOUT THIS CAR DESCRIPTION -->
+          <div class="mb-8">
+            <span class="section-label">About This Car</span>
+            <p id="car-description-text" class="text-neutral-500 font-sans text-sm leading-relaxed">
+              No description loaded.
+            </p>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="flex flex-col sm:flex-row items-center gap-3 w-full">
+            <button id="main-book-btn" class="w-full sm:flex-1 py-4 bg-[#0A0A0A] hover:bg-neutral-800 text-white font-sans font-bold text-xs uppercase tracking-wider rounded-[8px] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-md">
+              <i class="fa-solid fa-calendar-check text-[14px]"></i> Book Rental Right Now
+            </button>
+            <a id="main-whatsapp-btn" href="" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[8px] transition-all duration-300 flex items-center justify-center gap-2 text-sm font-bold shadow-md cursor-pointer">
+              <i class="fa-brands fa-whatsapp text-lg"></i> Inquiry WhatsApp
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- [C] RELATED CARS SECTION -->
+    <section class="bg-[#F7F7F7] py-16 border-t border-[#E0E0E0]">
+      <div class="max-w-[1140px] mx-auto px-6">
+        <h3 class="font-serif text-2xl font-bold text-[#0A0A0A] tracking-tight text-center uppercase mb-2">
+          You May Also Like
+        </h3>
+        <div class="w-[36px] h-[3px] bg-black mx-auto mb-10 rounded-[1.5px]"></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="related-cars-grid">
+          <!-- Dynamically populated with 3 related cards -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- [D] SIMPLE FOOTER -->
+  <footer class="bg-[#0A0A0A] py-6 border-t border-white/10 text-center text-xs font-medium tracking-wide">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-neutral-400">
+      © 2024 Speed Rental RAK | 050 602 4221
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE RESERVATION FORM MODAL -->
+  <div id="booking-modal-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-md z-[1000] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.14)] border border-[#E0E0E0] max-h-[92vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-5 border-b border-[#E0E0E0] flex items-center justify-between">
+        <div>
+          <span class="text-[10px] text-[#888888] font-bold tracking-widest uppercase block mb-1">
+            SECURE BOOKING REQUEST
+          </span>
+          <h3 id="modal-vehicle-name" class="font-serif text-xl sm:text-2xl text-[#0A0A0A] font-bold leading-none">
+            Vehicle Name
+          </h3>
+        </div>
+        <button id="close-modal-btn" class="text-[#888888] hover:text-[#0A0A0A] h-8 w-8 rounded-full border border-[#E0E0E0] flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        
+        <!-- Booking Success content -->
+        <div id="booking-modal-success" class="hidden text-center py-8">
+          <div class="w-16 h-16 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center text-3xl mx-auto mb-4 border border-[#E0E0E0]">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h4 class="text-xl font-bold text-[#0A0A0A] mb-2">Request Received Successfully!</h4>
+          <p class="text-sm text-[#888888] leading-relaxed max-w-xs mx-auto">
+            We logged your inquiries. Our booking specialists will verify and call you immediately to arrange local drop-off.
+          </p>
+        </div>
+
+        <!-- Form content -->
+        <form id="booking-modal-form" class="flex flex-col gap-4 text-left">
+          
+          <div class="bg-[#F5F5F5] border border-[#E0E0E0] rounded p-3 flex items-center justify-between text-xs sm:text-sm font-sans mb-1">
+            <span class="text-[#888888]">Hourly/Daily Rate Base:</span>
+            <span id="modal-vehicle-rate" class="text-[#0A0A0A] font-bold font-mono">AED 0 / Day</span>
+          </div>
+
+          <!-- Name -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-[#0A0A0A]">Full Name *</label>
+            <input id="modal-input-name" type="text" placeholder="e.g. Salim Al Hashimi" required
+              class="w-full bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] px-3.5 py-2.5 text-sm text-[#0A0A0A] placeholder-[#AAAAAA] focus:outline-none focus:border-[#0A0A0A] focus:bg-white transition" />
+          </div>
+
+          <!-- Phone -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-[#0A0A0A]">Phone / WhatsApp *</label>
+            <input id="modal-input-phone" type="tel" placeholder="050 602 4221" required
+              class="w-full bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] px-3.5 py-2.5 text-sm text-[#0A0A0A] placeholder-[#AAAAAA] focus:outline-none focus:border-[#0A0A0A] focus:bg-white transition" />
+          </div>
+
+          <!-- Dates -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-[#0A0A0A]">Pickup Date *</label>
+              <input id="modal-input-pickupdate" type="date" required
+                class="w-full bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] p-2.5 text-xs text-[#0A0A0A] focus:outline-none focus:border-[#0A0A0A] focus:bg-white" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-[#0A0A0A]">Return Date *</label>
+              <input id="modal-input-returndate" type="date" required
+                class="w-full bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] p-2.5 text-xs text-[#0A0A0A] focus:outline-none focus:border-[#0A0A0A] focus:bg-white" />
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-[#0A0A0A]">Additional Notes (delivery location, details)</label>
+            <textarea id="modal-input-notes" placeholder="e.g. Delivery Al Hamra Village Hilton at 2 PM."
+              class="w-full bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] p-2.5 text-xs text-[#0A0A0A] h-20 placeholder-[#AAAAAA] focus:outline-none focus:border-[#0A0A0A] focus:bg-white resize-none"></textarea>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="flex items-center gap-3 mt-4">
+            <button id="modal-cancel" type="button" class="w-1/3 py-3 border border-[#E0E0E0] rounded-[6px] text-[#888888] hover:bg-[#F5F5F5] text-xs font-bold transition cursor-pointer">
+              Cancel
+            </button>
+            <button type="submit" class="w-2/3 py-3 bg-[#0A0A0A] text-white hover:bg-neutral-800 rounded-[6px] text-xs font-bold transition cursor-pointer">
+              Confirm Rental Reservation
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- DYNAMIC DATA LOADING AND UI BINDING SCRIPT -->
+  <script>
+    // HARDCODED INITIAL CARS DIRECT FROM DATA.TS
+    const HARDCODED_CARS = [
+      {
+        id: "1",
+        name: "Toyota Corolla 2023",
+        category: "Sedan",
+        price: 120,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Silver",
+        plateNumber: "RAK A 12345",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 120,
+        weeklyPrice: 720,
+        monthlyPrice: 3000,
+        securityDeposit: 1000,
+        mileageLimit: "250 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: false,
+          bluetooth: true
+        },
+        description: "A reliable and highly fuel-efficient compact sedan, perfect for daily commuting and easy navigate across Ras Al Khaimah."
+      },
+      {
+        id: "2",
+        name: "Nissan Sunny 2022",
+        category: "Economy",
+        price: 80,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600",
+        year: 2022,
+        color: "White",
+        plateNumber: "RAK B 54321",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 80,
+        weeklyPrice: 480,
+        monthlyPrice: 2000,
+        securityDeposit: 1000,
+        mileageLimit: "250 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: false,
+          usbCharging: true,
+          rearCamera: false,
+          parkingSensors: false,
+          bluetooth: true
+        },
+        description: "Extremely economic and practical choice. The Nissan Sunny offers a surprisingly spacious cabin and exceptional fuel efficiency."
+      },
+      {
+        id: "3",
+        name: "Hyundai Accent 2023",
+        category: "Economy",
+        price: 90,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Gray",
+        plateNumber: "RAK C 98765",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 90,
+        weeklyPrice: 540,
+        monthlyPrice: 2250,
+        securityDeposit: 1000,
+        mileageLimit: "250 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: false,
+          usbCharging: true,
+          rearCamera: false,
+          parkingSensors: false,
+          bluetooth: true
+        },
+        description: "A modern budget-friendly option with slick styling, advanced infotainment, and robust safety metrics for tourists and residents."
+      },
+      {
+        id: "4",
+        name: "Toyota Camry 2023",
+        category: "Sedan",
+        price: 150,
+        status: "Rented",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Black",
+        plateNumber: "RAK D 45678",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 150,
+        weeklyPrice: 900,
+        monthlyPrice: 3750,
+        securityDeposit: 1200,
+        mileageLimit: "300 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "A premium mid-size sedan that perfectly blends quiet luxury, refined performance, and solid highway ride comfort."
+      },
+      {
+        id: "5",
+        name: "Mitsubishi Pajero 2022",
+        category: "SUV",
+        price: 200,
+        status: "Available",
+        seats: 7,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600",
+        year: 2022,
+        color: "Silver",
+        plateNumber: "RAK E 24680",
+        doors: 5,
+        fuelType: "Petrol",
+        dailyPrice: 200,
+        weeklyPrice: 1200,
+        monthlyPrice: 5000,
+        securityDeposit: 1500,
+        mileageLimit: "300 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "A robust 4x4 off-roader built for absolute utility and command. The generous 7-seat layout provides comfort for family roadtrips."
+      },
+      {
+        id: "6",
+        name: "Toyota Land Cruiser 2022",
+        category: "SUV",
+        price: 350,
+        status: "Available",
+        seats: 7,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600",
+        year: 2022,
+        color: "White",
+        plateNumber: "RAK F 67890",
+        doors: 5,
+        fuelType: "Petrol",
+        dailyPrice: 350,
+        weeklyPrice: 2100,
+        monthlyPrice: 8750,
+        securityDeposit: 1500,
+        mileageLimit: "Unlimited",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "The Toyota Land Cruiser is our flagship SUV — powerful, spacious and perfect for both city driving and off-road adventures across Ras Al Khaimah."
+      },
+      {
+        id: "7",
+        name: "Nissan Patrol 2023",
+        category: "SUV",
+        price: 380,
+        status: "Reserved",
+        seats: 7,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Champagne Gold",
+        plateNumber: "RAK G 13579",
+        doors: 5,
+        fuelType: "Petrol",
+        dailyPrice: 380,
+        weeklyPrice: 2280,
+        monthlyPrice: 9500,
+        securityDeposit: 1500,
+        mileageLimit: "Volume Bound",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "The Hero of All Terrains in the GCC. The Nissan Patrol combines top-tier passenger luxury, smart state coordinates, and absolute desert power."
+      },
+      {
+        id: "8",
+        name: "Kia Sportage 2023",
+        category: "SUV",
+        price: 180,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1627454820516-dc767bc63aa9?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Red",
+        plateNumber: "RAK H 86420",
+        doors: 5,
+        fuelType: "Petrol",
+        dailyPrice: 180,
+        weeklyPrice: 1080,
+        monthlyPrice: 4500,
+        securityDeposit: 1200,
+        mileageLimit: "300 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1627454820516-dc767bc63aa9?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "A sleek, technology-dense crossover. Nimble responsive handling makes it outstanding for seaside cruising in RAK."
+      },
+      {
+        id: "9",
+        name: "BMW 3 Series 2022",
+        category: "Luxury",
+        price: 280,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600",
+        year: 2022,
+        color: "Blue",
+        plateNumber: "RAK I 11223",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 280,
+        weeklyPrice: 1680,
+        monthlyPrice: 7000,
+        securityDeposit: 2000,
+        mileageLimit: "250 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "Experience the ultimate driving machine. Incredible cornering stability, custom driver setups, and luxurious modern design."
+      },
+      {
+        id: "10",
+        name: "Mercedes C-Class 2023",
+        category: "Luxury",
+        price: 320,
+        status: "Available",
+        seats: 5,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Grey",
+        plateNumber: "RAK J 99887",
+        doors: 4,
+        fuelType: "Petrol",
+        dailyPrice: 320,
+        weeklyPrice: 1920,
+        monthlyPrice: 8000,
+        securityDeposit: 2000,
+        mileageLimit: "250 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "Pure Mercedes executive prestige. Exceptional ambient illumination, quiet motor shielding, and advanced comfort ride support."
+      },
+      {
+        id: "11",
+        name: "Toyota Hiace Van 2022",
+        category: "Van",
+        price: 250,
+        status: "Rented",
+        seats: 12,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Diesel",
+        imageUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=600",
+        year: 2022,
+        color: "White",
+        plateNumber: "RAK K 77665",
+        doors: 4,
+        fuelType: "Diesel",
+        dailyPrice: 250,
+        weeklyPrice: 1500,
+        monthlyPrice: 6250,
+        securityDeposit: 1500,
+        mileageLimit: "350 km/day",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: false,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: false,
+          bluetooth: true
+        },
+        description: "Incomparable passenger capacity and reliability. Designed to move larger family groups or tourism packages without breaking a sweat."
+      },
+      {
+        id: "12",
+        name: "GMC Yukon 2023",
+        category: "SUV",
+        price: 420,
+        status: "Available",
+        seats: 7,
+        transmission: "Automatic",
+        ac: true,
+        fuel: "Petrol",
+        imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600",
+        year: 2023,
+        color: "Black",
+        plateNumber: "RAK L 55443",
+        doors: 5,
+        fuelType: "Petrol",
+        dailyPrice: 420,
+        weeklyPrice: 2520,
+        monthlyPrice: 10500,
+        securityDeposit: 2000,
+        mileageLimit: "Unlimited",
+        additionalImages: [
+          "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600",
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600"
+        ],
+        features: {
+          appleCarplay: true,
+          usbCharging: true,
+          rearCamera: true,
+          parkingSensors: true,
+          bluetooth: true
+        },
+        description: "Prestige presence on the road with massive high-end interior luxury. Excellent suspension, perfect for VIP comfort or premium cruising."
+      }
+    ];
+
+    // Read car ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = urlParams.get('id');
+
+    // Load full cars array from localStorage with fallbacks
+    let allCars = [];
+    try {
+      const stored = localStorage.getItem('speedrental_cars');
+      if (stored) {
+        allCars = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn("Failed parsing stored fleet:", e);
+    }
+
+    if (!allCars || allCars.length === 0) {
+      allCars = HARDCODED_CARS;
+    }
+
+    // Find requested car
+    const currentCar = allCars.find(c => String(c.id) === String(carId));
+
+    if (!currentCar) {
+      // Show error, hide main content
+      document.getElementById('error-container').classList.remove('hidden');
+      document.getElementById('main-content').classList.add('hidden');
+      document.title = "Car Not Found — Speed Rental RAK";
+    } else {
+      // Map meta page title
+      document.title = `${currentCar.name} — Speed Rental RAK`;
+      
+      // Bind car info to the page
+      document.getElementById('car-name-heading').innerText = currentCar.name;
+      document.getElementById('car-year-subtitle').querySelector('span').innerText = currentCar.year || '2023';
+      document.getElementById('car-category-badge').innerText = currentCar.category;
+      document.getElementById('car-description-text').innerText = currentCar.description || '';
+
+      // Set status badge visual properties
+      const statusBadge = document.getElementById('car-status-badge');
+      statusBadge.innerText = currentCar.status;
+      if (currentCar.status === 'Available') {
+        statusBadge.className = 'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-600 text-white';
+      } else if (currentCar.status === 'Rented') {
+        statusBadge.className = 'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-neutral-600 text-[#E0E0E0]';
+      } else {
+        statusBadge.className = 'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-amber-500 text-white';
+      }
+
+      // Rates pricing mapping (rely on pre-filled properties or dailyPrice calculation fallback)
+      const dailyPrice = currentCar.dailyPrice || currentCar.price || 0;
+      const weeklyPrice = currentCar.weeklyPrice || (dailyPrice * 6);
+      const monthlyPrice = currentCar.monthlyPrice || (dailyPrice * 24);
+
+      document.getElementById('price-daily-value').innerText = dailyPrice;
+      document.getElementById('price-weekly-value').innerText = weeklyPrice;
+      document.getElementById('price-monthly-value').innerText = monthlyPrice;
+
+      // Specification values mapping
+      document.getElementById('spec-val-seats').innerText = `${currentCar.seats || 5} Passengers`;
+      document.getElementById('spec-val-doors').innerText = `${currentCar.doors || 4} Doors`;
+      document.getElementById('spec-val-transmission').innerText = currentCar.transmission || 'Automatic';
+      document.getElementById('spec-val-fuel').innerText = currentCar.fuel || currentCar.fuelType || 'Petrol';
+      document.getElementById('spec-val-ac').innerText = currentCar.ac ? 'Full AC' : 'Standard AC';
+      document.getElementById('spec-val-year').innerText = currentCar.year || '2023';
+      document.getElementById('spec-val-color').innerText = currentCar.color || 'White';
+      document.getElementById('spec-val-insurance').innerText = 'Fully Insured';
+      const depositVal = currentCar.securityDeposit || currentCar.deposit || 1000;
+      document.getElementById('spec-val-deposit').innerText = `AED ${depositVal.toLocaleString()} Refundable`;
+      document.getElementById('spec-val-mileage').innerText = currentCar.mileageLimit || 'Unlimited';
+
+      // Load image gallery
+      let galleryImages = [];
+      if (currentCar.imageUrl) galleryImages.push(currentCar.imageUrl);
+      if (currentCar.additionalImages && currentCar.additionalImages.length > 0) {
+        currentCar.additionalImages.forEach(img => {
+          if (img && img !== currentCar.imageUrl) galleryImages.push(img);
+        });
+      } else if (currentCar.alternateImages && currentCar.alternateImages.length > 0) {
+        currentCar.alternateImages.forEach(img => {
+          if (img && img !== currentCar.imageUrl) galleryImages.push(img);
+        });
+      }
+
+      const mainGalleryImgEl = document.getElementById('main-gallery-image');
+      const fallbackIconEl = document.getElementById('gallery-fallback-icon');
+
+      if (galleryImages.length > 0) {
+        mainGalleryImgEl.src = galleryImages[0];
+      } else {
+        mainGalleryImgEl.classList.add('hidden');
+        fallbackIconEl.classList.remove('hidden');
+      }
+
+      // Build gallery thumbnails
+      const thumbStrip = document.getElementById('thumbnail-strip');
+      thumbStrip.innerHTML = '';
+      if (galleryImages.length > 1) {
+        galleryImages.forEach((img, index) => {
+          const thumb = document.createElement('div');
+          thumb.className = `w-[90px] h-[68px] min-w-[90px] rounded-lg overflow-hidden border cursor-pointer transition ${index === 0 ? 'border-[#0A0A0A] border-2 shadow-sm' : 'border-neutral-200 hover:border-neutral-400'}`;
+          thumb.innerHTML = `<img src="${img}" alt="Thumbnail" class="w-full h-full object-cover" referrerPolicy="no-referrer" />`;
+          
+          thumb.onclick = () => {
+            // Swap actively rendered gallery image
+            mainGalleryImgEl.style.opacity = '0';
+            setTimeout(() => {
+              mainGalleryImgEl.src = img;
+              mainGalleryImgEl.style.opacity = '1';
+            }, 150);
+
+            // Set active borders
+            Array.from(thumbStrip.children).forEach(child => {
+              child.className = `w-[90px] h-[68px] min-w-[90px] rounded-lg overflow-hidden border cursor-pointer transition border-neutral-200 hover:border-neutral-400`;
+            });
+            thumb.className = `w-[90px] h-[68px] min-w-[90px] rounded-lg overflow-hidden border cursor-pointer transition border-[#0A0A0A] border-2 shadow-sm`;
+          };
+          thumbStrip.appendChild(thumb);
+        });
+      } else {
+        thumbStrip.classList.add('hidden');
+      }
+
+      // Map amenities / features lists
+      const amenitiesContainer = document.getElementById('features-pills-contents');
+      amenitiesContainer.innerHTML = '';
+
+      const featureDefs = [
+        { key: 'appleCarplay', label: 'Apple CarPlay', icon: '📱' },
+        { key: 'usbCharging', label: 'USB Charging', icon: '🔌' },
+        { key: 'rearCamera', label: 'Rear Camera', icon: '📷' },
+        { key: 'parkingSensors', label: 'Parking Sensors', icon: '🅿️' },
+        { key: 'bluetooth', label: 'Bluetooth Audio', icon: '🔊' }
+      ];
+
+      let hasAny = false;
+      if (currentCar.features && typeof currentCar.features === 'object') {
+        featureDefs.forEach(fDef => {
+          if (currentCar.features[fDef.key] === true || currentCar.features[fDef.key] === 'true') {
+            hasAny = true;
+            const item = document.createElement('span');
+            item.className = 'feature-pill';
+            item.innerHTML = `<span class="text-neutral-600">${fDef.icon}</span> <span>${fDef.label}</span>`;
+            amenitiesContainer.appendChild(item);
+          }
+        });
+      }
+
+      if (!hasAny) {
+        amenitiesContainer.innerText = 'No supplementary attributes listed.';
+        amenitiesContainer.className = 'text-xs text-neutral-400 font-sans';
+      }
+
+      // Map action targets (WhatsApp URL generation)
+      const encodedMsg = encodeURIComponent(`Hello Speed Rental RAK! I would like to reserve the ${currentCar.name} for a rental.`);
+      const whatsappHref = `https://wa.me/971506024221?text=${encodedMsg}`;
+      document.getElementById('main-whatsapp-btn').href = whatsappHref;
+
+      // Render Related list (same categories cars, exclusive of the current ID)
+      const matches = allCars.filter(c => c.category === currentCar.category && String(c.id) !== String(currentCar.id));
+      let relatedResults = matches.slice(0, 3);
+      if (relatedResults.length < 3) {
+        // Fill up to 3 results with any other car categories
+        const spares = allCars.filter(c => String(c.id) !== String(currentCar.id) && !relatedResults.find(r => r.id === c.id));
+        relatedResults = [...relatedResults, ...spares.slice(0, 3 - relatedResults.length)];
+      }
+
+      const relatedContainer = document.getElementById('related-cars-grid');
+      relatedContainer.innerHTML = '';
+      if (relatedResults.length > 0) {
+        relatedResults.forEach(relCar => {
+          const relDailyPrice = relCar.dailyPrice || relCar.price || 0;
+          const card = document.createElement('div');
+          
+          // Render elegant related horizontal-style card matches
+          card.onclick = () => { window.location.href = `car-detail.html?id=${relCar.id}`; };
+          card.className = "bg-white overflow-hidden border border-[#E0E0E0] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.12)] hover:border-neutral-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col sm:flex-row h-auto sm:h-36";
+          
+          card.innerHTML = `
+            <div class="h-32 sm:h-full w-full sm:w-1/3 bg-[#F5F5F5] flex-shrink-0 relative overflow-hidden">
+              <img src="${relCar.imageUrl}" alt="${relCar.name}" class="w-full h-full object-cover" referrerPolicy="no-referrer" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600'" />
+            </div>
+            <div class="p-4 flex flex-col justify-between flex-1 select-none">
+              <div>
+                <span class="text-[9px] font-mono font-bold text-neutral-400 uppercase tracking-widest block mb-0.5">${relCar.category}</span>
+                <h4 class="font-sans font-bold text-sm tracking-wide text-[#0A0A0A] line-clamp-1">${relCar.name}</h4>
+              </div>
+              <div class="flex items-center justify-between mt-3 sm:mt-0 pt-2 border-t sm:border-t-0 border-neutral-100">
+                <div class="flex flex-col text-left">
+                  <span class="text-[9px] text-[#888888] font-bold tracking-widest uppercase">From</span>
+                  <div class="flex items-baseline gap-0.5">
+                    <span class="text-[10px] font-bold text-[#0A0A0A]">AED</span>
+                    <span class="text-lg font-mono font-bold text-[#0A0A0A] leading-none">${relDailyPrice}</span>
+                    <span class="text-[10px] text-neutral-400">/day</span>
+                  </div>
+                </div>
+                <button class="py-1.5 px-3 bg-black hover:bg-neutral-800 text-white font-sans font-bold text-[10px] uppercase tracking-wider rounded-[4px] transition">
+                  View Car
+                </button>
+              </div>
+            </div>
+          `;
+          relatedContainer.appendChild(card);
+        });
+      } else {
+        relatedContainer.innerHTML = '<p class="text-neutral-400 text-sm py-4 text-center">No other premium cars matched currently.</p>';
+      }
+
+      // Initialize click handles of interactive booking popup
+      const modalOverlay = document.getElementById('booking-modal-overlay');
+      const closeBtn = document.getElementById('close-modal-btn');
+      const cancelBtn = document.getElementById('modal-cancel');
+      const bookingForm = document.getElementById('booking-modal-form');
+      const bSuccessSection = document.getElementById('booking-modal-success');
+
+      const openModal = () => {
+        document.getElementById('modal-vehicle-name').innerText = currentCar.name;
+        document.getElementById('modal-vehicle-rate').innerText = `AED ${dailyPrice} / Day`;
+        
+        // Ensure resetsuccess is false upon open
+        bookingForm.classList.remove('hidden');
+        bSuccessSection.classList.add('hidden');
+        modalOverlay.classList.remove('hidden');
+      };
+
+      const closeModal = () => {
+        modalOverlay.classList.add('hidden');
+      };
+
+      document.getElementById('nav-book-btn').onclick = openModal;
+      document.getElementById('main-book-btn').onclick = openModal;
+      closeBtn.onclick = closeModal;
+      cancelBtn.onclick = closeModal;
+
+      // Close modal on click of dimming backdrop overlay
+      modalOverlay.onclick = (e) => {
+        if (e.target === modalOverlay) closeModal();
+      };
+
+      // Form reservation submit simulation
+      bookingForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        const customerName = document.getElementById('modal-input-name').value;
+        const customerPhone = document.getElementById('modal-input-phone').value;
+        const pickupDate = document.getElementById('modal-input-pickupdate').value;
+        const returnDate = document.getElementById('modal-input-returndate').value;
+        const customerNotes = document.getElementById('modal-input-notes').value;
+
+        // Structured inquiry record back to react-synchronized localStorage log
+        const formattedMsg = `Reservation Request: Selected Car ID: ${currentCar.id}. Dates: ${pickupDate} to ${returnDate}. Customer comments: "${customerNotes}"`;
+
+        const newInquiry = {
+          id: Date.now().toString(),
+          date: new Date().toLocaleString('en-US', { hour12: true }),
+          name: customerName,
+          phone: customerPhone,
+          message: formattedMsg,
+          status: 'New'
+        };
+
+        // Write to speed_rental_inquiries persistent database
+        let currentInquiries = [];
+        try {
+          const storedInq = localStorage.getItem('speed_rental_inquiries') || localStorage.getItem('speedrental_inquiries');
+          if (storedInq) {
+            currentInquiries = JSON.parse(storedInq);
+          }
+        } catch(err) {
+          console.warn("Storage reading error:", err);
+        }
+
+        currentInquiries.unshift(newInquiry);
+        localStorage.setItem('speed_rental_inquiries', JSON.stringify(currentInquiries));
+        localStorage.setItem('speedrental_inquiries', JSON.stringify(currentInquiries));
+
+        // Display success response metrics state
+        bookingForm.classList.add('hidden');
+        bSuccessSection.classList.remove('hidden');
+
+        setTimeout(() => {
+          closeModal();
+          bookingForm.reset();
+        }, 3000);
+      };
+    }
+
+    // Default image loader fallback logic
+    function handleImageLoadError(img) {
+      img.classList.add('hidden');
+      document.getElementById('gallery-fallback-icon').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

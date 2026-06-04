@@ -54,22 +54,22 @@ export default function WhyChooseUs({ isRtl }: WhyChooseUsProps) {
   ];
 
   return (
-    <section id="why-us" className="py-24 bg-[#111111] relative overflow-hidden border-b border-[#2E2E2E]">
+    <section id="why-us" className="py-24 bg-[#F7F7F7] relative overflow-hidden border-b border-[#E0E0E0]">
       
       {/* Dynamic Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Title */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-white text-xs sm:text-sm uppercase tracking-widest font-semibold flex items-center justify-center gap-2 mb-2">
-            <i className="fa-solid fa-gem text-xs text-[#AAAAAA]"></i> {isRtl ? 'لماذا تختارنا' : 'Trust Signals'}
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0A0A0A] tracking-[-0.02em] text-center uppercase">
             {isRtl ? 'التميز في خدمات التأجير' : 'Why Choose Speed Rental RAK'}
           </h2>
-          <div className="w-40 mx-auto mt-4">
-            <div className="artistic-line"></div>
-          </div>
+          <div className="w-[48px] h-[3px] bg-[#0A0A0A] mx-auto mt-3 mb-6 rounded-[2px]"></div>
+          <p className="text-[#888888] text-center max-w-[560px] mx-auto text-sm sm:text-base">
+            {isRtl
+              ? 'نهدف لتقديم أفضل تجربة تأجير سيارات مريحة وسلسة في رأس الخيمة بأسعار متميزة وخدمة استثنائية.'
+              : 'Our mission is to deliver the most seamless, high-end car rental experience in Ras Al Khaimah with stellar hospitality.'}
+          </p>
         </div>
 
         {/* 3x2 Cards Grid */}
@@ -78,15 +78,15 @@ export default function WhyChooseUs({ isRtl }: WhyChooseUsProps) {
             <div 
               id={`choose-card-${i}`}
               key={i}
-              className="bg-[#1A1A1A] border border-[#2E2E2E] hover:border-white hover:bg-[#111111] hover:-translate-y-2 transition-all duration-300 p-8 rounded-xl flex flex-col gap-4 group cursor-pointer"
+              className="bg-white border border-[#E0E0E0] shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_48px_rgba(0,0,0,0.16)] hover:-translate-y-1 hover:border-[#CCCCCC] transition-all duration-300 p-8 rounded-xl flex flex-col gap-4 group cursor-pointer"
             >
-              <div className="w-12 h-12 rounded bg-[#0A0A0A] border border-[#2E2E2E] flex items-center justify-center text-white text-xl transition-all duration-300">
+              <div className="w-12 h-12 rounded-[8px] bg-[#0A0A0A] flex items-center justify-center text-white text-xl transition-all duration-300">
                 <i className={`fa-solid ${c.icon}`}></i>
               </div>
-              <h3 className="text-lg font-sans font-bold text-white tracking-wide transition-colors duration-200">
+              <h3 className="text-lg font-sans font-bold text-[#0A0A0A] tracking-wide transition-colors duration-200">
                 {c.title}
               </h3>
-              <p className="text-sm text-[#AAAAAA] leading-relaxed font-light">
+              <p className="text-sm text-[#888888] leading-relaxed font-light">
                 {c.desc}
               </p>
             </div>

@@ -44,26 +44,26 @@ export default function HowItWorks({ isRtl }: HowItWorksProps) {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 bg-[#111111] relative border-b border-[#2E2E2E]">
+    <section id="how-it-works" className="py-24 bg-white relative border-b border-[#E0E0E0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Title */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="text-white text-xs sm:text-sm uppercase tracking-widest font-semibold flex items-center justify-center gap-2 mb-2">
-            <i className="fa-solid fa-graduation-cap text-xs text-[#AAAAAA]"></i> {isRtl ? 'سهولة الحجز' : 'Simple Checklist'}
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <h2 className="text-[28px] md:text-[36px] font-extrabold text-[#0A0A0A] tracking-[-0.02em] text-center uppercase">
             {isRtl ? 'كيف تعمل خدماتنا؟' : 'How It Works'}
           </h2>
-          <div className="w-40 mx-auto mt-4">
-            <div className="artistic-line"></div>
-          </div>
+          <div className="w-[48px] h-[3px] bg-[#0A0A0A] mx-auto mt-3 mb-6 rounded-[2px]"></div>
+          <p className="text-[#888888] text-center max-w-[560px] mx-auto text-sm sm:text-base">
+            {isRtl
+              ? 'احجز سيارتك المفضلة بـ 4 خطوات بسيطة وسريعة بدون أي تعقيدات أو كفالات معقدة.'
+              : 'Rent your preferred premium car in Ras Al Khaimah through four seamless, secure stages.'}
+          </p>
         </div>
 
         {/* Steps Horizontal Grid */}
         <div className="relative">
           {/* Connector Dotted Line for desktop */}
-          <div className="hidden lg:block absolute top-1/2 left-16 right-16 h-[2px] border-t-2 border-dashed border-[#2E2E2E] z-0 transform -translate-y-12"></div>
+          <div className="hidden lg:block absolute top-1/2 left-16 right-16 h-[2px] border-t-2 border-dashed border-[#E0E0E0] z-0 transform -translate-y-12"></div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
             {steps.map((s, index) => (
@@ -76,21 +76,21 @@ export default function HowItWorks({ isRtl }: HowItWorksProps) {
                 {/* Number Sphere + Custom Icon Layer */}
                 <div className="relative mb-6">
                   {/* Step index tag */}
-                  <span className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white text-black font-mono font-bold text-sm flex items-center justify-center border border-[#2E2E2E] shadow-md z-10">
+                  <span className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-[#0A0A0A] text-white font-mono font-bold text-sm flex items-center justify-center shadow-md z-10">
                     {s.num}
                   </span>
 
-                  <div className="w-20 h-20 rounded-full bg-[#1A1A1A] border-2 border-[#2E2E2E] flex items-center justify-center text-white text-2xl group-hover:border-white group-hover:bg-white group-hover:text-black transition-all duration-300 shadow-lg">
+                  <div className="w-20 h-20 rounded-full bg-white border-2 border-[#E0E0E0] flex items-center justify-center text-[#0A0A0A] text-2xl group-hover:border-[#0A0A0A] group-hover:bg-[#0A0A0A] group-hover:text-white transition-all duration-300 shadow-md">
                     <i className={`fa-solid ${s.icon}`}></i>
                   </div>
                 </div>
 
                 {/* Info titles */}
-                <h3 className="text-lg font-sans font-bold text-white mb-2 leading-none transition-colors duration-200">
+                <h3 className="text-lg font-sans font-bold text-[#0A0A0A] mb-2 leading-none transition-colors duration-200">
                   {s.title}
                 </h3>
                 
-                <p className="text-xs sm:text-sm text-[#AAAAAA] font-light leading-relaxed max-w-[240px]">
+                <p className="text-xs sm:text-sm text-[#888888] font-light leading-relaxed max-w-[240px]">
                   {s.desc}
                 </p>
 

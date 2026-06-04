@@ -75,6 +75,22 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // REAL TIME SYNC
+      window.addEventListener("storage", function(e) {
+        const handlers = {
+          "speedrental_cars": window.renderFleet,
+          "speedrental_offers": window.renderOffers,
+          "speedrental_announcements": window.renderAnnouncementBar,
+          "speedrental_reviews": window.renderReviews,
+          "speedrental_faqs": window.renderFAQs,
+          "speedrental_settings": window.applyBusinessSettings
+        };
+        if (handlers[e.key]) {
+          handlers[e.key]();
+        }
+      });
+    </script>
   </body>
 </html>
 

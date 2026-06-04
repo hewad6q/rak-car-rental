@@ -16,7 +16,35 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Silver',
+    plateNumber: 'RAK A 12345',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 120,
+    weeklyPrice: 720,
+    monthlyPrice: 3000,
+    securityDeposit: 1000,
+    mileageLimit: '250 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: false,
+      leatherSeats: false,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'A reliable and highly fuel-efficient compact sedan, perfect for daily commuting and easy navigate across Ras Al Khaimah.'
   },
   {
     id: '2',
@@ -28,7 +56,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600',
+    year: 2022,
+    color: 'White',
+    plateNumber: 'RAK B 54321',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 80,
+    weeklyPrice: 480,
+    monthlyPrice: 2000,
+    securityDeposit: 1000,
+    mileageLimit: '250 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: false,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: false,
+      leatherSeats: false,
+      backupCamera: false,
+      childSeat: true,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'Extremely economic and practical choice. The Nissan Sunny offers a surprisingly spacious cabin and exceptional fuel efficiency.'
   },
   {
     id: '3',
@@ -40,7 +95,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Gray',
+    plateNumber: 'RAK C 98765',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 90,
+    weeklyPrice: 540,
+    monthlyPrice: 2250,
+    securityDeposit: 1000,
+    mileageLimit: '250 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: false,
+      leatherSeats: false,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'A modern budget-friendly option with slick styling, advanced infotainment, and robust safety metrics for tourists and residents.'
   },
   {
     id: '4',
@@ -52,7 +134,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Black',
+    plateNumber: 'RAK D 45678',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 150,
+    weeklyPrice: 900,
+    monthlyPrice: 3750,
+    securityDeposit: 1200,
+    mileageLimit: '300 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'A premium mid-size sedan that perfectly blends quiet luxury, refined performance, and solid highway ride comfort.'
   },
   {
     id: '5',
@@ -64,7 +173,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600',
+    year: 2022,
+    color: 'Silver',
+    plateNumber: 'RAK E 24680',
+    doors: 5,
+    fuelType: 'Petrol',
+    dailyPrice: 200,
+    weeklyPrice: 1200,
+    monthlyPrice: 5000,
+    securityDeposit: 1500,
+    mileageLimit: '300 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'A robust 4x4 off-roader built for absolute utility and command. The generous 7-seat layout provides comfort for family roadtrips.'
   },
   {
     id: '6',
@@ -76,7 +212,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600',
+    year: 2022,
+    color: 'White',
+    plateNumber: 'RAK F 67890',
+    doors: 5,
+    fuelType: 'Petrol',
+    dailyPrice: 350,
+    weeklyPrice: 2100,
+    monthlyPrice: 8750,
+    securityDeposit: 1500,
+    mileageLimit: 'Unlimited',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'The Toyota Land Cruiser is our flagship SUV — powerful, spacious and perfect for both city driving and off-road adventures across Ras Al Khaimah.'
   },
   {
     id: '7',
@@ -88,7 +251,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Champagne Gold',
+    plateNumber: 'RAK G 13579',
+    doors: 5,
+    fuelType: 'Petrol',
+    dailyPrice: 380,
+    weeklyPrice: 2280,
+    monthlyPrice: 9500,
+    securityDeposit: 1500,
+    mileageLimit: 'Volume Bound',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'The Hero of All Terrains in the GCC. The Nissan Patrol combines top-tier passenger luxury, smart state coordinates, and absolute desert power.'
   },
   {
     id: '8',
@@ -100,7 +290,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1627454820516-dc767bc63aa9?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1627454820516-dc767bc63aa9?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Red',
+    plateNumber: 'RAK H 86420',
+    doors: 5,
+    fuelType: 'Petrol',
+    dailyPrice: 180,
+    weeklyPrice: 1080,
+    monthlyPrice: 4500,
+    securityDeposit: 1200,
+    mileageLimit: '300 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1627454820516-dc767bc63aa9?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: false,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'A sleek, technology-dense crossover. Nimble responsive handling makes it outstanding for seaside cruising in RAK.'
   },
   {
     id: '9',
@@ -112,7 +329,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600',
+    year: 2022,
+    color: 'Blue',
+    plateNumber: 'RAK I 11223',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 280,
+    weeklyPrice: 1680,
+    monthlyPrice: 7000,
+    securityDeposit: 2000,
+    mileageLimit: '250 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: false,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'Experience the ultimate driving machine. Incredible cornering stability, custom driver setups, and luxurious modern design.'
   },
   {
     id: '10',
@@ -124,7 +368,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Grey',
+    plateNumber: 'RAK J 99887',
+    doors: 4,
+    fuelType: 'Petrol',
+    dailyPrice: 320,
+    weeklyPrice: 1920,
+    monthlyPrice: 8000,
+    securityDeposit: 2000,
+    mileageLimit: '250 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: false,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'Pure Mercedes executive prestige. Exceptional ambient illumination, quiet motor shielding, and advanced comfort ride support.'
   },
   {
     id: '11',
@@ -136,7 +407,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Diesel',
-    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=600',
+    year: 2022,
+    color: 'White',
+    plateNumber: 'RAK K 77665',
+    doors: 4,
+    fuelType: 'Diesel',
+    dailyPrice: 250,
+    weeklyPrice: 1500,
+    monthlyPrice: 6250,
+    securityDeposit: 1500,
+    mileageLimit: '350 km/day',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: false,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: false,
+      leatherSeats: false,
+      backupCamera: true,
+      childSeat: false,
+      spareTyre: true,
+      wifi: false,
+      parkingSensors: true
+    },
+    description: 'Incomparable passenger capacity and reliability. Designed to move larger family groups or tourism packages without breaking a sweat.'
   },
   {
     id: '12',
@@ -148,7 +446,34 @@ export const INITIAL_CARS: Car[] = [
     transmission: 'Automatic',
     ac: true,
     fuel: 'Petrol',
-    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600'
+    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600',
+    year: 2023,
+    color: 'Black',
+    plateNumber: 'RAK L 55443',
+    doors: 5,
+    fuelType: 'Petrol',
+    dailyPrice: 420,
+    weeklyPrice: 2520,
+    monthlyPrice: 10500,
+    securityDeposit: 2000,
+    mileageLimit: 'Unlimited',
+    additionalImages: [
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600'
+    ],
+    features: {
+      gps: true,
+      bluetooth: true,
+      usbCharging: true,
+      sunroof: true,
+      leatherSeats: true,
+      backupCamera: true,
+      childSeat: true,
+      spareTyre: true,
+      wifi: true,
+      parkingSensors: true
+    },
+    description: 'Prestige presence on the road with massive high-end interior luxury. Excellent suspension, perfect for VIP comfort or premium cruising.'
   }
 ];
 

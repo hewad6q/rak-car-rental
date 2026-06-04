@@ -68,13 +68,13 @@ export default function FloatingElements({ phoneFormatted, whatsappNumber, isRtl
         <a
           id="floating-phone-dial"
           href={`tel:${phoneFormatted}`}
-          className="w-12 h-12 rounded-full bg-[#1A1A1A] border border-[#2E2E2E] text-white flex items-center justify-center text-sm shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 phone-pulse relative group"
+          className="w-12 h-12 rounded-full bg-[#0A0A0A] border border-[#0A0A0A] text-white flex items-center justify-center text-sm shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 phone-pulse relative group"
           title="Call Reservation Hot-line"
           aria-label="Call RAK Office"
         >
           <i className="fa-solid fa-phone"></i>
           {/* Tooltip trigger */}
-          <span className="absolute right-14 bg-[#1A1A1A] text-white border border-[#2E2E2E] text-[10px] font-bold py-1 px-3 rounded-md uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-250 pointer-events-none shadow-md">
+          <span className="absolute right-14 bg-white text-[#0A0A0A] border border-[#E0E0E0] text-[10px] font-bold py-1 px-3 rounded-md uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-250 pointer-events-none shadow-md">
             {isRtl ? 'اتصل بنا هاتفيًا!' : 'Call Office Now!'}
           </span>
         </a>
@@ -91,7 +91,7 @@ export default function FloatingElements({ phoneFormatted, whatsappNumber, isRtl
         >
           <i className="fa-brands fa-whatsapp text-2xl"></i>
           {/* Tooltip trigger */}
-          <span className="absolute right-16 bg-[#1A1A1A] text-white border border-[#2E2E2E] text-[10px] font-bold py-1 px-3 rounded-md uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-250 pointer-events-none shadow-md">
+          <span className="absolute right-16 bg-white text-[#0A0A0A] border border-[#E0E0E0] text-[10px] font-bold py-1 px-3 rounded-md uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-250 pointer-events-none shadow-md">
             {isRtl ? 'راسلنا عبر واتساب' : 'Chat With Us!'}
           </span>
         </a>
@@ -100,9 +100,9 @@ export default function FloatingElements({ phoneFormatted, whatsappNumber, isRtl
 
       {/* FIXED COOKIE CONSENT BANNER SHEET */}
       {showCookieBanner && (
-        <div id="cookie-banner" className="fixed bottom-0 left-0 w-full z-45 p-4 sm:p-6 bg-[#111111] border-t border-[#2E2E2E] shadow-2xl animate-[slideInUp_0.5s_ease-out_1]">
+        <div id="cookie-banner" className="fixed bottom-0 left-0 w-full z-45 p-4 sm:p-6 bg-white border-t border-[#E0E0E0] shadow-2xl animate-[slideInUp_0.5s_ease-out_1]">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-left">
-            <p className="text-[#AAAAAA] font-light leading-relaxed max-w-4xl font-sans">
+            <p className="text-[#888888] font-light leading-relaxed max-w-4xl font-sans">
               🍪 {isRtl 
                 ? 'ملفات تعريف الارتباط: نحن نستخدم ملفات تعريف الارتباط لتحسين تصفحك وقياس الأداء لموقعنا. بالاستمرار بالتصفح، نوافق على تشغيل سياسة الخصوصية.' 
                 : 'We use premium standard cookies to gauge performance, study demographic metrics, and provide smooth client experiences. By using our Dubai supercar portal, you agree to our policies.'}
@@ -112,7 +112,7 @@ export default function FloatingElements({ phoneFormatted, whatsappNumber, isRtl
               <button
                 id="cookie-decline"
                 onClick={() => setShowCookieBanner(false)}
-                className="text-[#555555] hover:text-white transition-colors duration-150 text-xs uppercase"
+                className="text-neutral-500 hover:text-[#0A0A0A] transition-colors duration-150 text-xs uppercase cursor-pointer"
               >
                 {isRtl ? 'رفض' : 'Decline'}
               </button>
@@ -120,7 +120,7 @@ export default function FloatingElements({ phoneFormatted, whatsappNumber, isRtl
               <button
                 id="cookie-accept"
                 onClick={handleAcceptCookies}
-                className="px-6 py-2.5 bg-white text-black hover:bg-[#E0E0E0] text-xs uppercase rounded transition-all duration-150 cursor-pointer"
+                className="px-6 py-2.5 bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-xs uppercase rounded-[6px] transition-all duration-150 cursor-pointer shadow-md"
               >
                 {isRtl ? 'موافق، قبول الكل' : 'Accept Cookies'}
               </button>

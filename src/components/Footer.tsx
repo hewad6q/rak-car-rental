@@ -137,12 +137,12 @@ export default function Footer({ business, onNavigate, isRtl }: FooterProps) {
 
       {/* POPUP LEGAL MODALS LAYOUT */}
       {activeModal && (
-        <div id="legal-modal-overlay" className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1A1A1A] w-full max-w-2xl rounded overflow-hidden shadow-2xl relative border border-[#2E2E2E] max-h-[85vh] flex flex-col">
+        <div id="legal-modal-overlay" className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-[6px] overflow-hidden shadow-2xl relative border border-[#E0E0E0] max-h-[85vh] flex flex-col">
             
             {/* Modal Top Title Bar */}
-            <div className="p-5 bg-[#111111] border-b border-[#2E2E2E] flex items-center justify-between text-left shrink-0">
-              <h4 className="font-serif text-lg sm:text-xl font-bold text-white capitalize">
+            <div className="p-5 bg-[#F7F7F7] border-b border-[#E0E0E0] flex items-center justify-between text-left shrink-0">
+              <h4 className="font-sans text-base sm:text-lg font-bold text-[#0A0A0A] capitalize">
                 {activeModal === 'privacy' && (isRtl ? 'سياسة الخصوصية والتأمين' : 'Privacy Policy & Cookie Statement')}
                 {activeModal === 'terms' && (isRtl ? 'الشروط وقواعد الاستخدام' : 'Rental Agreements, Terms & Conditions')}
                 {activeModal === 'sitemap' && (isRtl ? 'دليل وبنية الفهرسة' : 'Sitemap Directory Outline')}
@@ -150,27 +150,27 @@ export default function Footer({ business, onNavigate, isRtl }: FooterProps) {
               <button 
                 id="close-legal-modal"
                 onClick={handleCloseModal}
-                className="text-slate-400 hover:text-white h-7 w-7 rounded border border-[#2E2E2E] flex items-center justify-center text-sm cursor-pointer"
+                className="text-[#888888] hover:text-[#0A0A0A] h-7 w-7 rounded border border-[#E0E0E0] flex items-center justify-center text-sm cursor-pointer"
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
 
             {/* Modal scroll contents body */}
-            <div className="p-6 overflow-y-auto text-left flex flex-col gap-4 font-sans text-xs sm:text-sm text-[#AAAAAA] leading-relaxed font-light">
+            <div className="p-6 overflow-y-auto text-left flex flex-col gap-4 font-sans text-xs sm:text-sm text-[#888888] leading-relaxed font-light">
               
               {/* PRIVACY POLICY CONTEXT */}
               {activeModal === 'privacy' && (
                 <>
-                  <p className="font-semibold text-white">Last Modified: June 2026</p>
+                  <p className="font-semibold text-[#0A0A0A]">Last Modified: June 2026</p>
                   <p>
                     Welcome to Speed Rental RAK Privacy Center. We protect all customers driver licenses, Emirates ID, Passport files, and credit card validation metrics strictly in accordance with Ras Al Khaimah and United Arab Emirates federal guidelines.
                   </p>
-                  <h5 className="font-bold text-white uppercase text-xs mt-2">1. Data Collected & Storage</h5>
+                  <h5 className="font-bold text-[#0A0A0A] uppercase text-xs mt-2">1. Data Collected & Storage</h5>
                   <p>
                     When processing car rentals, we collect identification credentials, state driving licenses, and contact parameters. This information is stored in locked offline servers and digital local storage to register Salik toll deductions and municipal transit fines.
                   </p>
-                  <h5 className="font-bold text-white uppercase text-xs mt-2">2. Processing & Disclosure</h5>
+                  <h5 className="font-bold text-[#0A0A0A] uppercase text-xs mt-2">2. Processing & Disclosure</h5>
                   <p>
                     Your records are never leased to third-party advert entities. We disclose credentials solely to RAK traffic authorities or law enforcement agencies upon direct demand for accidents resolution or speed limit fines administration.
                   </p>
@@ -180,15 +180,15 @@ export default function Footer({ business, onNavigate, isRtl }: FooterProps) {
               {/* TERMS & CONDITIONS CONTEXT */}
               {activeModal === 'terms' && (
                 <>
-                  <p className="font-semibold text-white">Effective Date: June 2026</p>
+                  <p className="font-semibold text-[#0A0A0A]">Effective Date: June 2026</p>
                   <p>
                     These rules govern all vehicle rentals executed with Speed Rental RAK in the showroom or via delivery points.
                   </p>
-                  <h5 className="font-bold text-white uppercase text-xs mt-2">1. Age Requirement & Licenses</h5>
+                  <h5 className="font-bold text-[#0A0A0A] uppercase text-xs mt-2">1. Age Requirement & Licenses</h5>
                   <p>
                     The client driver must be 21 years old or above. UAE residents must provide valid original UAE driving license. Tourists must present a valid International Driving Permit (IDP) alongside their national license.
                   </p>
-                  <h5 className="font-bold text-white uppercase text-xs mt-2">2. Fuel Costs & Damage Fines</h5>
+                  <h5 className="font-bold text-[#0A0A0A] uppercase text-xs mt-2">2. Fuel Costs & Damage Fines</h5>
                   <p>
                     Vehicles are supplied matching specific fuel gauges and must be returned matching that level, otherwise refueling expenses apply. Standard comprehensive insurance is loaded, but if an accident report is labeled with driver negligence, the client bears the aggregate excess deductible fees in UAE courts.
                   </p>
@@ -201,12 +201,12 @@ export default function Footer({ business, onNavigate, isRtl }: FooterProps) {
                   <p>Complete structural map pointing to indexed landing blocks to help search crawlers navigate our UAE supercar fleet website efficiently.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                     {sitemapLinks.map((link, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2.5 rounded bg-[#0A0A0A] border border-[#2E2E2E] font-mono text-[11px] hover:border-white hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
-                        <i className="fa-solid fa-link text-white text-xs"></i>
+                      <div key={i} className="flex items-center gap-2 p-2.5 rounded bg-[#F7F7F7] border border-[#E0E0E0] font-mono text-[11px] hover:border-[#0A0A0A] transition-all duration-200 cursor-pointer">
+                        <i className="fa-solid fa-link text-[#888888] text-xs"></i>
                         {link.hash ? (
-                          <a href={link.hash} onClick={handleCloseModal} className="text-white hover:underline w-full text-left">{link.label} ({link.hash})</a>
+                          <a href={link.hash} onClick={handleCloseModal} className="text-[#0A0A0A] hover:underline w-full text-left font-sans">{link.label} ({link.hash})</a>
                         ) : (
-                          <button onClick={() => { handleLinkClick(link.id); handleCloseModal(); }} className="text-white hover:underline text-left cursor-pointer">{link.label} (#{link.id})</button>
+                          <button onClick={() => { handleLinkClick(link.id); handleCloseModal(); }} className="text-[#0A0A0A] hover:underline text-left cursor-pointer font-sans">{link.label} (#{link.id})</button>
                         )}
                       </div>
                     ))}
@@ -217,11 +217,11 @@ export default function Footer({ business, onNavigate, isRtl }: FooterProps) {
             </div>
 
             {/* Modal Bottom Close bar */}
-            <div className="p-4 bg-[#111111] border-t border-[#2E2E2E] flex justify-end shrink-0">
+            <div className="p-4 bg-[#F7F7F7] border-t border-[#E0E0E0] flex justify-end shrink-0">
               <button
                 id="close-legal-bottom"
                 onClick={handleCloseModal}
-                className="px-6 py-2.5 bg-white text-black hover:bg-[#E0E0E0] text-xs font-bold uppercase rounded transition-colors duration-200 cursor-pointer"
+                className="px-6 py-2.5 bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-xs font-bold uppercase rounded-[6px] transition-colors duration-200 cursor-pointer"
               >
                 {isRtl ? 'موافق وإغلاق' : 'Acknowledge & Close'}
               </button>

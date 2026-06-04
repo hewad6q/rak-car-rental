@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -76,48 +77,222 @@
   </div>
 
   <!-- LOGIN PANEL -->
-  <div id="login-container" class="fixed inset-0 bg-background z-40 flex items-center justify-center p-4 overflow-y-auto no-print">
-    <div class="bg-card border border-border w-full max-w-md rounded p-8 sm:p-10 shadow-2xl relative">
-      <div class="flex flex-col items-center text-center">
-        <div class="w-14 h-14 rounded bg-white/5 border border-border flex items-center justify-center text-white text-2xl mb-4">
-          <i class="fa-solid fa-car-side"></i>
+  <style>
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    .shake-card {
+      animation: shake 0.4s ease;
+    }
+  </style>
+  <div id="login-container" class="fixed inset-0 bg-[#0A0A0A] z-40 flex items-center justify-center p-4 overflow-y-auto no-print">
+    <!-- Centered Login Card -->
+    <div id="login-card" class="bg-white text-[#0A0A0A] w-full rounded-[16px] shadow-[0_24px_80px_rgba(0,0,0,0.4)] relative transition-all duration-300" style="max-width: 420px; width: 92%; padding: 48px;">
+      
+      <!-- SCREEN: LOGIN VIEW -->
+      <div id="view-login" class="transition-opacity duration-300 opacity-100">
+        <!-- Icon at Top Center -->
+        <div class="flex flex-col items-center text-center">
+          <div class="w-14 h-14 rounded-full bg-[#0A0A0A] text-white flex items-center justify-center text-[22px] mb-5">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h1 class="text-[#0A0A0A] font-sans leading-none" style="font-size: 24px; font-weight: 800; text-align: center;">Admin Login</h1>
+          <p class="text-[#888888] mt-2 mb-8 text-center" style="font-size: 13px;">Speed Rental RAK — Control Panel</p>
         </div>
-        <h1 class="text-2xl font-bold tracking-widest text-white leading-none">SPEED RENTAL</h1>
-        <p class="text-xs text-muted uppercase tracking-wider font-mono mt-2 mb-8 text-[10px]">Admin Control Panel</p>
+
+        <form id="login-form-submit" class="space-y-4">
+          <div>
+            <label class="block mb-1.5" style="font-size: 12px; font-weight: 600; color: #0A0A0A; text-transform: uppercase; letter-spacing: 0.06em;">Username</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[#AAAAAA] text-sm"><i class="fa-solid fa-user"></i></span>
+              <input id="login-username" type="text" placeholder="Enter username" class="w-full bg-[#F7F7F7] border-[1.5px] border-[#E0E0E0] rounded-[8px] py-3.5 pl-11 pr-4 text-sm text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="block mb-1.5" style="font-size: 12px; font-weight: 600; color: #0A0A0A; text-transform: uppercase; letter-spacing: 0.06em;">Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[#AAAAAA] text-sm"><i class="fa-solid fa-lock"></i></span>
+              <input id="login-password" type="password" placeholder="Enter password" class="w-full bg-[#F7F7F7] border-[1.5px] border-[#E0E0E0] rounded-[8px] py-3.5 pl-11 pr-11 text-sm text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all" required>
+              <button id="login-pwd-toggle" type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-[#AAAAAA] hover:text-[#0A0A0A] text-sm cursor-pointer"><i class="fa-solid fa-eye text-[#AAAAAA]"></i></button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 select-none">
+            <label class="flex items-center gap-2 text-[#888888] cursor-pointer" style="font-size: 13px;">
+              <input id="login-remember" type="checkbox" checked class="w-4 h-4 rounded text-[#0A0A0A] focus:ring-0 cursor-pointer accent-[#0A0A0A]">
+              <span>Keep me logged in</span>
+            </label>
+            <span id="login-forgot-trigger" class="text-[#0A0A0A] font-semibold underline cursor-pointer hover:text-neutral-700" style="font-size: 13px;">Forgot Password?</span>
+          </div>
+
+          <button type="submit" class="w-full bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-[15px] font-bold rounded-[8px] transition-colors duration-200 cursor-pointer text-center" style="padding: 14px; margin-top: 24px; border: none;">Login</button>
+        </form>
+
+        <div id="login-custom-error" class="hidden p-3 mt-4 rounded-[8px] bg-[#FFF0F0] border border-[#FFCCCC] text-[#CC0000] text-sm text-center">
+          <i class="fa-solid fa-circle-exclamation mr-1.5"></i> Incorrect username or password. Please try again.
+        </div>
+
+        <!-- Bottom of Card -->
+        <div class="text-center mt-6" style="margin-top: 24px; font-size: 11px; color: #AAAAAA;">
+          © 2024 Speed Rental RAK
+        </div>
       </div>
 
-      <div id="login-error-box" class="hidden p-3 mb-6 rounded bg-neutral-900 border border-red-500/50 text-red-400 text-xs text-left">
-        <i class="fa-solid fa-triangle-exclamation mr-2"></i> Invalid username or password. Please try again.
+      <!-- SCREEN 1: RESET PASSWORD — ENTER EMAIL -->
+      <div id="view-email" class="transition-opacity duration-300 opacity-0 hidden">
+        <div class="mb-4">
+          <span id="btn-email-back" class="text-[#888888] hover:text-[#0A0A0A] font-semibold cursor-pointer flex items-center gap-1.5" style="font-size: 13px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Login
+          </span>
+        </div>
+
+        <div class="text-center mb-6">
+          <h2 class="font-extrabold text-[#0A0A0A] text-center" style="font-size: 24px; font-weight: 800;">Reset Password</h2>
+          <p class="text-[#888888] mt-2 text-center" style="font-size: 13px;">Enter the admin email address to receive a verification code.</p>
+        </div>
+
+        <form id="email-form-submit" class="space-y-4">
+          <div>
+            <label class="block mb-1.5" style="font-size: 12px; font-weight: 600; color: #0A0A0A; text-transform: uppercase; letter-spacing: 0.06em;">Admin Email</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[#AAAAAA] text-sm"><i class="fa-solid fa-envelope"></i></span>
+              <input id="reset-email" type="email" placeholder="Enter admin email" class="w-full bg-[#F7F7F7] border-[1.5px] border-[#E0E0E0] rounded-[8px] py-3.5 pl-11 pr-4 text-sm text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all" required>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-[15px] font-bold rounded-[8px] transition-colors duration-200 cursor-pointer text-center" style="padding: 14px; margin-top: 24px; border: none;">Send Verification Code</button>
+        </form>
+
+        <div id="email-custom-error" class="hidden p-3 mt-4 rounded-[8px] bg-[#FFF0F0] border border-[#FFCCCC] text-[#CC0000] text-sm text-center">
+          <i class="fa-solid fa-circle-exclamation mr-1.5"></i> This email is not registered as the admin email.
+        </div>
+        
+        <!-- Bottom of Card -->
+        <div class="text-center mt-6" style="margin-top: 24px; font-size: 11px; color: #AAAAAA;">
+          © 2024 Speed Rental RAK
+        </div>
       </div>
 
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label class="text-[10px] uppercase font-bold text-muted block mb-1.5 font-mono">Username</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-muted text-xs"><i class="fa-solid fa-user"></i></span>
-            <input id="login-username" type="text" placeholder="admin" value="admin" class="w-full bg-background border border-border rounded py-2.5 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-white font-mono" required>
+      <!-- SCREEN 2: ENTER VERIFICATION CODE -->
+      <div id="view-code" class="transition-opacity duration-300 opacity-0 hidden">
+        <div class="mb-4">
+          <span id="btn-code-back" class="text-[#888888] hover:text-[#0A0A0A] font-semibold cursor-pointer flex items-center gap-1.5" style="font-size: 13px;">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </span>
+        </div>
+
+        <div class="text-center mb-6">
+          <h2 class="font-extrabold text-[#0A0A0A] text-center" style="font-size: 24px; font-weight: 800;">Enter Verification Code</h2>
+          <p class="text-[#888888] mt-2 leading-relaxed text-center" style="font-size: 13px;">
+            A 6-digit code has been sent to <span id="display-sent-email" class="font-bold text-[#0A0A0A]"></span>. check your inbox. Code expires in 10 minutes.
+          </p>
+        </div>
+
+        <!-- 6 individual single-digit boxes -->
+        <div class="flex items-center justify-center gap-2 my-6">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+          <input type="text" maxlength="1" class="code-box w-[46px] h-[56px] text-center text-[22px] font-bold text-[#0A0A0A] bg-[#F7F7F7] border-2 border-[#E0E0E0] rounded-[10px] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all">
+        </div>
+
+        <!-- TIMER DISPLAY -->
+        <div id="code-timer-container" class="text-center font-semibold text-[#888888] mb-6" style="font-size: 13px;">
+          Code expires in: <span id="code-countdown-clock" class="text-[#0A0A0A] font-bold">10:00</span>
+        </div>
+
+        <!-- RESEND TRIGGER -->
+        <div id="resend-container" class="text-center mb-6 hidden">
+          <span id="btn-resend-code" class="text-[#0A0A0A] hover:text-[#2E2E2E] font-bold underline cursor-pointer" style="font-size: 13px;">Didn't receive it? Resend</span>
+        </div>
+
+        <button id="btn-verify-code" class="w-full bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-[15px] font-bold rounded-[8px] transition-colors duration-200 cursor-pointer text-center" style="padding: 14px; margin-top: 12px; border: none;">Verify Code</button>
+
+        <div id="code-custom-error" class="hidden p-3 mt-4 rounded-[8px] bg-[#FFF0F0] border border-[#FFCCCC] text-[#CC0000] text-sm text-center">
+          <i class="fa-solid fa-circle-exclamation mr-1.5"></i> Incorrect code. Please try again.
+        </div>
+        
+        <!-- Bottom of Card -->
+        <div class="text-center mt-6" style="margin-top: 24px; font-size: 11px; color: #AAAAAA;">
+          © 2024 Speed Rental RAK
+        </div>
+      </div>
+
+      <!-- SCREEN 3: SET NEW PASSWORD -->
+      <div id="view-new-password" class="transition-opacity duration-300 opacity-0 hidden">
+        <div class="text-center mb-6">
+          <h2 class="font-extrabold text-[#0A0A0A] text-center" style="font-size: 24px; font-weight: 800;">Set New Password</h2>
+          <p class="text-[#888888] mt-2 text-center" style="font-size: 13px;">Create a strong new password for your admin account.</p>
+        </div>
+
+        <form id="new-password-form-submit" class="space-y-4">
+          <div>
+            <label class="block mb-1.5" style="font-size: 12px; font-weight: 600; color: #0A0A0A; text-transform: uppercase; letter-spacing: 0.06em;">New Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[#AAAAAA] text-sm"><i class="fa-solid fa-lock"></i></span>
+              <input id="new-pass" type="password" placeholder="Enter new password" class="w-full bg-[#F7F7F7] border-[1.5px] border-[#E0E0E0] rounded-[8px] py-3.5 pl-11 pr-11 text-sm text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all" required>
+              <button id="new-pass-toggle" type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-[#AAAAAA] hover:text-[#0A0A0A] text-sm cursor-pointer"><i class="fa-solid fa-eye text-[#AAAAAA]"></i></button>
+            </div>
+            
+            <!-- STRENGTH INDICATOR -->
+            <div class="mt-2.5">
+              <div class="w-full bg-[#E0E0E0] h-1 rounded-full overflow-hidden" style="height: 4px;">
+                <div id="strength-bar" class="h-full bg-red-400 transition-all duration-300" style="width: 0%;"></div>
+              </div>
+              <div id="strength-label" class="text-left font-bold text-xs mt-1 text-[#888888]" style="font-size: 11px;">Password is empty</div>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label class="text-[10px] uppercase font-bold text-muted block mb-1.5 font-mono">Password</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-muted text-xs"><i class="fa-solid fa-lock"></i></span>
-            <input id="login-password" type="password" placeholder="Speed@2024" value="Speed@2024" class="w-full bg-background border border-border rounded py-2.5 pl-9 pr-10 text-sm text-white focus:outline-none focus:border-white font-mono" required>
-            <button id="login-pwd-toggle" type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-white text-xs cursor-pointer"><i class="fa-solid fa-eye"></i></button>
+          <div>
+            <label class="block mb-1.5" style="font-size: 12px; font-weight: 600; color: #0A0A0A; text-transform: uppercase; letter-spacing: 0.06em;">Confirm New Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-[#AAAAAA] text-sm"><i class="fa-solid fa-lock"></i></span>
+              <input id="confirm-pass" type="password" placeholder="Re-enter new password" class="w-full bg-[#F7F7F7] border-[1.5px] border-[#E0E0E0] rounded-[8px] py-3.5 pl-11 pr-11 text-sm text-[#0A0A0A] focus:bg-white focus:border-[#0A0A0A] focus:outline-none transition-all" required>
+              <button id="confirm-pass-toggle" type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-[#AAAAAA] hover:text-[#0A0A0A] text-sm cursor-pointer"><i class="fa-solid fa-eye text-[#AAAAAA]"></i></button>
+            </div>
+            <div id="confirm-pass-match-label" class="text-left text-xs font-semibold mt-1 hidden" style="font-size: 11px;">Passwords do not match</div>
           </div>
-        </div>
 
-        <div class="flex items-center justify-between text-xs pt-1">
-          <label class="flex items-center gap-2 text-muted cursor-pointer">
-            <input id="login-remember" type="checkbox" checked class="rounded bg-background border-border text-black w-4 h-4 cursor-pointer">
-            <span>Remember Me</span>
-          </label>
-          <button id="login-forgot-trigger" type="button" class="text-muted hover:text-white hover:underline cursor-pointer">Forgot password?</button>
-        </div>
+          <button type="submit" class="w-full bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-[15px] font-bold rounded-[8px] transition-colors duration-200 cursor-pointer text-center" style="padding: 14px; margin-top: 24px; border: none;">Update Password</button>
+        </form>
 
-        <button type="submit" class="w-full py-3 bg-white text-black hover:bg-neutral-200 text-xs font-extrabold uppercase rounded transition duration-200 mt-6 cursor-pointer">Login</button>
-      </form>
+        <div id="new-password-custom-error" class="hidden p-3 mt-4 rounded-[8px] bg-[#FFF0F0] border border-[#FFCCCC] text-[#CC0000] text-sm text-center">
+          <i class="fa-solid fa-circle-exclamation mr-1.5"></i>
+        </div>
+        
+        <!-- Bottom of Card -->
+        <div class="text-center mt-6" style="margin-top: 24px; font-size: 11px; color: #AAAAAA;">
+          © 2024 Speed Rental RAK
+        </div>
+      </div>
+
+      <!-- SUCCESS BLOCK -->
+      <div id="view-success" class="transition-opacity duration-300 opacity-0 hidden">
+        <div class="flex flex-col items-center text-center">
+          <div class="text-[#0A0A0A] mb-5 text-[48px] text-center">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h2 class="font-bold text-[#0A0A0A] tracking-tight text-center" style="font-size: 22px;">Password Updated!</h2>
+          <p class="text-[#888888] mt-3 mb-8 leading-relaxed text-center" style="font-size: 13px;">
+            Your password has been changed successfully. You can now log in with your new password.
+          </p>
+          
+          <button id="btn-success-login-go" class="w-full bg-[#0A0A0A] text-white hover:bg-[#2E2E2E] text-[15px] font-bold rounded-[8px] transition-colors duration-200 cursor-pointer text-center" style="padding: 14px; border: none;">Go to Login</button>
+        </div>
+        
+        <!-- Bottom of Card -->
+        <div class="text-center mt-6" style="margin-top: 24px; font-size: 11px; color: #AAAAAA;">
+          © 2024 Speed Rental RAK
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -340,13 +515,35 @@
     });
 
     const defaultOffers = [
-      { id: "PROMO-01", title: "Eid Celebration Offer", description: "Enjoy 15% flat savings on any family SUV fleets valid through summer holidays.", discountType: "Percentage", discountValue: 15, code: "EID15", validFrom: "2026-06-10", validUntil: "2026-06-25", appliesTo: "Specific Category", appliesToVal: "SUV", isActive: true },
-      { id: "PROMO-02", title: "Monthly Loyalty Supercharge", description: "Enjoy automatic 1 free rental day value for sedan bookings matching 7 days cycles.", discountType: "Free Days", discountValue: 1, code: "LOYALTYROUND", validFrom: "2026-01-01", validUntil: "2026-12-31", appliesTo: "Specific Category", appliesToVal: "Sedan", isActive: true }
+      {
+        id: 1,
+        emoji: "🚗",
+        title: "Book 7+ Days — Get 1 Day FREE",
+        description: "Rent any car for 7 days or more and get one extra day completely free.",
+        promoCode: "",
+        code: "",
+        validUntil: "",
+        active: true,
+        isActive: true
+      },
+      {
+        id: 2,
+        emoji: "💰",
+        title: "First Time? Get 10% OFF",
+        description: "New customers get 10% discount on their first rental booking.",
+        promoCode: "SPEED10",
+        code: "SPEED10",
+        validUntil: "",
+        active: true,
+        isActive: true
+      }
     ];
 
     const defaultAnnouncements = [
-      { id: 1, text: "RAMADAN SPIRIT LEASES PROMO — GET 15% OFF ALL SUV VEHICLES: ENTER RAMADAN15", icon: "🌙", isActive: true, rank: 1 },
-      { id: 2, text: "📍 COMPLIMENTARY OUT-OF-TOWN VEHICLE DELIVERIES INSIDE ALL RAS AL KHAIMAH HOTELS", icon: "🚗", isActive: true, rank: 2 }
+      { id: 1, emoji: "🚗", text: "FREE Delivery in RAK City", active: true, isActive: true },
+      { id: 2, emoji: "📞", text: "Call Now: 050 602 4221", active: true, isActive: true },
+      { id: 3, emoji: "⭐", text: "Rated 4.3/5 on Google", active: true, isActive: true },
+      { id: 4, emoji: "🕐", text: "Open Until Midnight", active: true, isActive: true }
     ];
 
     const defaultSettings = {
@@ -356,14 +553,44 @@
       contact: { enable: true, inquiryEmail: "support@speedrentalrak.ae", autoreplyMsg: "We received your cockpit lease inquiry. An operator will notify your terminal over WhatsApp.", whatsappInquiry: "+971506024221" }
     };
 
-    const defaultAuth = { isLoggedIn: false, username: 'admin', passwordHash: 'Speed@2024', rememberMe: true, lastActive: Date.now(), autoLogoutMinutes: 60 };
+    const defaultAuth = { isLoggedIn: false, username: 'admin', passwordHash: 'Hewad@1234', rememberMe: true, lastActive: Date.now(), autoLogoutMinutes: 60 };
     const defaultNotifications = [
       { id: 1, text: "System authorized safely for Administrator.", date: "2026-06-03 14:22", seen: false },
       { id: 2, text: "New booking (BK-001) registered for Ahmed Al Mansoori.", date: "2026-06-03 14:23", seen: false }
     ];
 
     // IN-MEMORY CONTROLLING ARRAYS
-    let cars = [], bookings = [], customers = [], settings = {}, reviews = [], faqs = [], offers = [], announcements = [], notifications = [], activityLog = [], authState = {};
+    let carsArray = [];
+    function saveCarsToStorage() {
+      localStorage.setItem("speedrental_cars", JSON.stringify(carsArray));
+      console.log("Cars saved to localStorage:", carsArray.length, "cars");
+    }
+    function loadCarsFromStorage() {
+      const stored = localStorage.getItem("speedrental_cars");
+      if (stored) {
+        try {
+          carsArray = JSON.parse(stored);
+        } catch(e) {
+          carsArray = getDefaultCars();
+          saveCarsToStorage();
+        }
+      } else {
+        carsArray = getDefaultCars();
+        saveCarsToStorage();
+      }
+    }
+    function getDefaultCars() {
+      return defaultCars;
+    }
+
+    // Proxy getter/setter for cars so existing code continues to work perfectly
+    Object.defineProperty(window, 'cars', {
+      get() { return carsArray; },
+      set(val) { carsArray = val; }
+    });
+
+    let bookings = [], customers = [], settings = {}, reviews = [], faqs = [], offers = [], announcements = [], notifications = [], activityLog = [], authState = {};
+    let offersArray = [], announcementsArray = [];
     let currentNav = 'dashboard';
     let sidebarCollapsed = false;
 
@@ -401,11 +628,70 @@
       if (dialogResolver) { dialogResolver(false); dialogResolver = null; }
     });
 
-    function saveState(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    function saveState(key, data) {
+      if (key === KEYS.CARS || key === 'speedrental_cars') {
+        saveCarsToStorage();
+        window.dispatchEvent(new StorageEvent('storage', { key: 'speedrental_cars', newValue: JSON.stringify(carsArray) }));
+      } else if (key === KEYS.SETTINGS || key === 'speedrental_settings') {
+        const enriched = { ...data };
+        if (data.general) {
+          enriched.businessName = data.general.name;
+          enriched.tagline = data.general.tagline || "Drive with Confidence";
+          enriched.phone = data.general.phone;
+          enriched.phoneFormatted = data.general.phoneRaw || data.general.phone;
+          enriched.address = data.general.address;
+          enriched.hours = data.general.hours;
+          enriched.operatingHours = data.general.hours;
+          enriched.whatsapp = data.general.whatsapp || data.general.phoneRaw || "971506024221";
+          enriched.googleMapsEmbed = data.general.mapsEmbed;
+          enriched.googleMapsLink = data.general.mapsLink;
+        }
+        if (data.social) {
+          enriched.instagram = data.social.instagram;
+          enriched.facebook = data.social.facebook;
+          enriched.twitter = data.social.twitter;
+          enriched.tiktok = data.social.tiktok;
+          enriched.googleBusiness = data.social.gprofile;
+          enriched.googleReviewsUrl = data.social.gprofile;
+        }
+        if (data.website) {
+          enriched.heroHeadline1 = data.website.headline1 || "DRIVE IN";
+          enriched.heroHeadline2 = data.website.headline2 || "LUXURY";
+          enriched.heroSubheading = data.website.subheading;
+          enriched.footerTagline = data.website.footerTagline || "Speed Rental RAK — Drive with Confidence";
+          enriched.copyrightText = data.website.copyright || "© 2026 Speed Rental RAK. All Rights Reserved.";
+          enriched.termsText = data.website.terms;
+          enriched.privacyText = data.website.privacy;
+        }
+        if (data.contact) {
+          enriched.contactFormEnabled = data.contact.enable !== false;
+        }
+        enriched.rating = 4.3;
+        enriched.reviewCount = 20;
+
+        localStorage.setItem(key, JSON.stringify(enriched));
+        window.dispatchEvent(new StorageEvent('storage', { key: key, newValue: JSON.stringify(enriched) }));
+      } else {
+        localStorage.setItem(key, JSON.stringify(data));
+        window.dispatchEvent(new StorageEvent('storage', { key: key, newValue: JSON.stringify(data) }));
+      }
+    }
     function restoreState(key, defaultValue) {
+      if (key === KEYS.CARS || key === 'speedrental_cars') {
+        loadCarsFromStorage();
+        return carsArray;
+      }
       const val = localStorage.getItem(key);
       if (!val) { saveState(key, defaultValue); return defaultValue; }
-      try { return JSON.parse(val); } catch(e) { return defaultValue; }
+      try { 
+        const parsed = JSON.parse(val);
+        if (key === KEYS.SETTINGS && !parsed.general && defaultValue.general) {
+          return defaultValue;
+        }
+        return parsed; 
+      } catch(e) { 
+        return defaultValue; 
+      }
     }
 
     // Write audit logs
@@ -521,10 +807,28 @@
     }
 
     // ==================== AUTHENTICATION VERIFIER ====================
+    // Initialize EmailJS
+    emailjs.init("YOUR_PUBLIC_KEY");
+
+    // HOW TO SET UP EMAIL SENDING:
+    // 1. Go to https://www.emailjs.com and create a free account
+    // 2. Add an Email Service (Gmail recommended) — copy the Service ID
+    // 3. Create an Email Template with these variables:
+    //    {{to_name}}, {{reset_code}}, {{company_name}}, {{expiry_time}}
+    //    Template subject: "Speed Rental RAK — Password Reset Code"
+    //    Template body: "Hello {{to_name}}, your reset code is: {{reset_code}}
+    //    This code expires in {{expiry_time}}."
+    // 4. Copy your Public Key from Account settings
+    // 5. Replace YOUR_PUBLIC_KEY, YOUR_SERVICE_ID, YOUR_TEMPLATE_ID above
+
     function checkAuth() {
       const login = document.getElementById('login-container');
       const app = document.getElementById('app-container');
-      if (authState.isLoggedIn) {
+      const isCurrentlyLoggedIn = localStorage.getItem("speedrental_logged_in") === "true" || sessionStorage.getItem("speedrental_logged_in") === "true";
+      
+      authState.isLoggedIn = isCurrentlyLoggedIn;
+      
+      if (isCurrentlyLoggedIn) {
         login.classList.add('hidden');
         app.classList.remove('hidden');
         resetInactivityTimer();
@@ -535,36 +839,421 @@
       }
     }
 
-    // Toggle obscure pass text
-    const loginPwd = document.getElementById('login-password');
+    function shakeLoginCard() {
+      const card = document.getElementById('login-card');
+      card.classList.add('shake-card');
+      setTimeout(() => {
+        card.classList.remove('shake-card');
+      }, 400);
+    }
+
+    // Toggle obscure pass text inside Login View
+    const loginPwdInput = document.getElementById('login-password');
     document.getElementById('login-pwd-toggle').onclick = () => {
-      const isPwd = loginPwd.type === 'password';
-      loginPwd.type = isPwd ? 'text' : 'password';
-      document.getElementById('login-pwd-toggle').innerHTML = `<i class="fa-solid ${isPwd ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+      const isPwd = loginPwdInput.type === 'password';
+      loginPwdInput.type = isPwd ? 'text' : 'password';
+      document.getElementById('login-pwd-toggle').innerHTML = `<i class="fa-solid ${isPwd ? 'fa-eye-slash text-[#0A0A0A]' : 'fa-eye text-[#AAAAAA]'}"></i>`;
     };
 
-    document.getElementById('login-form').onsubmit = (e) => {
+    // Transition manager between states with smooth fade effect
+    function transitionToView(fromId, toId) {
+      const fromEl = document.getElementById(fromId);
+      const toEl = document.getElementById(toId);
+      
+      if (fromEl) {
+        fromEl.style.opacity = '0';
+        setTimeout(() => {
+          fromEl.classList.add('hidden');
+          if (toEl) {
+            toEl.classList.remove('hidden');
+            // trigger reflow
+            toEl.offsetHeight;
+            toEl.style.opacity = '1';
+          }
+        }, 300);
+      } else if (toEl) {
+        toEl.classList.remove('hidden');
+        toEl.offsetHeight;
+        toEl.style.opacity = '1';
+      }
+    }
+
+    // Login Form Submit handler
+    document.getElementById('login-form-submit').onsubmit = (e) => {
       e.preventDefault();
       const u = document.getElementById('login-username').value.trim();
-      const p = loginPwd.value.trim();
+      const p = loginPwdInput.value.trim();
       const rem = document.getElementById('login-remember').checked;
+      const errorBox = document.getElementById('login-custom-error');
       
-      if (u.toLowerCase() === authState.username && p === authState.passwordHash) {
+      errorBox.classList.add('hidden');
+      
+      const creds = JSON.parse(localStorage.getItem("speedrental_credentials") || "{}");
+      
+      if (u === creds.username && p === creds.password) {
+        authState.username = u;
+        authState.passwordHash = p;
         authState.isLoggedIn = true;
         authState.rememberMe = rem;
         authState.lastActive = Date.now();
         saveState(KEYS.AUTH, authState);
+        
+        if (rem) {
+          localStorage.setItem("speedrental_logged_in", "true");
+        } else {
+          sessionStorage.setItem("speedrental_logged_in", "true");
+        }
+        
         logAction("Authorized Connection", "Host terminal authenticated securely with master credentials.");
         showToast("Authenticated. Welcome superuser.");
         checkAuth();
       } else {
-        document.getElementById('login-error-box').classList.remove('hidden');
-        setTimeout(() => document.getElementById('login-error-box').classList.add('hidden'), 5000);
+        errorBox.classList.remove('hidden');
+        shakeLoginCard();
       }
     };
 
+    // Back & Forgot triggers
     document.getElementById('login-forgot-trigger').onclick = () => {
-      document.getElementById('forgot-modal').classList.remove('hidden');
+      transitionToView('view-login', 'view-email');
+    };
+
+    document.getElementById('btn-email-back').onclick = () => {
+      transitionToView('view-email', 'view-login');
+    };
+
+    document.getElementById('btn-code-back').onclick = () => {
+      if (codeTimerInterval) clearInterval(codeTimerInterval);
+      transitionToView('view-code', 'view-email');
+    };
+
+    // SCREEN 1: Email Reset Form Submit handler
+    document.getElementById('email-form-submit').onsubmit = (e) => {
+      e.preventDefault();
+      const enteredEmail = document.getElementById('reset-email').value.trim();
+      const errorEl = document.getElementById('email-custom-error');
+      errorEl.classList.add('hidden');
+      
+      const creds = JSON.parse(localStorage.getItem("speedrental_credentials") || "{}");
+      
+      if (enteredEmail.toLowerCase() !== (creds.email || "hewad6q@gmail.com").toLowerCase()) {
+        errorEl.innerText = "This email is not registered as the admin email.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      const generatedCode = Math.floor(100000 + Math.random() * 900000);
+      
+      localStorage.setItem("speedrental_reset_code", JSON.stringify({
+        code: generatedCode,
+        expiry: Date.now() + (10 * 60 * 1000),
+        email: enteredEmail
+      }));
+      
+      document.getElementById('display-sent-email').innerText = enteredEmail;
+      
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        to_email: enteredEmail,
+        to_name: "Admin",
+        reset_code: generatedCode,
+        company_name: "Speed Rental RAK",
+        expiry_time: "10 minutes"
+      }).then(() => {
+        showToast("Reset code sent successfully.", "success");
+      }).catch((err) => {
+        console.error("EmailJS sending error:", err);
+        showToast("Reset code generated (check console/localStorage during preview).", "info");
+      });
+      
+      startCodeTimer(600);
+      
+      document.querySelectorAll('.code-box').forEach(b => b.value = '');
+      transitionToView('view-email', 'view-code');
+      
+      setTimeout(() => {
+        const firstBox = document.querySelector('.code-box');
+        if (firstBox) firstBox.focus();
+      }, 350);
+    };
+
+    // Countdown and Resend controller
+    let codeTimerInterval = null;
+    function startCodeTimer(durationSeconds) {
+      if (codeTimerInterval) clearInterval(codeTimerInterval);
+      
+      let timeRemaining = durationSeconds;
+      const clockEl = document.getElementById('code-countdown-clock');
+      const verifyBtn = document.getElementById('btn-verify-code');
+      const resendContainer = document.getElementById('resend-container');
+      const errorEl = document.getElementById('code-custom-error');
+      
+      resendContainer.classList.add('hidden');
+      verifyBtn.removeAttribute('disabled');
+      verifyBtn.style.opacity = '1';
+      verifyBtn.style.cursor = 'pointer';
+      
+      setTimeout(() => {
+        if (timeRemaining > 0) {
+          resendContainer.classList.remove('hidden');
+        }
+      }, 60000);
+
+      function update() {
+        if (timeRemaining <= 0) {
+          clearInterval(codeTimerInterval);
+          clockEl.innerText = "00:00";
+          errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> Code has expired. Please request a new one.`;
+          errorEl.classList.remove('hidden');
+          verifyBtn.setAttribute('disabled', 'true');
+          verifyBtn.style.opacity = '0.5';
+          verifyBtn.style.cursor = 'not-allowed';
+          resendContainer.classList.remove('hidden');
+          return;
+        }
+        
+        timeRemaining--;
+        const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+        const s = (timeRemaining % 60).toString().padStart(2, '0');
+        clockEl.innerText = `${m}:${s}`;
+      }
+      
+      const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+      const s = (timeRemaining % 60).toString().padStart(2, '0');
+      clockEl.innerText = `${m}:${s}`;
+      
+      codeTimerInterval = setInterval(update, 1000);
+    }
+
+    // 6-digit Code input cursor focus shift handler
+    const codeInputs = document.querySelectorAll('.code-box');
+    codeInputs.forEach((box, index) => {
+      box.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (val && !/^[0-9]$/.test(val)) {
+          e.target.value = '';
+          return;
+        }
+        if (val && index < codeInputs.length - 1) {
+          codeInputs[index + 1].focus();
+        }
+      });
+
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          codeInputs[index - 1].focus();
+        }
+      });
+
+      box.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+        if (/^\d{6}$/.test(pastedData)) {
+          codeInputs.forEach((b, i) => {
+            b.value = pastedData[i];
+          });
+          codeInputs[5].focus();
+        }
+      });
+    });
+
+    // Code verification submit
+    document.getElementById('btn-verify-code').onclick = () => {
+      const codeBoxes = document.querySelectorAll('.code-box');
+      let enteredCode = '';
+      codeBoxes.forEach(b => enteredCode += b.value);
+      
+      const errorEl = document.getElementById('code-custom-error');
+      errorEl.classList.add('hidden');
+      
+      if (enteredCode.length < 6) {
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> Please enter all 6 digits.`;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      const storedDataStr = localStorage.getItem("speedrental_reset_code");
+      if (!storedDataStr) {
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> No active reset request found.`;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      const storedData = JSON.parse(storedDataStr);
+      const now = Date.now();
+      
+      if (now > storedData.expiry) {
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> Code has expired. Please request a new one.`;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      if (enteredCode !== storedData.code.toString()) {
+        errorEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1.5"></i> Incorrect code. Please try again.`;
+        errorEl.classList.remove('hidden');
+        shakeLoginCard();
+        codeBoxes.forEach(b => b.value = '');
+        codeBoxes[0].focus();
+        return;
+      }
+      
+      localStorage.removeItem("speedrental_reset_code");
+      if (codeTimerInterval) clearInterval(codeTimerInterval);
+      
+      transitionToView('view-code', 'view-new-password');
+    };
+
+    // Resend Code handler logic
+    document.getElementById('btn-resend-code').onclick = () => {
+      const entry = JSON.parse(localStorage.getItem("speedrental_reset_code") || "{}");
+      const email = entry.email || "hewad6q@gmail.com";
+      const generatedCode = Math.floor(100000 + Math.random() * 900000);
+      
+      localStorage.setItem("speedrental_reset_code", JSON.stringify({
+        code: generatedCode,
+        expiry: Date.now() + (10 * 60 * 1000),
+        email: email
+      }));
+      
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        to_email: email,
+        to_name: "Admin",
+        reset_code: generatedCode,
+        company_name: "Speed Rental RAK",
+        expiry_time: "10 minutes"
+      }).then(() => {
+        showToast("New code sent successfully.", "success");
+      }).catch((err) => {
+        console.error("EmailJS sending error:", err);
+      });
+      
+      startCodeTimer(600);
+      
+      document.getElementById('code-custom-error').classList.add('hidden');
+      document.querySelectorAll('.code-box').forEach(b => b.value = '');
+      document.querySelector('.code-box').focus();
+    };
+
+    // SCREEN 3: Set New Password Strength checker
+    const p1Input = document.getElementById('new-pass');
+    const p2Input = document.getElementById('confirm-pass');
+    const strengthBarEl = document.getElementById('strength-bar');
+    const strengthLabelEl = document.getElementById('strength-label');
+    const matchLabelEl = document.getElementById('confirm-pass-match-label');
+
+    function getPasswordStrength(pwd) {
+      if (!pwd) return { percent: 0, color: '#E0E0E0', label: 'Password is empty' };
+      
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasDigit = /[0-9]/.test(pwd);
+      const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+      const len = pwd.length;
+      
+      const meetsStrong = len >= 8 && hasUpper && hasLower && hasDigit && hasSpecial;
+      if (meetsStrong) {
+        return { percent: 100, color: '#90EE90', label: 'Strong' };
+      }
+      
+      let meetCount = 0;
+      if (hasUpper) meetCount++;
+      if (hasLower) meetCount++;
+      if (hasDigit) meetCount++;
+      if (hasSpecial) meetCount++;
+      
+      if (len >= 6 && meetCount >= 2) {
+        return { percent: 66, color: '#FFD580', label: 'Medium' };
+      }
+      
+      return { percent: 33, color: '#FFAAAA', label: 'Weak' };
+    }
+
+    function checkConfirmMatch() {
+      const p1 = p1Input.value;
+      const p2 = p2Input.value;
+      
+      if (!p2) {
+        p2Input.style.borderColor = '#E0E0E0';
+        matchLabelEl.classList.add('hidden');
+        return;
+      }
+      
+      if (p1 === p2) {
+        p2Input.style.borderColor = '#10B981';
+        matchLabelEl.classList.add('hidden');
+      } else {
+        p2Input.style.borderColor = '#EF4444';
+        matchLabelEl.innerText = "Passwords do not match";
+        matchLabelEl.style.color = '#EF4444';
+        matchLabelEl.classList.remove('hidden');
+      }
+    }
+
+    p1Input.addEventListener('input', () => {
+      const val = p1Input.value;
+      const strength = getPasswordStrength(val);
+      
+      strengthBarEl.style.width = strength.percent + '%';
+      strengthBarEl.style.backgroundColor = strength.color;
+      strengthLabelEl.innerText = strength.label;
+      
+      checkConfirmMatch();
+    });
+
+    p2Input.addEventListener('input', checkConfirmMatch);
+
+    // Show/hide triggers inside Screen 3
+    document.getElementById('new-pass-toggle').onclick = () => {
+      const isPwd = p1Input.type === 'password';
+      p1Input.type = isPwd ? 'text' : 'password';
+      document.getElementById('new-pass-toggle').innerHTML = `<i class="fa-solid ${isPwd ? 'fa-eye-slash text-[#0A0A0A]' : 'fa-eye text-[#AAAAAA]'}"></i>`;
+    };
+
+    document.getElementById('confirm-pass-toggle').onclick = () => {
+      const isPwd = p2Input.type === 'password';
+      p2Input.type = isPwd ? 'text' : 'password';
+      document.getElementById('confirm-pass-toggle').innerHTML = `<i class="fa-solid ${isPwd ? 'fa-eye-slash text-[#0A0A0A]' : 'fa-eye text-[#AAAAAA]'}"></i>`;
+    };
+
+    // Submitting New Password Update form
+    document.getElementById('new-password-form-submit').onsubmit = (e) => {
+      e.preventDefault();
+      const pass1 = p1Input.value;
+      const pass2 = p2Input.value;
+      const errorEl = document.getElementById('new-password-custom-error');
+      errorEl.classList.add('hidden');
+      
+      if (!pass1 || !pass2) {
+        errorEl.innerText = "Please fill in all password fields.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      if (pass1 !== pass2) {
+        errorEl.innerText = "Passwords do not match.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      const strength = getPasswordStrength(pass1);
+      if (strength.label === 'Weak') {
+        errorEl.innerText = "Password must be at least Medium strength.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      let credentials = JSON.parse(localStorage.getItem("speedrental_credentials") || "{}");
+      credentials.password = pass1;
+      localStorage.setItem("speedrental_credentials", JSON.stringify(credentials));
+      
+      authState.passwordHash = pass1;
+      saveState(KEYS.AUTH, authState);
+      
+      transitionToView('view-new-password', 'view-success');
+    };
+
+    // Go back to login trigger on final success screen
+    document.getElementById('btn-success-login-go').onclick = () => {
+      window.location.reload();
     };
 
     // ==================== INACTIVITY / IDLE MANAGER ====================
@@ -614,6 +1303,8 @@
     });
 
     function logoutUser(reason = "Manual Terminated.") {
+      localStorage.removeItem("speedrental_logged_in");
+      sessionStorage.removeItem("speedrental_logged_in");
       authState.isLoggedIn = false;
       saveState(KEYS.AUTH, authState);
       clearTimeout(inactivityTimeout);
@@ -1047,24 +1738,61 @@
 
     function paginateFleet(dir) { fleetPage += dir; drawFleetRows(); }
 
-    async function deleteCar(id) {
-      const c = cars.find(item => item.id === id);
-      if (!c) return;
-      const ok = await confirmDialog("Wipe Vehicle Records", `Confirm permanent system deletion for ${c.name} (${c.plate})?`);
+    const renderCarsTable = () => { if (typeof drawFleetRows === 'function') drawFleetRows(); };
+    const logActivity = (type, val) => { if (typeof logAction === 'function') logAction(type, val); };
+
+    function changeCarStatus(carId, newStatus) {
+      // Step 1: find the car in carsArray by id
+      const carIndex = carsArray.findIndex(c => c.id == carId);
+      if (carIndex === -1) return;
+      
+      // Step 2: update the status
+      carsArray[carIndex].status = newStatus;
+      
+      // Step 3: IMMEDIATELY save to localStorage
+      saveCarsToStorage();
+      
+      // Step 4: re-render the admin table row to reflect new status
+      renderCarsTable();
+      
+      // Step 5: show success toast
+      showToast("Status updated — " + carsArray[carIndex].name 
+                + " is now " + newStatus);
+      
+      // Step 6: log to activity log
+      logActivity("Status Changed", 
+        carsArray[carIndex].name + " → " + newStatus);
+    }
+
+    async function deleteCar(carId) {
+      // Step 1: find car name for toast message
+      const car = carsArray.find(c => c.id == carId);
+      if (!car) return;
+      const ok = await confirmDialog("Wipe Vehicle Records", `Confirm permanent system deletion for ${car.name} (${car.plate || ''})?`);
       if (!ok) return;
-      cars = cars.filter(item => item.id !== id);
-      saveState(KEYS.CARS, cars);
-      logAction("Wiped Vehicle", `Deleted fleet asset ID ${id}: ${c.name}`);
-      showToast("Wiped vehicle profile from index.");
-      drawFleetRows();
+
+      const carName = car ? car.name : "Car";
+      
+      // Step 2: filter out the deleted car
+      carsArray = carsArray.filter(c => c.id != carId);
+      
+      // Step 3: save immediately
+      saveCarsToStorage();
+      
+      // Step 4: re-render table
+      renderCarsTable();
+      
+      // Step 5: toast + log
+      showToast(carName + " has been deleted");
+      logActivity("Car Deleted", carName);
     }
 
     async function triggerBulkDelete() {
       if (fleetSelected.length === 0) return;
       const ok = await confirmDialog("Bulk System Wipe", `Are you sure you want to completely erase ${fleetSelected.length} fleet records from memory logs?`);
       if (!ok) return;
-      cars = cars.filter(c => !fleetSelected.includes(c.id));
-      saveState(KEYS.CARS, cars);
+      carsArray = carsArray.filter(c => !fleetSelected.includes(c.id));
+      saveCarsToStorage();
       logAction("Wiped Vehicles Bulk", `Erased ${fleetSelected.length} assets.`);
       showToast("Wiped selected cars.");
       fleetSelected = [];
@@ -1075,7 +1803,7 @@
     function triggerInlineStatus(e, id) {
       e.stopPropagation();
       document.querySelectorAll('.inline-status-picker').forEach(p => p.remove());
-      const c = cars.find(item => item.id === id);
+      const c = cars.find(item => item.id == id);
       if (!c) return;
 
       const rect = e.target.getBoundingClientRect();
@@ -1101,14 +1829,7 @@
     }
 
     function updateSingleCarStatus(id, stat) {
-      const c = cars.find(item => item.id === id);
-      if (!c) return;
-      const old = c.status;
-      c.status = stat;
-      saveState(KEYS.CARS, cars);
-      logAction("State Checked", `Toggled transit ${c.name} (${c.plate}): ${old} to ${stat}.`);
-      showToast(`Toggled ${c.name} to ${stat}`);
-      drawFleetRows();
+      changeCarStatus(id, stat);
     }
 
     // ----------------- ROUTE 3: BOOKINGS MANAGER -----------------
@@ -1398,91 +2119,518 @@
 
     // ----------------- ROUTE 5: PRICING & OFFERS -----------------
     function renderPricing(cont) {
+      // Re-load arrays to be certain they are fresh
+      const storedOffers = localStorage.getItem("speedrental_offers");
+      if (storedOffers) {
+        try { offersArray = JSON.parse(storedOffers); } catch(e) {}
+      } else {
+        offersArray = defaultOffers;
+        localStorage.setItem("speedrental_offers", JSON.stringify(offersArray));
+      }
+      offers = offersArray; // Sync alias
+
+      const storedAnn = localStorage.getItem("speedrental_announcements");
+      if (storedAnn) {
+        try { announcementsArray = JSON.parse(storedAnn); } catch(e) {}
+      } else {
+        announcementsArray = defaultAnnouncements;
+        localStorage.setItem("speedrental_announcements", JSON.stringify(announcementsArray));
+      }
+      announcements = announcementsArray; // Sync alias
+
       cont.innerHTML = `
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 select-none font-medium text-xs text-muted">
-          <div class="bg-card border border-border p-5 rounded lg:col-span-1 space-y-4">
-            <h3 class="text-xs uppercase font-extrabold font-mono text-white pb-2 border-b border-border flex items-center gap-1.5"><i class="fa-solid fa-coins"></i> Tier Standard Daily Rates</h3>
-            
-            <div class="space-y-3">
+        <div class="space-y-10 selection:bg-neutral-800 text-left">
+          
+          <!-- SPECIAL OFFERS SECTION -->
+          <div class="bg-card border border-border p-6 rounded relative">
+            <div class="flex items-center justify-between pb-4 border-b border-border mb-6">
               <div>
-                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Economy</label>
-                <div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center font-mono">AED</span><input id="p-economy" type="number" class="w-full bg-background border border-border rounded py-2 pl-12 pr-4 text-white font-mono" value="80" disabled></div>
+                <h2 class="text-xs uppercase font-extrabold text-white font-mono flex items-center gap-2">
+                  <i class="fa-solid fa-gift text-amber-500"></i> Special Offers & Promotions
+                </h2>
+                <p class="text-muted text-[10px] mt-1 pr-6 uppercase tracking-wider font-mono">Manage promo codes and seasonal discount campaigns.</p>
               </div>
-              <div>
-                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Sedan</label>
-                <div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center font-mono">AED</span><input id="p-sedan" type="number" class="w-full bg-background border border-border rounded py-2 pl-12 pr-4 text-white font-mono" value="120" disabled></div>
-              </div>
-              <div>
-                <label class="text-[10px] uppercase font-bold text-muted block mb-1">SUV</label>
-                <div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center font-mono">AED</span><input id="p-suv" type="number" class="w-full bg-background border border-border rounded py-2 pl-12 pr-4 text-white font-mono" value="180" disabled></div>
-              </div>
-              <div>
-                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Luxury</label>
-                <div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center font-mono">AED</span><input id="p-luxury" type="number" class="w-full bg-background border border-border rounded py-2 pl-12 pr-4 text-white font-mono" value="280" disabled></div>
-              </div>
-              <div>
-                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Van</label>
-                <div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center font-mono">AED</span><input id="p-van" type="number" class="w-full bg-background border border-border rounded py-2 pl-12 pr-4 text-white font-mono" value="250" disabled></div>
-              </div>
+              <button class="px-3.5 py-1.5 bg-white text-black font-extrabold uppercase rounded text-[10px] cursor-pointer hover:bg-neutral-200 flex items-center gap-1 shrink-0 font-sans" onclick="openAddOfferModal()">
+                <i class="fa-solid fa-plus text-[9px]"></i> Add New Offer
+              </button>
             </div>
-            <button class="w-full py-2 bg-neutral-900 border border-border rounded font-extrabold uppercase text-[10px] text-white hover:bg-white hover:text-black transition cursor-pointer" onclick="showToast('Pricing lock coordinates updated in code.', 'success')">Save Baseline Rates</button>
+
+            <div class="overflow-x-auto w-full">
+              <table class="w-full text-left text-xs border-collapse min-w-[650px] text-muted">
+                <thead>
+                  <tr class="border-b border-border font-extrabold font-mono text-[10px] text-zinc-500 uppercase">
+                    <th class="pb-3 w-14 text-center">Emoji</th>
+                    <th class="pb-3 pl-2">Title</th>
+                    <th class="pb-3 pl-2 w-[40%]">Description</th>
+                    <th class="pb-3 pl-2 w-32">Promo Code</th>
+                    <th class="pb-3 pl-2 w-32">Valid Until</th>
+                    <th class="pb-3 w-20 text-center">Active</th>
+                    <th class="pb-3 w-21 text-right pr-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="offers-list-tbody">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="bg-card border border-border p-5 rounded lg:col-span-2">
-            <div class="flex items-center justify-between pb-2 border-b border-border mb-4">
-              <h3 class="text-xs uppercase font-extrabold font-mono text-white flex items-center gap-1.5"><i class="fa-solid fa-gift"></i> Promo Coupons Index</h3>
-              <button class="px-3 py-1 bg-white text-black font-extrabold uppercase rounded text-[10px] cursor-pointer" onclick="openAddOfferForm()"><i class="fa-solid fa-plus-circle"></i> Add Promo</button>
+          <!-- ANNOUNCEMENT BAR SECTION -->
+          <div class="bg-card border border-border p-6 rounded relative">
+            <div class="pb-4 border-b border-border mb-6 flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h2 class="text-xs uppercase font-extrabold text-white font-mono flex items-center gap-2">
+                  <i class="fa-solid fa-bullhorn text-indigo-400"></i> Announcement Bar
+                </h2>
+                <p class="text-muted text-[10px] mt-1 pr-6 uppercase tracking-wider font-mono">Top-of-screen bulletin board and system coordinates.</p>
+              </div>
+              <div class="flex items-center gap-2.5 bg-neutral-900 px-4 py-2 rounded border border-border shrink-0 select-none">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Show announcement bar on website:</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="announcement-master-toggle" class="sr-only peer" ${isAnnouncementBarEnabled() ? 'checked' : ''} onchange="toggleAnnouncementBarMaster(this)">
+                  <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+                </label>
+              </div>
             </div>
-            
-            <div class="space-y-3 max-h-[420px] overflow-y-auto">
-              ${offers.map(o => `
-                <div class="p-4 bg-neutral-900/60 border border-border rounded flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs leading-relaxed">
-                  <div>
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="px-2 py-0.5 bg-white text-black font-mono font-extrabold rounded text-[10px]">${o.code}</span>
-                      <span class="font-bold text-white text-[12px]">${o.title}</span>
-                    </div>
-                    <p class="text-muted text-[11px]">${o.description}</p>
-                    <div class="flex flex-wrap gap-2 text-[9px] uppercase tracking-wider font-mono text-zinc-500 mt-2 font-bold">
-                      <span>Val: ${o.discountType === 'Percentage' ? `${o.discountValue}% Off` : `AED ${o.discountValue} Discount`}</span>
-                      <span>•</span>
-                      <span>Target: ${o.appliesToVal || 'All'}</span>
-                      <span>•</span>
-                      <span>Range: ${o.validFrom} to ${o.validUntil}</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1.5 self-end sm:self-auto">
-                    <button class="w-7 h-7 bg-card border border-border hover:text-white rounded flex items-center justify-center transition cursor-pointer" onclick="toggleOfferActive('${o.id}')"><i class="fa-solid ${o.isActive ? 'fa-toggle-on text-emerald-400' : 'fa-toggle-off'} text-sm"></i></button>
-                    <button class="w-7 h-7 bg-card border border-border text-red-500 hover:bg-red-500 hover:text-white rounded flex items-center justify-center transition cursor-pointer" onclick="deleteOffer('${o.id}')"><i class="fa-solid fa-trash-can"></i></button>
-                  </div>
-                </div>
-              `).join('')}
+
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-[10px] uppercase font-extrabold font-mono text-zinc-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-scroll text-[10px]"></i> Announcement Marquee Items
+                </h3>
+                <button class="px-3 py-1 bg-white text-black font-extrabold uppercase rounded text-[9px] cursor-pointer hover:bg-neutral-200 font-sans" onclick="openAddAnnouncementModal()">
+                  <i class="fa-solid fa-plus text-[8px]"></i> Add Announcement
+                </button>
+              </div>
+
+              <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-xs border-collapse min-w-[550px] text-muted">
+                  <thead>
+                    <tr class="border-b border-border font-extrabold font-mono text-[10px] text-zinc-500 uppercase">
+                      <th class="pb-3 w-14 text-center">Emoji</th>
+                      <th class="pb-3 pl-2">Text</th>
+                      <th class="pb-3 w-20 text-center">Active</th>
+                      <th class="pb-3 w-21 text-right pr-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="announcements-list-tbody">
+                    <!-- Dynamic rows -->
+                  </tbody>
+                </table>
+              </div>
             </div>
+
           </div>
+
         </div>
       `;
+      renderOffersTable();
+      renderAnnouncementsTable();
     }
 
-    function toggleOfferActive(id) {
-      const o = offers.find(item => item.id === id);
-      if (!o) return;
-      o.isActive = !o.isActive;
-      saveState(KEYS.OFFERS, offers);
-      logAction("Promo Checked", `Toggled offer target [${o.code}] status: ${o.isActive ? 'Active' : 'Disabled'}`);
-      showToast(`Toggled promo [${o.code}]`);
-      navigate('pricing');
+    function renderOffersTable() {
+      const tbody = document.getElementById("offers-list-tbody");
+      if (!tbody) return;
+      if (offersArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-zinc-600 italic">No promotional offers found. Click "+ Add New Offer" to create one.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = offersArray.map(o => {
+        const promoCode = o.promoCode || o.code || "";
+        const expiry = o.validUntil ? o.validUntil : "No Expiry";
+        const isActive = o.active !== false && o.isActive !== false;
+        return `
+          <tr class="border-b border-border/40 hover:bg-white/[1%] transition duration-150">
+            <td class="py-3 text-center text-base select-none">${o.emoji || "🎉"}</td>
+            <td class="py-3 pl-2 font-bold text-white text-xs">${o.title}</td>
+            <td class="py-3 pl-2 text-zinc-400 text-[11px] font-normal leading-relaxed pr-6">${o.description || ""}</td>
+            <td class="py-3 pl-2 font-mono">
+              ${promoCode ? `<span class="px-2 py-0.5 bg-neutral-900 border border-border text-zinc-300 font-extrabold rounded text-[10px]">${promoCode}</span>` : `<span class="text-zinc-600">—</span>`}
+            </td>
+            <td class="py-3 pl-2 font-mono text-zinc-400 tracking-tight text-[11px]">${expiry}</td>
+            <td class="py-3 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${isActive ? 'checked' : ''} onchange="toggleOffer('${o.id}')">
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+              </label>
+            </td>
+            <td class="py-3 text-right pr-2">
+              <div class="flex items-center justify-end gap-1.5 animate-fade">
+                <button class="w-7 h-7 bg-card border border-border hover:border-white hover:text-white rounded flex items-center justify-center transition cursor-pointer text-zinc-400 hover:text-white" onclick="openEditOfferModal('${o.id}')">
+                  <i class="fa-solid fa-pencil text-[10px]"></i>
+                </button>
+                <button class="w-7 h-7 bg-card border border-border text-red-500 hover:bg-neutral-800 rounded flex items-center justify-center transition cursor-pointer" onclick="triggerDeleteOffer('${o.id}')">
+                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    async function deleteOffer(id) {
-      const o = offers.find(item => item.id === id);
+    function renderAnnouncementsTable() {
+      const tbody = document.getElementById("announcements-list-tbody");
+      if (!tbody) return;
+      if (announcementsArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-zinc-600 italic">No announcements found. Click "Add Announcement" to create one.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = announcementsArray.map(a => {
+        const isActive = a.active !== false && a.isActive !== false;
+        return `
+          <tr class="border-b border-border/40 hover:bg-white/[1%] transition duration-150">
+            <td class="py-3 text-center text-base select-none">${a.emoji || a.icon || "📢"}</td>
+            <td class="py-3 pl-2 text-white text-xs leading-relaxed pr-6 font-semibold">${a.text}</td>
+            <td class="py-3 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${isActive ? 'checked' : ''} onchange="toggleAnnouncement('${a.id}')">
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+              </label>
+            </td>
+            <td class="py-3 text-right pr-2">
+              <div class="flex items-center justify-end gap-1.5 animate-fade">
+                <button class="w-7 h-7 bg-card border border-border hover:border-white hover:text-white rounded flex items-center justify-center transition cursor-pointer text-zinc-400 hover:text-white" onclick="openEditAnnouncementModal('${a.id}')">
+                  <i class="fa-solid fa-pencil text-[10px]"></i>
+                </button>
+                <button class="w-7 h-7 bg-card border border-border text-red-500 hover:bg-neutral-800 rounded flex items-center justify-center transition cursor-pointer" onclick="triggerDeleteAnnouncement('${a.id}')">
+                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function isAnnouncementBarEnabled() {
+      const stored = localStorage.getItem("speedrental_settings");
+      let s = stored ? JSON.parse(stored) : {};
+      return s.announcementBarEnabled !== false;
+    }
+
+    function toggleAnnouncementBarMaster(chk) {
+      const stored = localStorage.getItem("speedrental_settings");
+      let s = stored ? JSON.parse(stored) : {};
+      s.announcementBarEnabled = chk.checked;
+      localStorage.setItem("speedrental_settings", JSON.stringify(s));
+      logAction("Settings Update", `Toggled website Announcement Bar enabled: ${chk.checked}`);
+      showToast(chk.checked ? "Announcement bar enabled on website" : "Announcement bar hidden on website");
+    }
+
+    function toggleOffer(offerId) {
+      const index = offersArray.findIndex(o => o.id == offerId);
+      if (index === -1) return;
+      const bval = !offersArray[index].active;
+      offersArray[index].active = bval;
+      offersArray[index].isActive = bval;
+      localStorage.setItem("speedrental_offers", JSON.stringify(offersArray));
+      offers = offersArray;
+      renderOffersTable();
+      const status = bval ? "visible" : "hidden";
+      logAction("Promo Checked", `Toggled promotional offer ID [${offerId}] to: ${status}`);
+      showToast("Offer is now " + status + " on website");
+    }
+
+    function toggleAnnouncement(annId) {
+      const index = announcementsArray.findIndex(a => a.id == annId);
+      if (index === -1) return;
+      const bval = !announcementsArray[index].active;
+      announcementsArray[index].active = bval;
+      announcementsArray[index].isActive = bval;
+      localStorage.setItem("speedrental_announcements", JSON.stringify(announcementsArray));
+      announcements = announcementsArray;
+      renderAnnouncementsTable();
+      const status = bval ? "visible" : "hidden";
+      logAction("Announcement Checked", `Toggled announcement ID [${annId}] to: ${status}`);
+      showToast("Announcement is now " + status + " in marquee");
+    }
+
+    async function triggerDeleteOffer(offerId) {
+      const o = offersArray.find(item => item.id == offerId);
       if (!o) return;
-      const ok = await confirmDialog("Delete Coupon", `Completely wipe promo voucher target code [${o.code}]?`);
+      const ok = await confirmDialog("Delete Offer", `Delete this offer? It will be removed from the website immediately.`);
       if (!ok) return;
-      offers = offers.filter(item => item.id !== id);
-      saveState(KEYS.OFFERS, offers);
-      logAction("Wiped Coupon", `Erased promo voucher code ${o.code}`);
-      showToast("Coupon erased successfully.");
-      navigate('pricing');
+      offersArray = offersArray.filter(item => item.id != offerId);
+      localStorage.setItem("speedrental_offers", JSON.stringify(offersArray));
+      offers = offersArray;
+      renderOffersTable();
+      logAction("Offer Wiped", `Removed promo campaign offer title matches [${o.title}]`);
+      showToast("Offer removed from website");
+    }
+
+    async function triggerDeleteAnnouncement(annId) {
+      const a = announcementsArray.find(item => item.id == annId);
+      if (!a) return;
+      const ok = await confirmDialog("Delete Announcement", `Delete this announcement? It will be removed from the marquee immediately.`);
+      if (!ok) return;
+      announcementsArray = announcementsArray.filter(item => item.id != annId);
+      localStorage.setItem("speedrental_announcements", JSON.stringify(announcementsArray));
+      announcements = announcementsArray;
+      renderAnnouncementsTable();
+      logAction("Announcement Wiped", `Removed dynamic announcement text [${a.text}]`);
+      showToast("Announcement deleted");
+    }
+
+    function openAddOfferModal() {
+      const html = `
+        <form id="form-add-offer" class="space-y-4 text-left leading-relaxed">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Emoji</label>
+              <input name="emoji" type="text" placeholder="🎉" maxlength="2" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold">
+              <span class="text-[9px] text-zinc-500 block mt-1">Paste emoji</span>
+            </div>
+            <div class="col-span-2">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Promo Code</label>
+              <input name="promoCode" type="text" placeholder="e.g. SPEED10" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-bold uppercase">
+              <span class="text-[9px] text-zinc-500 block mt-1">Leave blank if no code</span>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Offer Title <span class="text-red-500">*</span></label>
+            <input name="title" type="text" placeholder="e.g. Book 7 Days Get 1 Free" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Offer Description</label>
+            <textarea name="description" rows="3" placeholder="Full description shown to customers" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs" required></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Expiry Date</label>
+              <input name="validUntil" type="date" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">
+              <span class="text-[9px] text-zinc-500 block mt-1">Leave blank for no expiry</span>
+            </div>
+            <div class="flex flex-col justify-end pb-1.5">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-2">Active on Website</label>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="add-offer-active" class="sr-only peer" checked>
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+                <span class="ml-2 text-xs text-zinc-400">Enabled</span>
+              </label>
+            </div>
+          </div>
+        </form>
+      `;
+
+      openModal({
+        title: "Spawn Special Campaign Offer",
+        bodyHtml: html,
+        onSave: (bodyEl) => {
+          const form = bodyEl.querySelector('form');
+          if (!form.reportValidity()) return;
+          const fd = new FormData(form);
+
+          const isActiveVal = bodyEl.querySelector('#add-offer-active').checked;
+          const newOffer = {
+            id: Date.now(),
+            emoji: fd.get('emoji')?.trim() || "🎉",
+            title: fd.get('title').trim(),
+            description: fd.get('description').trim(),
+            promoCode: fd.get('promoCode')?.trim().toUpperCase() || "",
+            code: fd.get('promoCode')?.trim().toUpperCase() || "",
+            validUntil: fd.get('validUntil') || "",
+            validFrom: "2026-06-01",
+            active: isActiveVal,
+            isActive: isActiveVal
+          };
+
+          offersArray.push(newOffer);
+          localStorage.setItem("speedrental_offers", JSON.stringify(offersArray));
+          offers = offersArray;
+          closeModal();
+          renderOffersTable();
+          logAction("Offer Saved", `Added campaign [${newOffer.title}] with code: ${newOffer.promoCode}`);
+          showToast("Offer added — now visible on website");
+        }
+      });
+    }
+
+    function openEditOfferModal(offerId) {
+      const o = offersArray.find(item => item.id == offerId);
+      if (!o) return;
+
+      const html = `
+        <form id="form-edit-offer" class="space-y-4 text-left leading-relaxed">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Emoji</label>
+              <input name="emoji" type="text" value="${o.emoji || '🎉'}" placeholder="🎉" maxlength="2" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold">
+              <span class="text-[9px] text-zinc-500 block mt-1">Paste emoji</span>
+            </div>
+            <div class="col-span-2">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Promo Code</label>
+              <input name="promoCode" type="text" value="${o.promoCode || o.code || ''}" placeholder="e.g. SPEED10" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-bold uppercase">
+              <span class="text-[9px] text-zinc-500 block mt-1">Leave blank if no code</span>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Offer Title <span class="text-red-500">*</span></label>
+            <input name="title" type="text" value="${o.title}" placeholder="e.g. Book 7 Days Get 1 Free" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Offer Description</label>
+            <textarea name="description" rows="3" placeholder="Full description shown to customers" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs" required>${o.description || ''}</textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Expiry Date</label>
+              <input name="validUntil" type="date" value="${o.validUntil || ''}" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">
+              <span class="text-[9px] text-zinc-500 block mt-1">Leave blank for no expiry</span>
+            </div>
+            <div class="flex flex-col justify-end pb-1.5">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-2">Active on Website</label>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="edit-offer-active" class="sr-only peer" ${(o.active !== false && o.isActive !== false) ? 'checked' : ''}>
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+                <span class="ml-2 text-xs text-zinc-400">Enabled</span>
+              </label>
+            </div>
+          </div>
+        </form>
+      `;
+
+      openModal({
+        title: "Edit Special Campaign Offer",
+        bodyHtml: html,
+        onSave: (bodyEl) => {
+          const form = bodyEl.querySelector('form');
+          if (!form.reportValidity()) return;
+          const fd = new FormData(form);
+
+          const idx = offersArray.findIndex(item => item.id == offerId);
+          if (idx !== -1) {
+            const isActiveVal = bodyEl.querySelector('#edit-offer-active').checked;
+            offersArray[idx] = {
+              ...offersArray[idx],
+              emoji: fd.get('emoji')?.trim() || "🎉",
+              title: fd.get('title').trim(),
+              description: fd.get('description').trim(),
+              promoCode: fd.get('promoCode')?.trim().toUpperCase() || "",
+              code: fd.get('promoCode')?.trim().toUpperCase() || "",
+              validUntil: fd.get('validUntil') || "",
+              active: isActiveVal,
+              isActive: isActiveVal
+            };
+            localStorage.setItem("speedrental_offers", JSON.stringify(offersArray));
+            offers = offersArray;
+            closeModal();
+            renderOffersTable();
+            logAction("Offer Saved", `Updated campaign [${offersArray[idx].title}]`);
+            showToast("Offer saved successfully");
+          }
+        }
+      });
+    }
+
+    function openAddAnnouncementModal() {
+      const html = `
+        <form id="form-add-ann-item" class="space-y-4 text-left leading-relaxed">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Emoji</label>
+              <input name="emoji" type="text" placeholder="📢" maxlength="2" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold">
+              <span class="text-[9px] text-zinc-500 block mt-1">Paste emoji</span>
+            </div>
+            <div class="col-span-2 flex flex-col justify-end pb-1.5">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-2">Active in Marquee</label>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="add-ann-active" class="sr-only peer" checked>
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+                <span class="ml-2 text-xs text-zinc-400">Enabled</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Announcement Text <span class="text-red-500">*</span></label>
+            <input name="text" type="text" placeholder="e.g. FREE Delivery in RAK City" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+          </div>
+        </form>
+      `;
+
+      openModal({
+        title: "Add Announcement Item",
+        bodyHtml: html,
+        onSave: (bodyEl) => {
+          const form = bodyEl.querySelector('form');
+          if (!form.reportValidity()) return;
+          const fd = new FormData(form);
+
+          const isActiveVal = bodyEl.querySelector('#add-ann-active').checked;
+          const newAnn = {
+            id: Date.now(),
+            emoji: fd.get('emoji')?.trim() || "📢",
+            text: fd.get('text').trim(),
+            active: isActiveVal,
+            isActive: isActiveVal
+          };
+
+          announcementsArray.push(newAnn);
+          localStorage.setItem("speedrental_announcements", JSON.stringify(announcementsArray));
+          announcements = announcementsArray;
+          closeModal();
+          renderAnnouncementsTable();
+          logAction("Announcement Saved", `Added announcement item text: [${newAnn.text}]`);
+          showToast("Announcement added successfully");
+        }
+      });
+    }
+
+    function openEditAnnouncementModal(annId) {
+      const a = announcementsArray.find(item => item.id == annId);
+      if (!a) return;
+
+      const html = `
+        <form id="form-edit-ann-item" class="space-y-4 text-left leading-relaxed">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Emoji</label>
+              <input name="emoji" type="text" value="${a.emoji || a.icon || '📢'}" placeholder="📢" maxlength="2" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold">
+              <span class="text-[9px] text-zinc-500 block mt-1">Paste emoji</span>
+            </div>
+            <div class="col-span-2 flex flex-col justify-end pb-1.5">
+              <label class="text-[10px] uppercase font-bold text-muted block mb-2">Active in Marquee</label>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="edit-ann-active" class="sr-only peer" ${(a.active !== false && a.isActive !== false) ? 'checked' : ''}>
+                <div class="w-8 h-4.5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-white peer-checked:after:bg-black peer-checked:after:border-black"></div>
+                <span class="ml-2 text-xs text-zinc-400">Enabled</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-muted block mb-1">Announcement Text <span class="text-red-500">*</span></label>
+            <input name="text" type="text" value="${a.text}" placeholder="e.g. FREE Delivery in RAK City" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+          </div>
+        </form>
+      `;
+
+      openModal({
+        title: "Edit Announcement Item",
+        bodyHtml: html,
+        onSave: (bodyEl) => {
+          const form = bodyEl.querySelector('form');
+          if (!form.reportValidity()) return;
+          const fd = new FormData(form);
+
+          const idx = announcementsArray.findIndex(item => item.id == annId);
+          if (idx !== -1) {
+            const isActiveVal = bodyEl.querySelector('#edit-ann-active').checked;
+            announcementsArray[idx] = {
+              ...announcementsArray[idx],
+              emoji: fd.get('emoji')?.trim() || "📢",
+              text: fd.get('text').trim(),
+              active: isActiveVal,
+              isActive: isActiveVal
+            };
+            localStorage.setItem("speedrental_announcements", JSON.stringify(announcementsArray));
+            announcements = announcementsArray;
+            closeModal();
+            renderAnnouncementsTable();
+            logAction("Announcement Saved", `Modified announcement item parameters of ID: ${annId}`);
+            showToast("Announcement saved successfully");
+          }
+        }
+      });
     }
 
     // ----------------- ROUTE 6: MEDIA MANAGER -----------------
@@ -1689,53 +2837,7 @@
 
     // ----------------- ROUTE 9: ANNOUNCEMENTS -----------------
     function renderAnnouncements(cont) {
-      cont.innerHTML = `
-        <div class="bg-card border border-border p-5 rounded font-medium text-xs text-muted text-left select-none">
-          <div class="flex items-center justify-between pb-2 border-b border-border mb-4">
-            <h3 class="text-xs uppercase font-extrabold font-mono text-white flex items-center gap-1.5"><i class="fa-solid fa-scroll"></i> Portal Announcements Marquee Bar</h3>
-            <button class="px-4 py-2 bg-white text-black font-extrabold uppercase rounded text-[10px] cursor-pointer" onclick="openAddAnnouncementForm()"><i class="fa-solid fa-plus-circle"></i> Add Notice</button>
-          </div>
-
-          <div class="space-y-3">
-            ${announcements.map((a, idx) => `
-              <div class="p-3.5 bg-neutral-900 border border-border rounded flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded bg-white/5 border border-border flex items-center justify-center text-sm">${a.icon}</div>
-                  <div>
-                    <span class="text-white font-semibold text-[11px] block leading-tight font-sans">${a.text}</span>
-                    <span class="text-[9px] font-mono block text-zinc-500 mt-1 uppercase">Notice Rank Position #${idx+1}</span>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-1 shrink-0">
-                  <button class="w-7 h-7 hover:text-white border border-border rounded flex items-center justify-center cursor-pointer transition text-[10px]" onclick="toggleAnnouncementActive(${a.id})"><i class="fa-solid ${a.isActive ? 'fa-toggle-on text-emerald-400' : 'fa-toggle-off'} text-sm"></i></button>
-                  <button class="w-7 h-7 text-red-500 hover:bg-red-500 hover:text-white border border-border rounded flex items-center justify-center cursor-pointer transition text-[10px]" onclick="deleteAnnouncement(${a.id})"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function toggleAnnouncementActive(id) {
-      const a = announcements.find(item => item.id === id);
-      if (!a) return;
-      a.isActive = !a.isActive;
-      saveState(KEYS.ANNOUNCEMENTS, announcements);
-      logAction("Announcement Checked", `Toggled notice #${id} state to ${a.isActive ? 'Active' : 'Muted'}`);
-      showToast(`Announcement updated.`);
-      navigate('announcements');
-    }
-
-    async function deleteAnnouncement(id) {
-      const ok = await confirmDialog("Delete Announcement", "Erase announcement notice from marquee array list?");
-      if (!ok) return;
-      announcements = announcements.filter(item => item.id !== id);
-      saveState(KEYS.ANNOUNCEMENTS, announcements);
-      logAction("Announcement Wiped", `Deleted notice #${id}`);
-      showToast("Notice erased.");
-      navigate('announcements');
+      renderPricing(cont);
     }
 
     // ----------------- ROUTE 10: BUSINESS PROFILE -----------------
@@ -1866,6 +2968,18 @@
       authState.autoLogoutMinutes = t;
 
       saveState(KEYS.AUTH, authState);
+
+      // Keep master login speedrental_credentials in sync!
+      const credentials = {
+        username: authState.username,
+        password: authState.passwordHash,
+        email: "hewad6q@gmail.com"
+      };
+      const storedCreds = JSON.parse(localStorage.getItem("speedrental_credentials") || "{}");
+      if (storedCreds.email) {
+        credentials.email = storedCreds.email;
+      }
+      localStorage.setItem("speedrental_credentials", JSON.stringify(credentials));
       logAction("Credentials Adjusted", `Toggled session control limits parameters. Auto-logout is ${t === 999 ? 'Never' : `${t} minutes`}.`);
       showToast("Security guidelines updated safely.", "success");
       resetInactivityTimer();
@@ -1984,183 +3098,528 @@
     }
 
     // ==================== SYSTEM FORMS MODAL ACTIONS ====================
+    window.calcSuggestedPrices = function(input) {
+      const val = Number(input.value);
+      if (!val) return;
+      const form = input.closest('form');
+      if (!form) return;
+      const weekly = form.querySelector('input[name="weeklyPrice"]');
+      const monthly = form.querySelector('input[name="monthlyPrice"]');
+      if (weekly && !weekly.value) weekly.value = Math.round(val * 6);
+      if (monthly && !monthly.value) monthly.value = Math.round(val * 24);
+    };
+
     function openAddCarForm() {
       const htmlForm = `
-        <form id="form-car-add" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 leading-relaxed">
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Vehicle Name</label>
-            <input name="carName" type="text" placeholder="e.g. Range Rover Sport" class="w-full bg-background border border-border rounded py-2 px-3 text-white" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Select Category</label>
-            <select name="carCategory" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Economy">Economy</option><option value="Sedan" selected>Sedan</option><option value="SUV">SUV</option><option value="Luxury">Luxury</option><option value="Van">Van</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Model / Variant Trim</label>
-            <input name="carModel" type="text" placeholder="e.g. 3.0L V6 Supercharged" class="w-full bg-background border border-border rounded py-2 px-3 text-white" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Rental Fee per Day</label>
-            <input name="carPrice" type="number" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">License Plate Number</label>
-            <input name="carPlate" type="text" placeholder="e.g. RAK Z 99999" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" required>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Model Year</label>
-              <input name="carYear" type="number" placeholder="2024" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" required>
+        <form id="form-car-add" class="space-y-6 pb-2 leading-relaxed text-left text-xs bg-card p-1">
+          
+          <!-- SECTION 1: BASIC INFORMATION -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-car text-zinc-400"></i> 1. Basic Information
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Brand/Make <span class="text-red-500">*</span></label>
+                <input name="brand" type="text" placeholder="e.g. Kia" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Model Name <span class="text-red-500">*</span></label>
+                <input name="model" type="text" placeholder="e.g. Sportage" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Model Year <span class="text-red-500">*</span></label>
+                <input name="year" type="number" placeholder="2024" min="1990" max="2030" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
             </div>
-            <div>
-              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Seating (PAX)</label>
-              <input name="carSeats" type="number" placeholder="5" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" required>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Category <span class="text-red-500">*</span></label>
+                <select name="category" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold" required>
+                  <option value="Economy">Economy</option>
+                  <option value="Sedan" selected>Sedan</option>
+                  <option value="SUV">SUV</option>
+                  <option value="Luxury">Luxury</option>
+                  <option value="Van">Van</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Exterior Color</label>
+                <input name="color" type="text" placeholder="e.g. Cherry Red" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">License Plate Number <span class="text-red-500">*</span></label>
+                <input name="plate" type="text" placeholder="e.g. RAK A 99999" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
             </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Transmission Pattern</label>
-            <select name="carTrans" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Automatic" selected>Automatic</option><option value="Manual">Manual</option>
-            </select>
+
+          <!-- SECTION 2: TECHNICAL DETAILS -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-gears text-zinc-400"></i> 2. Technical Details
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Transmission</label>
+                <select name="transmission" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Automatic" selected>Automatic</option>
+                  <option value="Manual">Manual</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Fuel Type</label>
+                <select name="fuelType" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Petrol" selected>Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Seating Capacity (PAX)</label>
+                <input name="seats" type="number" placeholder="5" min="2" max="20" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Number of Doors</label>
+                <input name="doors" type="number" placeholder="4" min="2" max="6" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">AC Option</label>
+                <select name="ac" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Yes" selected>Yes</option>
+                  <option value="Climate Control">Climate Control</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Engine Size/Specs</label>
+                <input name="engine" type="text" placeholder="e.g. 1.6L GDI" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Fuel Standard</label>
-            <select name="carFuel" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Petrol" selected>Petrol (Standard)</option><option value="Diesel">Diesel</option><option value="Electric">Electric</option>
-            </select>
+
+          <!-- SECTION 3: PRICING -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-coins text-zinc-400"></i> 3. Pricing & Limits
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Daily Price (AED) <span class="text-red-500">*</span></label>
+                <input name="dailyPrice" type="number" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required oninput="calcSuggestedPrices(this)">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Weekly Price (AED) <span class="text-red-500">*</span></label>
+                <input name="weeklyPrice" type="number" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Monthly Price (AED) <span class="text-red-500">*</span></label>
+                <input name="monthlyPrice" type="number" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Base Security Deposit (AED) <span class="text-red-500">*</span></label>
+                <input name="securityDeposit" type="number" value="1500" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Mileage Limit <span class="text-red-500">*</span></label>
+                <input name="mileageLimit" type="text" value="Unlimited" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Base Security Deposit (AED)</label>
-            <input name="carDeposit" type="number" value="1500" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" required>
+
+          <!-- SECTION 4: CAR OPTIONS & FEATURES -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-list-check text-zinc-400"></i> 4. Options & Features
+            </h5>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-neutral-900/40 p-3 rounded border border-border/80">
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_appleCarPlay" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>Apple CarPlay</span>
+              </label>
+              <label class="flex items-center gap-3 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_androidAuto" class="w-4 h-4 bg-background border border-border rounded accent-white z-10">
+                <span>Android Auto</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_bluetooth" class="w-4 h-4 bg-background border border-border rounded accent-white" checked>
+                <span>Bluetooth</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_usbCharging" class="w-4 h-4 bg-background border border-border rounded accent-white" checked>
+                <span>USB Charging</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_gps" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>GPS Navigation</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_camera" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>Rear / 360 Camera</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_sensors" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>Parking Sensors</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_sunroof" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>Sunroof/Panoramic</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_leather" class="w-4 h-4 bg-background border border-border rounded accent-white">
+                <span>Leather Seats</span>
+              </label>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Primary Image URL Resource</label>
-            <input name="carImage" type="text" placeholder="https://unsplash..." class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-[10px]" value="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80">
+
+          <!-- SECTION 5: IMAGES -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-image text-zinc-400"></i> 5. Primary Image Resource
+            </h5>
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Primary Image URL <span class="text-red-500">*</span></label>
+              <input name="imageUrl" type="url" placeholder="https://unsplash..." value="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-[11px]" required>
+            </div>
           </div>
-          <div class="md:col-span-2">
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Brief Description</label>
-            <textarea name="carDesc" rows="2" placeholder="Describe key operational options and fleet configurations..." class="w-full bg-background border border-border rounded py-1.5 px-3 text-white text-xs"></textarea>
+
+          <!-- SECTION 6: DESCRIPTION -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-file-signature text-zinc-400"></i> 6. Description & Remarks
+            </h5>
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Rich Description (Max 500 chars)</label>
+              <textarea name="description" rows="3" maxlength="500" placeholder="Provide details about dynamic configurations, features, options..." class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs"></textarea>
+            </div>
           </div>
+
         </form>
       `;
 
       openModal({
-        title: "Database Addition: Create Asset Card",
+        title: "Create Brand New Fleet Asset Card",
         bodyHtml: htmlForm,
         onSave: (bodyEl) => {
           const form = bodyEl.querySelector('form');
           if (!form.reportValidity()) return;
           const fd = new FormData(form);
-          
+
+          const brand = fd.get('brand').trim();
+          const modelName = fd.get('model').trim();
+          const fullName = `${brand} ${modelName}`;
+          const yearVal = Number(fd.get('year')) || new Date().getFullYear();
+
+          const f_appleCarPlay = form.querySelector('input[name="f_appleCarPlay"]').checked;
+          const f_androidAuto = form.querySelector('input[name="f_androidAuto"]').checked;
+          const f_bluetooth = form.querySelector('input[name="f_bluetooth"]').checked;
+          const f_usbCharging = form.querySelector('input[name="f_usbCharging"]').checked;
+          const f_gps = form.querySelector('input[name="f_gps"]').checked;
+          const f_camera = form.querySelector('input[name="f_camera"]').checked;
+          const f_sensors = form.querySelector('input[name="f_sensors"]').checked;
+          const f_sunroof = form.querySelector('input[name="f_sunroof"]').checked;
+          const f_leather = form.querySelector('input[name="f_leather"]').checked;
+
+          const dPrice = Number(fd.get('dailyPrice')) || 100;
+
+          // Build dynamic features array list
+          const feats = [];
+          if (f_appleCarPlay) feats.push("Apple CarPlay");
+          if (f_androidAuto) feats.push("Android Auto");
+          if (f_bluetooth) feats.push("Bluetooth");
+          if (f_usbCharging) feats.push("USB Charging");
+          if (f_gps) feats.push("GPS");
+          if (f_camera) feats.push("Backup Camera");
+          if (f_sensors) feats.push("Parking Sensors");
+          if (f_sunroof) feats.push("Sunroof");
+          if (f_leather) feats.push("Leather Seats");
+
           const newCar = {
-            id: cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 1,
-            name: fd.get('carName').trim(),
-            category: fd.get('carCategory'),
-            model: fd.get('carModel').trim(),
-            priceDaily: parseInt(fd.get('carPrice')),
-            priceWeekly: parseInt(fd.get('carPrice')) * 6,
-            priceMonthly: parseInt(fd.get('carPrice')) * 24,
-            plate: fd.get('carPlate').trim().toUpperCase(),
-            year: parseInt(fd.get('carYear')),
-            seats: parseInt(fd.get('carSeats')),
-            transmission: fd.get('carTrans'),
-            fuel: fd.get('carFuel'),
-            deposit: parseInt(fd.get('carDeposit')),
-            imageUrl: fd.get('carImage'),
-            alternateImages: [],
-            features: ['AC', 'GPS', 'Bluetooth', 'Parking Sensors'],
-            description: fd.get('carDesc').trim() || "A well-maintained luxury car of RAK fleets.",
-            status: 'Available',
+            id: Date.now(),
+            brand: brand,
+            modelName: modelName,
+            name: fullName,
+            model: fd.get('engine')?.trim() || "1.6L SE Package",
+            year: yearVal,
+            category: fd.get('category') || "Sedan",
             color: '#333333',
-            colorName: 'Space Grey',
-            ac: 'Yes',
-            mileageLimit: 'Unlimited',
-            mileageUnlimited: true,
+            colorName: fd.get('color')?.trim() || "Cosmic Charcoal",
+            plateNumber: fd.get('plate')?.trim() || "",
+            plate: fd.get('plate')?.trim() || "",
+            seats: Number(fd.get('seats')) || 5,
+            doors: Number(fd.get('doors')) || 4,
+            transmission: fd.get('transmission') || "Automatic",
+            fuelType: fd.get('fuelType') || "Petrol",
+            fuel: fd.get('fuelType') || "Petrol",
+            ac: fd.get('ac') || "Yes",
+            
+            dailyPrice: dPrice,
+            weeklyPrice: Number(fd.get('weeklyPrice')) || dPrice * 6,
+            monthlyPrice: Number(fd.get('monthlyPrice')) || dPrice * 24,
+            securityDeposit: Number(fd.get('securityDeposit')) || 1500,
+            mileageLimit: fd.get('mileageLimit')?.trim() || "Unlimited",
+            status: "Available",
+            imageUrl: fd.get('imageUrl') || "",
+            description: fd.get('description')?.trim() || "",
+
+            // Backwards compatibility properties
+            priceDaily: dPrice,
+            priceWeekly: Number(fd.get('weeklyPrice')) || dPrice * 6,
+            priceMonthly: Number(fd.get('monthlyPrice')) || dPrice * 24,
+            deposit: Number(fd.get('securityDeposit')) || 1500,
+            alternateImages: [],
+            features: feats,
+            featureOptions: {
+              appleCarPlay: f_appleCarPlay,
+              androidAuto: f_androidAuto,
+              bluetooth: f_bluetooth,
+              usbCharging: f_usbCharging,
+              gps: f_gps,
+              camera: f_camera,
+              sensors: f_sensors,
+              sunroof: f_sunroof,
+              leather: f_leather
+            },
             dateAdded: new Date().toISOString().split('T')[0]
           };
 
-          cars.push(newCar);
-          saveState(KEYS.CARS, cars);
-          logAction("Asset Created", `Spawned new core vehicle record: ${newCar.name} (${newCar.plate})`);
-          showToast(`Added ${newCar.name} to list`, 'success');
+          carsArray.push(newCar);
+          saveCarsToStorage();
           closeModal();
+
           if (currentNav === 'fleet') drawFleetRows();
           else navigate('fleet');
+
+          showToast("Car added successfully");
+          logAction("Car Added", newCar.name);
         }
       });
     }
 
     function openEditCarForm(id) {
-      const c = cars.find(item => item.id === id);
+      const c = cars.find(item => item.id == id);
       if (!c) return;
 
+      let brandVal = c.brand || "";
+      let modelVal = c.modelName || "";
+      if (!brandVal) {
+        const words = c.name.split(' ');
+        brandVal = words[0] || "";
+        modelVal = words.slice(1).join(' ') || "";
+      }
+
+      const featureOpts = c.featureOptions || {};
+      const hasFeat = (name) => {
+        if (c.features && Array.isArray(c.features)) {
+          return c.features.includes(name);
+        }
+        return false;
+      };
+
+      const appleChecked = featureOpts.appleCarPlay || hasFeat("Apple CarPlay");
+      const androidChecked = featureOpts.androidAuto || hasFeat("Android Auto");
+      const bluetoothChecked = featureOpts.bluetooth || hasFeat("Bluetooth") || true;
+      const usbChecked = featureOpts.usbCharging || hasFeat("USB Charging") || true;
+      const gpsChecked = featureOpts.gps || hasFeat("GPS");
+      const cameraChecked = featureOpts.camera || hasFeat("Backup Camera") || hasFeat("Rear Camera") || hasFeat("360 Camera");
+      const sensorsChecked = featureOpts.sensors || hasFeat("Parking Sensors");
+      const sunroofChecked = featureOpts.sunroof || hasFeat("Sunroof");
+      const leatherChecked = featureOpts.leather || hasFeat("Leather Seats");
+
       const htmlForm = `
-        <form id="form-car-edit" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 leading-relaxed">
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Vehicle Name</label>
-            <input name="carName" type="text" class="w-full bg-background border border-border rounded py-2 px-3 text-white" value="${c.name}" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Select Category</label>
-            <select name="carCategory" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Economy" ${c.category==='Economy'?'selected':''}>Economy</option>
-              <option value="Sedan" ${c.category==='Sedan'?'selected':''}>Sedan</option>
-              <option value="SUV" ${c.category==='SUV'?'selected':''}>SUV</option>
-              <option value="Luxury" ${c.category==='Luxury'?'selected':''}>Luxury</option>
-              <option value="Van" ${c.category==='Van'?'selected':''}>Van</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Model Variant Trim</label>
-            <input name="carModel" type="text" class="w-full bg-background border border-border rounded py-2 px-3 text-white" value="${c.model}" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Daily Price (AED)</label>
-            <input name="carPrice" type="number" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" value="${c.priceDaily}" required>
-          </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">License Plate Number</label>
-            <input name="carPlate" type="text" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" value="${c.plate}" required>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Model Year</label>
-              <input name="carYear" type="number" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" value="${c.year}" required>
+        <form id="form-car-edit" class="space-y-6 pb-2 leading-relaxed text-left text-xs bg-card p-1">
+          
+          <!-- SECTION 1: BASIC INFORMATION -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-car text-zinc-400"></i> 1. Basic Information
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Brand/Make <span class="text-red-500">*</span></label>
+                <input name="brand" type="text" value="${brandVal}" placeholder="e.g. Kia" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Model Name <span class="text-red-500">*</span></label>
+                <input name="model" type="text" value="${modelVal}" placeholder="e.g. Sportage" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Model Year <span class="text-red-500">*</span></label>
+                <input name="year" type="number" value="${c.year || 2023}" placeholder="2024" min="1990" max="2030" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
             </div>
-            <div>
-              <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Seating PAX</label>
-              <input name="carSeats" type="number" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" value="${c.seats}" required>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Category <span class="text-red-500">*</span></label>
+                <select name="category" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold" required>
+                  <option value="Economy" ${c.category==='Economy'?'selected':''}>Economy</option>
+                  <option value="Sedan" ${c.category==='Sedan'?'selected':''}>Sedan</option>
+                  <option value="SUV" ${c.category==='SUV'?'selected':''}>SUV</option>
+                  <option value="Luxury" ${c.category==='Luxury'?'selected':''}>Luxury</option>
+                  <option value="Van" ${c.category==='Van'?'selected':''}>Van</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Exterior Color</label>
+                <input name="color" type="text" value="${c.colorName || ''}" placeholder="e.g. Cherry Red" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">License Plate Number <span class="text-red-500">*</span></label>
+                <input name="plate" type="text" value="${c.plateNumber || c.plate || ''}" placeholder="e.g. RAK A 99999" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
             </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Transmission Pattern</label>
-            <select name="carTrans" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Automatic" ${c.transmission==='Automatic'?'selected':''}>Automatic</option>
-              <option value="Manual" ${c.transmission==='Manual'?'selected':''}>Manual</option>
-            </select>
+
+          <!-- SECTION 2: TECHNICAL DETAILS -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-gears text-zinc-400"></i> 2. Technical Details
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Transmission</label>
+                <select name="transmission" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Automatic" ${(c.transmission==='Automatic')?'selected':''}>Automatic</option>
+                  <option value="Manual" ${(c.transmission==='Manual')?'selected':''}>Manual</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Fuel Type</label>
+                <select name="fuelType" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Petrol" ${(c.fuel || c.fuelType)==='Petrol'?'selected':''}>Petrol</option>
+                  <option value="Diesel" ${(c.fuel || c.fuelType)==='Diesel'?'selected':''}>Diesel</option>
+                  <option value="Electric" ${(c.fuel || c.fuelType)==='Electric'?'selected':''}>Electric</option>
+                  <option value="Hybrid" ${(c.fuel || c.fuelType)==='Hybrid'?'selected':''}>Hybrid</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Seating Capacity (PAX)</label>
+                <input name="seats" type="number" value="${c.seats || 5}" placeholder="5" min="2" max="20" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Number of Doors</label>
+                <input name="doors" type="number" value="${c.doors || 4}" placeholder="4" min="2" max="6" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">AC Option</label>
+                <select name="ac" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-semibold">
+                  <option value="Yes" ${c.ac==='Yes'?'selected':''}>Yes</option>
+                  <option value="Climate Control" ${c.ac==='Climate Control'?'selected':''}>Climate Control</option>
+                  <option value="No" ${c.ac==='No'?'selected':''}>No</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Engine Size/Specs</label>
+                <input name="engine" type="text" value="${c.model || ''}" placeholder="e.g. 1.6L GDI" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold">
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Fuel Standard</label>
-            <select name="carFuel" class="w-full bg-background border border-border rounded py-2 px-3 text-white">
-              <option value="Petrol" ${c.fuel==='Petrol'?'selected':''}>Petrol</option>
-              <option value="Diesel" ${c.fuel==='Diesel'?'selected':''}>Diesel</option>
-              <option value="Electric" ${c.fuel==='Electric'?'selected':''}>Electric</option>
-            </select>
+
+          <!-- SECTION 3: PRICING -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-coins text-zinc-400"></i> 3. Pricing & Limits
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Daily Price (AED) <span class="text-red-500">*</span></label>
+                <input name="dailyPrice" type="number" value="${c.priceDaily || c.dailyPrice}" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required oninput="calcSuggestedPrices(this)">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Weekly Price (AED) <span class="text-red-500">*</span></label>
+                <input name="weeklyPrice" type="number" value="${c.priceWeekly || c.weeklyPrice}" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Monthly Price (AED) <span class="text-red-500">*</span></label>
+                <input name="monthlyPrice" type="number" value="${c.priceMonthly || c.monthlyPrice}" placeholder="AED" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Base Security Deposit (AED) <span class="text-red-500">*</span></label>
+                <input name="securityDeposit" type="number" value="${c.deposit || c.securityDeposit || 1500}" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-xs font-semibold" required>
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-muted block mb-1">Mileage Limit <span class="text-red-500">*</span></label>
+                <input name="mileageLimit" type="text" value="${c.mileageLimit || 'Unlimited'}" class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs font-semibold" required>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Primary Deposit Value</label>
-            <input name="carDeposit" type="number" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono" value="${c.deposit}" required>
+
+          <!-- SECTION 4: CAR OPTIONS & FEATURES -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-list-check text-zinc-400"></i> 4. Options & Features
+            </h5>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-neutral-900/40 p-3 rounded border border-border/80">
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_appleCarPlay" class="w-4 h-4 bg-background border border-border rounded accent-white" ${appleChecked?'checked':''}>
+                <span>Apple CarPlay</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_androidAuto" class="w-4 h-4 bg-background border border-border rounded accent-white" ${androidChecked?'checked':''}>
+                <span>Android Auto</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_bluetooth" class="w-4 h-4 bg-background border border-border rounded accent-white" ${bluetoothChecked?'checked':''}>
+                <span>Bluetooth</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_usbCharging" class="w-4 h-4 bg-background border border-border rounded accent-white" ${usbChecked?'checked':''}>
+                <span>USB Charging</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_gps" class="w-4 h-4 bg-background border border-border rounded accent-white" ${gpsChecked?'checked':''}>
+                <span>GPS Navigation</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_camera" class="w-4 h-4 bg-background border border-border rounded accent-white" ${cameraChecked?'checked':''}>
+                <span>Rear / 360 Camera</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_sensors" class="w-4 h-4 bg-background border border-border rounded accent-white" ${sensorsChecked?'checked':''}>
+                <span>Parking Sensors</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_sunroof" class="w-4 h-4 bg-background border border-border rounded accent-white" ${sunroofChecked?'checked':''}>
+                <span>Sunroof/Panoramic</span>
+              </label>
+              <label class="flex items-center gap-2 text-white font-medium cursor-pointer select-none">
+                <input type="checkbox" name="f_leather" class="w-4 h-4 bg-background border border-border rounded accent-white" ${leatherChecked?'checked':''}>
+                <span>Leather Seats</span>
+              </label>
+            </div>
           </div>
-          <div>
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Image URL Resource Path</label>
-            <input name="carImage" type="text" class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-[10px]" value="${c.imageUrl}">
+
+          <!-- SECTION 5: IMAGES -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-image text-zinc-400"></i> 5. Primary Image Resource
+            </h5>
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Primary Image URL <span class="text-red-500">*</span></label>
+              <input name="imageUrl" type="url" value="${c.imageUrl || ''}" placeholder="https://unsplash..." class="w-full bg-background border border-border rounded py-2 px-3 text-white font-mono text-[11px]" required>
+            </div>
           </div>
-          <div class="md:col-span-2">
-            <label class="text-[10px] uppercase font-bold text-muted block mb-1 font-mono">Brief Description Text</label>
-            <textarea name="carDesc" rows="2" class="w-full bg-background border border-border rounded py-1.5 px-3 text-white text-xs">${c.description || ''}</textarea>
+
+          <!-- SECTION 6: DESCRIPTION -->
+          <div class="space-y-3 p-1">
+            <h5 class="text-[10px] uppercase tracking-wider font-extrabold font-mono text-white pb-1.5 border-b border-border flex items-center gap-1">
+              <i class="fa-solid fa-file-signature text-zinc-400"></i> 6. Description & Remarks
+            </h5>
+            <div>
+              <label class="text-[10px] uppercase font-bold text-muted block mb-1">Rich Description (Max 500 chars)</label>
+              <textarea name="description" rows="3" maxlength="500" placeholder="Provide details about dynamic configurations, features, options..." class="w-full bg-background border border-border rounded py-2 px-3 text-white text-xs">${c.description || ''}</textarea>
+            </div>
           </div>
+
         </form>
       `;
 
@@ -2172,28 +3631,101 @@
           if (!form.reportValidity()) return;
           const fd = new FormData(form);
 
-          c.name = fd.get('carName').trim();
-          c.category = fd.get('carCategory');
-          c.model = fd.get('carModel').trim();
-          c.priceDaily = parseInt(fd.get('carPrice'));
-          c.priceWeekly = c.priceDaily * 6;
-          c.priceMonthly = c.priceDaily * 24;
-          c.plate = fd.get('carPlate').trim().toUpperCase();
-          c.year = parseInt(fd.get('carYear'));
-          c.seats = parseInt(fd.get('carSeats'));
-          c.transmission = fd.get('carTrans');
-          c.fuel = fd.get('carFuel');
-          c.deposit = parseInt(fd.get('carDeposit'));
-          c.imageUrl = fd.get('carImage');
-          c.description = fd.get('carDesc').trim();
+          const brand = fd.get('brand').trim();
+          const modelName = fd.get('model').trim();
+          const fullName = `${brand} ${modelName}`;
+          const yearVal = Number(fd.get('year')) || 2023;
 
-          saveState(KEYS.CARS, cars);
-          logAction("Asset Shift", `Manually updated indexes parameters of vehicle [${c.name}].`);
-          showToast(`Saved ${c.name}`);
-          closeModal();
-          drawFleetRows();
+          const f_appleCarPlay = form.querySelector('input[name="f_appleCarPlay"]').checked;
+          const f_androidAuto = form.querySelector('input[name="f_androidAuto"]').checked;
+          const f_bluetooth = form.querySelector('input[name="f_bluetooth"]').checked;
+          const f_usbCharging = form.querySelector('input[name="f_usbCharging"]').checked;
+          const f_gps = form.querySelector('input[name="f_gps"]').checked;
+          const f_camera = form.querySelector('input[name="f_camera"]').checked;
+          const f_sensors = form.querySelector('input[name="f_sensors"]').checked;
+          const f_sunroof = form.querySelector('input[name="f_sunroof"]').checked;
+          const f_leather = form.querySelector('input[name="f_leather"]').checked;
+
+          const dPrice = Number(fd.get('dailyPrice')) || 100;
+
+          const feats = [];
+          if (f_appleCarPlay) feats.push("Apple CarPlay");
+          if (f_androidAuto) feats.push("Android Auto");
+          if (f_bluetooth) feats.push("Bluetooth");
+          if (f_usbCharging) feats.push("USB Charging");
+          if (f_gps) feats.push("GPS");
+          if (f_camera) feats.push("Backup Camera");
+          if (f_sensors) feats.push("Parking Sensors");
+          if (f_sunroof) feats.push("Sunroof");
+          if (f_leather) feats.push("Leather Seats");
+
+          const updatedData = {
+            brand: brand,
+            modelName: modelName,
+            name: fullName,
+            model: fd.get('engine')?.trim() || "1.6L SE Package",
+            year: yearVal,
+            category: fd.get('category') || "Sedan",
+            colorName: fd.get('color')?.trim() || "Cosmic Charcoal",
+            plateNumber: fd.get('plate')?.trim() || "",
+            plate: fd.get('plate')?.trim() || "",
+            seats: Number(fd.get('seats')) || 5,
+            doors: Number(fd.get('doors')) || 4,
+            transmission: fd.get('transmission') || "Automatic",
+            fuelType: fd.get('fuelType') || "Petrol",
+            fuel: fd.get('fuelType') || "Petrol",
+            ac: fd.get('ac') || "Yes",
+            
+            dailyPrice: dPrice,
+            weeklyPrice: Number(fd.get('weeklyPrice')) || dPrice * 6,
+            monthlyPrice: Number(fd.get('monthlyPrice')) || dPrice * 24,
+            securityDeposit: Number(fd.get('securityDeposit')) || 1500,
+            mileageLimit: fd.get('mileageLimit')?.trim() || "Unlimited",
+            imageUrl: fd.get('imageUrl') || "",
+            description: fd.get('description')?.trim() || "",
+
+            // Backwards compliance properties
+            priceDaily: dPrice,
+            priceWeekly: Number(fd.get('weeklyPrice')) || dPrice * 6,
+            priceMonthly: Number(fd.get('monthlyPrice')) || dPrice * 24,
+            deposit: Number(fd.get('securityDeposit')) || 1500,
+            features: feats,
+            featureOptions: {
+              appleCarPlay: f_appleCarPlay,
+              androidAuto: f_androidAuto,
+              bluetooth: f_bluetooth,
+              usbCharging: f_usbCharging,
+              gps: f_gps,
+              camera: f_camera,
+              sensors: f_sensors,
+              sunroof: f_sunroof,
+              leather: f_leather
+            }
+          };
+
+          saveEditedCar(c.id, updatedData);
         }
       });
+    }
+
+    function saveEditedCar(carId, updatedData) {
+      const carIndex = carsArray.findIndex(c => c.id == carId);
+      if (carIndex === -1) return;
+      
+      carsArray[carIndex] = { 
+        ...carsArray[carIndex], 
+        ...updatedData,
+        id: carId
+      };
+      
+      saveCarsToStorage();
+      closeModal();
+      
+      if (currentNav === 'fleet') drawFleetRows();
+      else navigate('fleet');
+      
+      showToast("Car updated successfully");
+      logAction("Car Edited", updatedData.name);
     }
 
     function openViewCarCard(id) {
@@ -3029,6 +4561,18 @@
 
     // RUN THE COCKPIT MACHINE ON LOAD
     document.addEventListener('DOMContentLoaded', () => {
+      // Call loadCarsFromStorage() immediately when the page loads, before rendering anything in the admin fleet table.
+      loadCarsFromStorage();
+
+      // Initialize master administrator credentials safely
+      if (!localStorage.getItem("speedrental_credentials")) {
+        localStorage.setItem("speedrental_credentials", JSON.stringify({
+          username: "admin",
+          password: "Hewad@1234",
+          email: "hewad6q@gmail.com"
+        }));
+      }
+
       // 1. Recover variables safe
       cars = restoreState(KEYS.CARS, defaultCars);
       bookings = restoreState(KEYS.BOOKINGS, defaultBookings);

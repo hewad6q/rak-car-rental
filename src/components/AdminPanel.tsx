@@ -89,7 +89,7 @@ export default function AdminPanel({
   };
 
   // Car Fleet Actions
-  const handleStatusToggle = (id: string) => {
+  const handleStatusToggle = (id: string | number) => {
     setCars((prev) => {
       const updated = prev.map((car) => {
         if (car.id === id) {
@@ -100,16 +100,16 @@ export default function AdminPanel({
         }
         return car;
       });
-      localStorage.setItem('speed_rental_cars', JSON.stringify(updated));
+      localStorage.setItem('speedrental_cars', JSON.stringify(updated));
       return updated;
     });
   };
 
-  const handleCarDelete = (id: string) => {
+  const handleCarDelete = (id: string | number) => {
     if (window.confirm('Are you absolutely sure you want to remove this vehicle from the fleet?')) {
       setCars((prev) => {
         const updated = prev.filter((c) => c.id !== id);
-        localStorage.setItem('speed_rental_cars', JSON.stringify(updated));
+        localStorage.setItem('speedrental_cars', JSON.stringify(updated));
         return updated;
       });
     }
@@ -124,7 +124,7 @@ export default function AdminPanel({
     if (!editingCarId) return;
     setCars((prev) => {
       const updated = prev.map((c) => (c.id === editingCarId ? { ...c, ...editCarForm } as Car : c));
-      localStorage.setItem('speed_rental_cars', JSON.stringify(updated));
+      localStorage.setItem('speedrental_cars', JSON.stringify(updated));
       return updated;
     });
     setEditingCarId(null);
@@ -138,7 +138,7 @@ export default function AdminPanel({
     };
     setCars((prev) => {
       const updated = [newCar, ...prev];
-      localStorage.setItem('speed_rental_cars', JSON.stringify(updated));
+      localStorage.setItem('speedrental_cars', JSON.stringify(updated));
       return updated;
     });
     setIsAddingCar(false);
@@ -181,7 +181,7 @@ export default function AdminPanel({
   };
 
   // Promo Banner Actions
-  const handlePromoToggle = (id: string) => {
+  const handlePromoToggle = (id: string | number) => {
     setPromotions((prev) => {
       const updated = prev.map((p) => (p.id === id ? { ...p, isActive: !p.isActive } : p));
       localStorage.setItem('speed_rental_promotions', JSON.stringify(updated));
@@ -189,7 +189,7 @@ export default function AdminPanel({
     });
   };
 
-  const handlePromoTextEdit = (id: string, title: string, desc: string, code?: string) => {
+  const handlePromoTextEdit = (id: string | number, title: string, desc: string, code?: string) => {
     setPromotions((prev) => {
       const updated = prev.map((p) => (p.id === id ? { ...p, title, description: desc, code } : p));
       localStorage.setItem('speed_rental_promotions', JSON.stringify(updated));
