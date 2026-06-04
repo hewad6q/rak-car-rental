@@ -6,6 +6,8 @@
 import { useState, useEffect } from 'react';
 import { Car, Inquiry, Promotion, BusinessInfo } from './types';
 import { INITIAL_CARS, INITIAL_BUSINESS_INFO, INITIAL_PROMOTIONS, TESTIMONIALS, FAQS } from './data';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from './firebase';
 
 // Component imports
 import AnnouncementBar from './components/AnnouncementBar';
@@ -359,19 +361,35 @@ export default function App() {
     handleNavigate('fleet');
   };
 
-  // Callback: Push New Inquiries from Landing Components
-  const handleRecordNewInquiry = (inquiryData: { name: string; phone: string; message: string }) => {
+  // Callback: Push New Inquiries and Booking Requests to Firestore Database Bookings collection
+  const handleRecordNewInquiry = async (inquiryData: { name: string; phone: string; message: string }) => {
     const timestamp = new Date().toLocaleString('en-US', { hour12: true });
     
+    // Generate a fresh unique document reference to assign a clean Firestore-generated id
+    const docRef = doc(collection(db, 'bookings'));
+    const newInq: Inquiry = {
+      id: docRef.id,
+      date: timestamp,
+      name: inquiryData.name,
+      phone: inquiryData.phone,
+      message: inquiryData.message,
+      status: 'New',
+    };
+
+    try {
+      await setDoc(docRef, {
+        name: newInq.name,
+        phone: newInq.phone,
+        message: newInq.message,
+        status: newInq.status,
+        date: newInq.date,
+        createdAt: new Date().toISOString()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `bookings/${docRef.id}`);
+    }
+    
     setInquiries((prev) => {
-      const newInq: Inquiry = {
-        id: Date.now().toString(),
-        date: timestamp,
-        name: inquiryData.name,
-        phone: inquiryData.phone,
-        message: inquiryData.message,
-        status: 'New',
-      };
       const updated = [newInq, ...prev];
       localStorage.setItem('speed_rental_inquiries', JSON.stringify(updated));
       return updated;

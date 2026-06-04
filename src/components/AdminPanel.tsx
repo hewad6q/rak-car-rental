@@ -5,6 +5,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Car, Inquiry, Promotion, BusinessInfo } from '../types';
+import { collection, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from '../firebase';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -156,27 +158,79 @@ export default function AdminPanel({
     });
   };
 
-  // Inquiry Log Actions
-  const handleInquiryStatusChange = (id: string, nextStatus: Inquiry['status']) => {
-    setInquiries((prev) => {
-      const updated = prev.map((inq) => (inq.id === id ? { ...inq, status: nextStatus } : inq));
-      localStorage.setItem('speed_rental_inquiries', JSON.stringify(updated));
-      return updated;
-    });
+  // Synchronize dynamic inquiries live from Firestore database "bookings" collection of cloud
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const bookingsCollection = collection(db, 'bookings');
+    
+    const unsubscribe = onSnapshot(
+      bookingsCollection,
+      (snapshot) => {
+        const bookingsList: Inquiry[] = [];
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          bookingsList.push({
+            id: docSnap.id,
+            date: data.date || '',
+            name: data.name || '',
+            phone: data.phone || '',
+            message: data.message || '',
+            status: data.status || 'New',
+            adminNotes: data.adminNotes || '',
+          });
+        });
+        
+        // Sort bookings by native creation dates (or falling timestamp order)
+        bookingsList.sort((a, b) => {
+          const dateA = new Date(a.date).getTime() || 0;
+          const dateB = new Date(b.date).getTime() || 0;
+          return dateB - dateA;
+        });
+
+        setInquiries(bookingsList);
+        localStorage.setItem('speed_rental_inquiries', JSON.stringify(bookingsList));
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'bookings');
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [isOpen, setInquiries]);
+
+  // Inquiry Log Actions targeting Cloud Storage
+  const handleInquiryStatusChange = async (id: string, nextStatus: Inquiry['status']) => {
+    try {
+      await updateDoc(doc(db, 'bookings', id), {
+        status: nextStatus
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `bookings/${id}`);
+    }
   };
 
-  const handleInqNotesSave = (id: string, notes: string) => {
-    setInquiries((prev) => {
-      const updated = prev.map((inq) => (inq.id === id ? { ...inq, adminNotes: notes } : inq));
-      localStorage.setItem('speed_rental_inquiries', JSON.stringify(updated));
-      return updated;
-    });
+  const handleInqNotesSave = async (id: string, notes: string) => {
+    try {
+      await updateDoc(doc(db, 'bookings', id), {
+        adminNotes: notes
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `bookings/${id}`);
+    }
   };
 
-  const clearInquiries = () => {
+  const clearInquiries = async () => {
     if (window.confirm('Delete all recorded inquiries from log?')) {
-      setInquiries([]);
-      localStorage.setItem('speed_rental_inquiries', JSON.stringify([]));
+      for (const inq of inquiries) {
+        try {
+          await deleteDoc(doc(db, 'bookings', inq.id));
+        } catch (error) {
+          handleFirestoreError(error, OperationType.DELETE, `bookings/${inq.id}`);
+        }
+      }
     }
   };
 
