@@ -51,6 +51,323 @@
       #print-zone { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; }
     }
   </style>
+  <!--
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  FIRESTORE SECURITY RULES (firestore.rules)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /cars/{carId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /bookings/{bookingId} {
+        allow read, write: if true;
+      }
+      match /customers/{customerId} {
+        allow read, write: if true;
+      }
+      match /offers/{offerId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /announcements/{annId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /faqs/{faqId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /settings/{settingsId} {
+        allow read: if true;
+        allow write: if true;
+      }
+      match /analytics/{analyticsId} {
+        allow read, write: if true;
+      }
+      match /activity_log/{logId} {
+        allow read, write: if true;
+      }
+      match /contact_inquiries/{inqId} {
+        allow read, write: if true;
+      }
+    }
+  }
+  -->
+  <script type="module">
+    // Import Firebase SDKs from CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc,
+      addDoc, 
+      setDoc,
+      getDoc,
+      getDocs, 
+      updateDoc, 
+      deleteDoc,
+      onSnapshot,
+      query,
+      orderBy,
+      where,
+      serverTimestamp,
+      limit
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
+      authDomain: "speed-rental-rak.firebaseapp.com",
+      projectId: "speed-rental-rak",
+      storageBucket: "speed-rental-rak.firebasestorage.app",
+      messagingSenderId: "917938638656",
+      appId: "1:917938638656:web:6ec6435de59818f28fb4a5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app, "ai-studio-0ab0de5f-dc97-42bd-b8f6-8e174be9b1c9");
+
+    // Make db and Firebase functions available globally
+    window.db = db;
+    window.fbCollection = collection;
+    window.fbDoc = doc;
+    window.fbAddDoc = addDoc;
+    window.fbSetDoc = setDoc;
+    window.fbGetDoc = getDoc;
+    window.fbGetDocs = getDocs;
+    window.fbUpdateDoc = updateDoc;
+    window.fbDeleteDoc = deleteDoc;
+    window.fbOnSnapshot = onSnapshot;
+    window.fbQuery = query;
+    window.fbOrderBy = orderBy;
+    window.fbWhere = where;
+    window.fbServerTimestamp = serverTimestamp;
+    window.fbLimit = limit;
+
+    // Offline cache/fallback helpers
+    function cacheToLocalStorage(collectionName, data, id) {
+      const key = "fb_cache_" + collectionName;
+      try {
+        const cached = JSON.parse(localStorage.getItem(key) || "[]");
+        const existingIdx = cached.findIndex(item => item.firestoreId === id);
+        if (existingIdx !== -1) {
+          cached[existingIdx] = { firestoreId: id, ...data };
+        } else {
+          cached.unshift({ firestoreId: id, ...data });
+        }
+        localStorage.setItem(key, JSON.stringify(cached.slice(0, 200)));
+      } catch(e) {}
+    }
+
+    function saveToLocalStorageFallback(collectionName, data) {
+      const id = "local_" + Date.now();
+      try {
+        const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
+        pending.push({ action: "create", collection: collectionName, data, tempId: id });
+        localStorage.setItem("fb_pending_writes", JSON.stringify(pending));
+        cacheToLocalStorage(collectionName, data, id);
+      } catch(e) {}
+      return id;
+    }
+
+    function updateLocalStorageCache(collectionName, docId, data) {
+      const key = "fb_cache_" + collectionName;
+      try {
+        const cached = JSON.parse(localStorage.getItem(key) || "[]");
+        const idx = cached.findIndex(item => item.firestoreId === docId);
+        if (idx !== -1) {
+          cached[idx] = { ...cached[idx], ...data };
+          localStorage.setItem(key, JSON.stringify(cached));
+        }
+      } catch(e) {}
+    }
+
+    function removeFromLocalStorageCache(collectionName, docId) {
+      const key = "fb_cache_" + collectionName;
+      try {
+        const cached = JSON.parse(localStorage.getItem(key) || "[]");
+        const updated = cached.filter(item => item.firestoreId !== docId);
+        localStorage.setItem(key, JSON.stringify(updated));
+      } catch(e) {}
+    }
+
+    // Master Firebase Helper Functions
+    async function saveToFirestore(collectionName, data) {
+      try {
+        const colRef = collection(db, collectionName);
+        const docRef = await addDoc(colRef, {
+          ...data,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        cacheToLocalStorage(collectionName, data, docRef.id);
+        return docRef.id;
+      } catch(error) {
+        console.error("Firestore save error:", error);
+        return saveToLocalStorageFallback(collectionName, data);
+      }
+    }
+
+    async function updateInFirestore(collectionName, docId, data) {
+      try {
+        const docRef = doc(db, collectionName, docId);
+        await updateDoc(docRef, {
+          ...data,
+          updatedAt: serverTimestamp()
+        });
+        updateLocalStorageCache(collectionName, docId, data);
+        return true;
+      } catch(error) {
+        console.error("Firestore update error:", error);
+        return false;
+      }
+    }
+
+    async function deleteFromFirestore(collectionName, docId) {
+      try {
+        const docRef = doc(db, collectionName, docId);
+        await deleteDoc(docRef);
+        removeFromLocalStorageCache(collectionName, docId);
+        return true;
+      } catch(error) {
+        console.error("Firestore delete error:", error);
+        return false;
+      }
+    }
+
+    async function getFromFirestore(collectionName, orderByField) {
+      try {
+        const colRef = collection(db, collectionName);
+        const q = orderByField 
+          ? query(colRef, orderBy(orderByField, "asc"))
+          : colRef;
+        const snapshot = await getDocs(q);
+        const data = [];
+        snapshot.forEach(docSnap => {
+          data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+        });
+        localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(data));
+        return data;
+      } catch(error) {
+        console.error("Firestore get error:", error);
+        const cached = localStorage.getItem("fb_cache_" + collectionName);
+        return cached ? JSON.parse(cached) : [];
+      }
+    }
+
+    async function getSingleDoc(collectionName, docId) {
+      try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return { firestoreId: docSnap.id, ...docSnap.data() };
+        }
+        return null;
+      } catch(error) {
+        console.error("Firestore get single error:", error);
+        const cached = localStorage.getItem("fb_cache_" + collectionName + "_" + docId);
+        return cached ? JSON.parse(cached) : null;
+      }
+    }
+
+    async function setSingleDoc(collectionName, docId, data) {
+      try {
+        const docRef = doc(db, collectionName, docId);
+        await setDoc(docRef, {
+          ...data,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        localStorage.setItem("fb_cache_" + collectionName + "_" + docId, JSON.stringify(data));
+        return true;
+      } catch(error) {
+        console.error("Firestore set doc error:", error);
+        return false;
+      }
+    }
+
+    function listenToCollection(collectionName, callback, orderByField) {
+      try {
+        const colRef = collection(db, collectionName);
+        const q = orderByField
+          ? query(colRef, orderBy(orderByField, "asc"))
+          : colRef;
+        return onSnapshot(q, (snapshot) => {
+          const data = [];
+          snapshot.forEach(docSnap => {
+            data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+          });
+          callback(data);
+        }, (error) => {
+          console.error("Firestore listener error:", error);
+        });
+      } catch(error) {
+        console.error("Firestore listen error:", error);
+      }
+    }
+
+    function listenToDoc(collectionName, docId, callback) {
+      try {
+        const docRef = doc(db, collectionName, docId);
+        return onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            callback({ firestoreId: docSnap.id, ...docSnap.data() });
+          }
+        });
+      } catch(error) {
+        console.error("Firestore doc listen error:", error);
+      }
+    }
+
+    async function incrementAnalytic(field, amount) {
+      try {
+        const current = await getSingleDoc("analytics", "main") || {};
+        current[field] = (Number(current[field]) || 0) + amount;
+        await setSingleDoc("analytics", "main", current);
+      } catch(e) {
+        console.error("Analytics error:", e);
+      }
+    }
+
+    async function processPendingWrites() {
+      try {
+        const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
+        if (pending.length === 0) return;
+        localStorage.setItem("fb_pending_writes", "[]");
+        for (const item of pending) {
+          if (item.action === "create") {
+            await saveToFirestore(item.collection, item.data);
+          }
+        }
+      } catch(e) {}
+    }
+
+    // Expose globally
+    window.saveToFirestore = saveToFirestore;
+    window.updateInFirestore = updateInFirestore;
+    window.deleteFromFirestore = deleteFromFirestore;
+    window.getFromFirestore = getFromFirestore;
+    window.getSingleDoc = getSingleDoc;
+    window.setSingleDoc = setSingleDoc;
+    window.listenToCollection = listenToCollection;
+    window.listenToDoc = listenToDoc;
+    window.incrementAnalytic = incrementAnalytic;
+    window.processPendingWrites = processPendingWrites;
+
+    window.addEventListener("online", () => {
+      processPendingWrites();
+    });
+
+    // Signal ready
+    window.firebaseReady = true;
+    document.dispatchEvent(new Event("firebaseReady"));
+  </script>
 </head>
 <body class="font-sans antialiased text-white select-none">
 
@@ -561,10 +878,50 @@
 
     // IN-MEMORY CONTROLLING ARRAYS
     let carsArray = [];
-    function saveCarsToStorage() {
+    // SYNC FOR FULL RESTORATION BACKUP CODES
+    async function syncCollectionToFirestore(collectionName, localArray) {
+      if (!window.db) return;
+      for (const item of localArray) {
+        if (!item || typeof item !== 'object') continue;
+        const normalized = { ...item };
+        // avoid saving temporary frontend values if desired, prefix with ID properties
+        const idToCompare = String(item.id || '');
+        if (item.firestoreId) {
+          await window.updateInFirestore(collectionName, item.firestoreId, normalized);
+        } else {
+          try {
+            const fsId = await window.saveToFirestore(collectionName, normalized);
+            item.firestoreId = fsId;
+          } catch(e) {
+            console.warn("Failed syncing individual item:", item, e);
+          }
+        }
+      }
+      // Cleanup items in Firestore that don't exist locally
+      try {
+        const colRef = window.fbCollection(window.db, collectionName);
+        const snapshot = await window.fbGetDocs(colRef);
+        snapshot.forEach(async docSnap => {
+          const dbItem = docSnap.data();
+          const match = localArray.find(c => String(c.id) === String(dbItem.id) || docSnap.id === c.firestoreId);
+          if (!match) {
+            const docRef = window.fbDoc(window.db, collectionName, docSnap.id);
+            await window.fbDeleteDoc(docRef);
+          }
+        });
+      } catch(e) {
+        console.warn("Sync delete cleanup warning for " + collectionName + ":", e);
+      }
+    }
+
+    async function saveCarsToStorage() {
       localStorage.setItem("speedrental_cars", JSON.stringify(carsArray));
       console.log("Cars saved to localStorage:", carsArray.length, "cars");
+      if (window.db) {
+        await syncCollectionToFirestore("cars", carsArray);
+      }
     }
+
     function loadCarsFromStorage() {
       const stored = localStorage.getItem("speedrental_cars");
       if (stored) {
@@ -628,9 +985,9 @@
       if (dialogResolver) { dialogResolver(false); dialogResolver = null; }
     });
 
-    function saveState(key, data) {
+    async function saveState(key, data) {
       if (key === KEYS.CARS || key === 'speedrental_cars') {
-        saveCarsToStorage();
+        await saveCarsToStorage();
         window.dispatchEvent(new StorageEvent('storage', { key: 'speedrental_cars', newValue: JSON.stringify(carsArray) }));
       } else if (key === KEYS.SETTINGS || key === 'speedrental_settings') {
         const enriched = { ...data };
@@ -671,11 +1028,39 @@
 
         localStorage.setItem(key, JSON.stringify(enriched));
         window.dispatchEvent(new StorageEvent('storage', { key: key, newValue: JSON.stringify(enriched) }));
+
+        if (window.setSingleDoc) {
+          await window.setSingleDoc("settings", "main", enriched);
+        }
       } else {
         localStorage.setItem(key, JSON.stringify(data));
         window.dispatchEvent(new StorageEvent('storage', { key: key, newValue: JSON.stringify(data) }));
       }
+
+      // Sync specific collection arrays as needed
+      if (window.db) {
+        try {
+          if (key === KEYS.BOOKINGS) {
+            await syncCollectionToFirestore("bookings", data);
+          } else if (key === KEYS.CUSTOMERS) {
+            await syncCollectionToFirestore("customers", data);
+          } else if (key === KEYS.OFFERS) {
+            await syncCollectionToFirestore("offers", data);
+          } else if (key === KEYS.ANNOUNCEMENTS) {
+            await syncCollectionToFirestore("announcements", data);
+          } else if (key === KEYS.REVIEWS) {
+            await syncCollectionToFirestore("reviews", data);
+          } else if (key === KEYS.FAQS) {
+            await syncCollectionToFirestore("faqs", data);
+          } else if (key === KEYS.ACTIVITY_LOG) {
+            await syncCollectionToFirestore("activity_log", data);
+          }
+        } catch(e) {
+          console.warn("Firestore save mirror error for:", key, e);
+        }
+      }
     }
+
     function restoreState(key, defaultValue) {
       if (key === KEYS.CARS || key === 'speedrental_cars') {
         loadCarsFromStorage();
@@ -4559,10 +4944,9 @@
       document.getElementById('notification-dropdown').classList.add('hidden');
     });
 
-    // RUN THE COCKPIT MACHINE ON LOAD
-    document.addEventListener('DOMContentLoaded', () => {
-      // Call loadCarsFromStorage() immediately when the page loads, before rendering anything in the admin fleet table.
-      loadCarsFromStorage();
+    async function initAdminDashboard() {
+      if (window.adminInited) return;
+      window.adminInited = true;
 
       // Initialize master administrator credentials safely
       if (!localStorage.getItem("speedrental_credentials")) {
@@ -4573,7 +4957,7 @@
         }));
       }
 
-      // 1. Recover variables safe
+      // 1. Recover local/fallback variables first (so UI has warm load immediately)
       cars = restoreState(KEYS.CARS, defaultCars);
       bookings = restoreState(KEYS.BOOKINGS, defaultBookings);
       customers = restoreState(KEYS.CUSTOMERS, defaultCustomers);
@@ -4586,6 +4970,115 @@
       authState = restoreState(KEYS.AUTH, defaultAuth);
       notifications = restoreState(KEYS.NOTIFICATIONS, defaultNotifications);
 
+      // Try initial remote load from Firestore in parallel
+      if (window.getFromFirestore) {
+        try {
+          const [
+            remoteCars,
+            remoteBookings,
+            remoteCustomers,
+            remoteReviews,
+            remoteFaqs,
+            remoteOffers,
+            remoteAnnouncements,
+            remoteActivity,
+            remoteSettings
+          ] = await Promise.all([
+            window.getFromFirestore("cars", "id"),
+            window.getFromFirestore("bookings", "date"),
+            window.getFromFirestore("customers", "id"),
+            window.getFromFirestore("reviews", "id"),
+            window.getFromFirestore("faqs", "id"),
+            window.getFromFirestore("offers", "id"),
+            window.getFromFirestore("announcements", "id"),
+            window.getFromFirestore("activity_log", "timestamp"),
+            window.getSingleDoc("settings", "main")
+          ]);
+
+          if (remoteCars && remoteCars.length > 0) {
+            carsArray = remoteCars;
+            cars = remoteCars;
+            localStorage.setItem("speedrental_cars", JSON.stringify(carsArray));
+          } else {
+            console.log("Empty Firestore cars collection. Bootstrapping with default fleet...");
+            await syncCollectionToFirestore("cars", defaultCars);
+          }
+
+          if (remoteBookings && remoteBookings.length > 0) {
+            bookings = remoteBookings;
+            localStorage.setItem("speedrental_bookings", JSON.stringify(bookings));
+          } else {
+            await syncCollectionToFirestore("bookings", defaultBookings);
+          }
+
+          if (remoteCustomers && remoteCustomers.length > 0) {
+            customers = remoteCustomers;
+            localStorage.setItem("speedrental_customers", JSON.stringify(customers));
+          } else {
+            await syncCollectionToFirestore("customers", defaultCustomers);
+          }
+
+          if (remoteReviews && remoteReviews.length > 0) {
+            reviews = remoteReviews;
+            localStorage.setItem("speedrental_reviews", JSON.stringify(reviews));
+          } else {
+            await syncCollectionToFirestore("reviews", defaultReviews);
+          }
+
+          if (remoteFaqs && remoteFaqs.length > 0) {
+            faqs = remoteFaqs;
+            localStorage.setItem("speedrental_faqs", JSON.stringify(faqs));
+          } else {
+            await syncCollectionToFirestore("faqs", defaultFaqs);
+          }
+
+          if (remoteOffers && remoteOffers.length > 0) {
+            offers = remoteOffers;
+            localStorage.setItem("speedrental_offers", JSON.stringify(offers));
+          } else {
+            await syncCollectionToFirestore("offers", defaultOffers);
+          }
+
+          if (remoteAnnouncements && remoteAnnouncements.length > 0) {
+            announcements = remoteAnnouncements;
+            localStorage.setItem("speedrental_announcements", JSON.stringify(announcements));
+          } else {
+            await syncCollectionToFirestore("announcements", defaultAnnouncements);
+          }
+
+          if (remoteActivity && remoteActivity.length > 0) {
+            activityLog = remoteActivity;
+            localStorage.setItem("speedrental_activity", JSON.stringify(activityLog));
+          }
+
+          if (remoteSettings && remoteSettings.general) {
+            settings = remoteSettings;
+            localStorage.setItem("speedrental_settings", JSON.stringify(settings));
+          } else {
+            if (window.setSingleDoc) {
+              await window.setSingleDoc("settings", "main", defaultSettings);
+            }
+          }
+        } catch(e) {
+          console.warn("Firestore parallel sync warmup skipped/failed:", e);
+        }
+
+        // Live Firestore listener for Bookings collection to dynamically receive new bookings from web inquiries in real-time
+        try {
+          window.listenToCollection("bookings", (updatedBookings) => {
+            if (updatedBookings && updatedBookings.length > 0) {
+              bookings = updatedBookings;
+              localStorage.setItem("speedrental_bookings", JSON.stringify(bookings));
+              if (currentNav === 'bookings' && typeof renderActiveView === 'function') {
+                renderActiveView();
+              }
+            }
+          }, "date");
+        } catch(e) {
+          console.error("Booking snapshot sync error:", e);
+        }
+      }
+
       // 2. Start global tickers
       runTimeDrivers();
       renderSidebar();
@@ -4594,6 +5087,21 @@
       // 3. Check gateway validation
       checkAuth();
       logAction("System check", "Administrator terminal connected securely to data stores indices.");
+    }
+
+    // RUN THE COCKPIT MACHINE ON LOAD
+    document.addEventListener('DOMContentLoaded', () => {
+      // Lazy fallback if Firestore is taking too long
+      setTimeout(() => {
+        if (!window.adminInited) {
+          console.log("Firebase load timeout fallback. Initializing offline mode.");
+          initAdminDashboard();
+        }
+      }, 2500);
+    });
+
+    document.addEventListener("firebaseReady", () => {
+      initAdminDashboard();
     });
   </script>
 </body>

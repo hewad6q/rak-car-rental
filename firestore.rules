@@ -1,36 +1,70 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper functions
-    function isValidId(id) { 
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    // Cars Collection Rules
+    match /cars/{carId} {
+      allow read: if true;
+      allow write: if true;
     }
     
-    function incoming() { 
-      return request.resource.data; 
-    }
-
-    function isValidBooking(data) {
-      return data.keys().hasAll(['name', 'phone', 'message', 'status'])
-        && data.keys().size() <= 10
-        && data.name is string && data.name.size() <= 200 && data.name.size() > 0
-        && data.phone is string && data.phone.size() <= 50 && data.phone.size() > 0
-        && data.message is string && data.message.size() <= 3000
-        && data.status is string && (data.status == 'New' || data.status == 'Contacted' || data.status == 'Done');
-    }
-
-    // Default deny catch-all
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Secure Bookings Collection Match
+    // Bookings Collection Rules
     match /bookings/{bookingId} {
-      allow create: if isValidId(bookingId) && isValidBooking(incoming());
+      allow read, write: if true;
+    }
+    
+    // Customers Collection Rules
+    match /customers/{customerId} {
+      allow read, write: if true;
+    }
+
+    // Offers Collection Rules
+    match /offers/{offerId} {
       allow read: if true;
-      allow update: if isValidId(bookingId) && isValidBooking(incoming());
-      allow delete: if true;
+      allow write: if true;
+    }
+
+    // Announcements Collection Rules
+    match /announcements/{annId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Reviews Collection Rules
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // FAQs Collection Rules
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Settings Collection Rules
+    match /settings/{settingsId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Analytics Collection Rules
+    match /analytics/{analyticsId} {
+      allow read, write: if true;
+    }
+
+    // Activity Log Collection Rules
+    match /activity_log/{logId} {
+      allow read, write: if true;
+    }
+
+    // Contact Inquiries (backup) Collection Rules
+    match /contact_inquiries/{inqId} {
+      allow read, write: if true;
+    }
+
+    // Database Connection Test Collection Rules
+    match /test/{documentId} {
+      allow read: if true;
     }
   }
 }

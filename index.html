@@ -71,6 +71,387 @@
         }
       }
     </script>
+    <script type="module">
+      // Import Firebase SDKs from CDN
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { 
+        getFirestore, 
+        collection, 
+        doc,
+        addDoc, 
+        setDoc,
+        getDoc,
+        getDocs, 
+        updateDoc, 
+        deleteDoc,
+        onSnapshot,
+        query,
+        orderBy,
+        where,
+        serverTimestamp,
+        limit
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
+        authDomain: "speed-rental-rak.firebaseapp.com",
+        projectId: "speed-rental-rak",
+        storageBucket: "speed-rental-rak.firebasestorage.app",
+        messagingSenderId: "917938638656",
+        appId: "1:917938638656:web:6ec6435de59818f28fb4a5"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app, "ai-studio-0ab0de5f-dc97-42bd-b8f6-8e174be9b1c9");
+
+      // Make db and Firebase functions available globally
+      window.db = db;
+      window.fbCollection = collection;
+      window.fbDoc = doc;
+      window.fbAddDoc = addDoc;
+      window.fbSetDoc = setDoc;
+      window.fbGetDoc = getDoc;
+      window.fbGetDocs = getDocs;
+      window.fbUpdateDoc = updateDoc;
+      window.fbDeleteDoc = deleteDoc;
+      window.fbOnSnapshot = onSnapshot;
+      window.fbQuery = query;
+      window.fbOrderBy = orderBy;
+      window.fbWhere = where;
+      window.fbServerTimestamp = serverTimestamp;
+      window.fbLimit = limit;
+
+      // Offline cache/fallback helpers
+      function cacheToLocalStorage(collectionName, data, id) {
+        const key = "fb_cache_" + collectionName;
+        try {
+          const cached = JSON.parse(localStorage.getItem(key) || "[]");
+          const existingIdx = cached.findIndex(item => item.firestoreId === id);
+          if (existingIdx !== -1) {
+            cached[existingIdx] = { firestoreId: id, ...data };
+          } else {
+            cached.unshift({ firestoreId: id, ...data });
+          }
+          localStorage.setItem(key, JSON.stringify(cached.slice(0, 200)));
+        } catch(e) {}
+      }
+
+      function saveToLocalStorageFallback(collectionName, data) {
+        const id = "local_" + Date.now();
+        try {
+          const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
+          pending.push({ action: "create", collection: collectionName, data, tempId: id });
+          localStorage.setItem("fb_pending_writes", JSON.stringify(pending));
+          cacheToLocalStorage(collectionName, data, id);
+        } catch(e) {}
+        return id;
+      }
+
+      function updateLocalStorageCache(collectionName, docId, data) {
+        const key = "fb_cache_" + collectionName;
+        try {
+          const cached = JSON.parse(localStorage.getItem(key) || "[]");
+          const idx = cached.findIndex(item => item.firestoreId === docId);
+          if (idx !== -1) {
+            cached[idx] = { ...cached[idx], ...data };
+            localStorage.setItem(key, JSON.stringify(cached));
+          }
+        } catch(e) {}
+      }
+
+      function removeFromLocalStorageCache(collectionName, docId) {
+        const key = "fb_cache_" + collectionName;
+        try {
+          const cached = JSON.parse(localStorage.getItem(key) || "[]");
+          const updated = cached.filter(item => item.firestoreId !== docId);
+          localStorage.setItem(key, JSON.stringify(updated));
+        } catch(e) {}
+      }
+
+      // Master Firebase Helper Functions
+      async function saveToFirestore(collectionName, data) {
+        try {
+          const colRef = collection(db, collectionName);
+          const docRef = await addDoc(colRef, {
+            ...data,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          cacheToLocalStorage(collectionName, data, docRef.id);
+          return docRef.id;
+        } catch(error) {
+          console.error("Firestore save error:", error);
+          return saveToLocalStorageFallback(collectionName, data);
+        }
+      }
+
+      async function updateInFirestore(collectionName, docId, data) {
+        try {
+          const docRef = doc(db, collectionName, docId);
+          await updateDoc(docRef, {
+            ...data,
+            updatedAt: serverTimestamp()
+          });
+          updateLocalStorageCache(collectionName, docId, data);
+          return true;
+        } catch(error) {
+          console.error("Firestore update error:", error);
+          return false;
+        }
+      }
+
+      async function deleteFromFirestore(collectionName, docId) {
+        try {
+          const docRef = doc(db, collectionName, docId);
+          await deleteDoc(docRef);
+          removeFromLocalStorageCache(collectionName, docId);
+          return true;
+        } catch(error) {
+          console.error("Firestore delete error:", error);
+          return false;
+        }
+      }
+
+      async function getFromFirestore(collectionName, orderByField) {
+        try {
+          const colRef = collection(db, collectionName);
+          const q = orderByField 
+            ? query(colRef, orderBy(orderByField, "asc"))
+            : colRef;
+          const snapshot = await getDocs(q);
+          const data = [];
+          snapshot.forEach(docSnap => {
+            data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+          });
+          localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(data));
+          return data;
+        } catch(error) {
+          console.error("Firestore get error:", error);
+          const cached = localStorage.getItem("fb_cache_" + collectionName);
+          return cached ? JSON.parse(cached) : [];
+        }
+      }
+
+      async function getSingleDoc(collectionName, docId) {
+        try {
+          const docRef = doc(db, collectionName, docId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            return { firestoreId: docSnap.id, ...docSnap.data() };
+          }
+          return null;
+        } catch(error) {
+          console.error("Firestore get single error:", error);
+          const cached = localStorage.getItem("fb_cache_" + collectionName + "_" + docId);
+          return cached ? JSON.parse(cached) : null;
+        }
+      }
+
+      async function setSingleDoc(collectionName, docId, data) {
+        try {
+          const docRef = doc(db, collectionName, docId);
+          await setDoc(docRef, {
+            ...data,
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+          localStorage.setItem("fb_cache_" + collectionName + "_" + docId, JSON.stringify(data));
+          return true;
+        } catch(error) {
+          console.error("Firestore set doc error:", error);
+          return false;
+        }
+      }
+
+      function listenToCollection(collectionName, callback, orderByField) {
+        try {
+          const colRef = collection(db, collectionName);
+          const q = orderByField
+            ? query(colRef, orderBy(orderByField, "asc"))
+            : colRef;
+          return onSnapshot(q, (snapshot) => {
+            const data = [];
+            snapshot.forEach(docSnap => {
+              data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+            });
+            callback(data);
+          }, (error) => {
+            console.error("Firestore listener error:", error);
+          });
+        } catch(error) {
+          console.error("Firestore listen error:", error);
+        }
+      }
+
+      function listenToDoc(collectionName, docId, callback) {
+        try {
+          const docRef = doc(db, collectionName, docId);
+          return onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+              callback({ firestoreId: docSnap.id, ...docSnap.data() });
+            }
+          });
+        } catch(error) {
+          console.error("Firestore doc listen error:", error);
+        }
+      }
+
+      async function incrementAnalytic(field, amount) {
+        try {
+          const current = await getSingleDoc("analytics", "main") || {};
+          current[field] = (Number(current[field]) || 0) + amount;
+          await setSingleDoc("analytics", "main", current);
+        } catch(e) {
+          console.error("Analytics error:", e);
+        }
+      }
+
+      async function processPendingWrites() {
+        try {
+          const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
+          if (pending.length === 0) return;
+          localStorage.setItem("fb_pending_writes", "[]");
+          for (const item of pending) {
+            if (item.action === "create") {
+              await saveToFirestore(item.collection, item.data);
+            }
+          }
+        } catch(e) {}
+      }
+
+      // Expose globally
+      window.saveToFirestore = saveToFirestore;
+      window.updateInFirestore = updateInFirestore;
+      window.deleteFromFirestore = deleteFromFirestore;
+      window.getFromFirestore = getFromFirestore;
+      window.getSingleDoc = getSingleDoc;
+      window.setSingleDoc = setSingleDoc;
+      window.listenToCollection = listenToCollection;
+      window.listenToDoc = listenToDoc;
+      window.incrementAnalytic = incrementAnalytic;
+      window.processPendingWrites = processPendingWrites;
+
+      window.addEventListener("online", () => {
+        processPendingWrites();
+      });
+
+      // Signal ready
+      window.firebaseReady = true;
+      document.dispatchEvent(new Event("firebaseReady"));
+    </script>
+    <script>
+      // Load all dynamic content from Firestore once Firebase is ready
+      document.addEventListener("firebaseReady", async function() {
+        await initWebsite();
+        try {
+          await window.incrementAnalytic("pageViews", 1);
+        } catch(e) {}
+      });
+
+      async function initWebsite() {
+        await Promise.all([
+          loadFleetFromFirestore(),
+          loadOffersFromFirestore(),
+          loadAnnouncementsFromFirestore(),
+          loadReviewsFromFirestore(),
+          loadFAQsFromFirestore(),
+          loadSettingsFromFirestore()
+        ]);
+        
+        // Listeners for live backend updates
+        window.listenToCollection("cars", renderFleet);
+        window.listenToCollection("offers", renderOffers);
+        window.listenToCollection("announcements", (ann) => {
+          localStorage.setItem("speedrental_announcements", JSON.stringify(ann));
+          renderAnnouncementBar();
+        });
+        window.listenToCollection("reviews", (reviews) => {
+          renderReviews(reviews.filter(r => r.visible !== false));
+        });
+        window.listenToCollection("faqs", (faqs) => {
+          renderFAQs(faqs.filter(f => f.visible !== false).sort((a,b) => (Number(a.order)||0)-(Number(b.order)||0)));
+        });
+        window.listenToDoc("settings", "main", applyBusinessSettings);
+      }
+
+      async function loadFleetFromFirestore() {
+        const cars = await window.getFromFirestore("cars", "createdAt");
+        if (cars.length === 0) {
+          await seedDefaultCars();
+        } else {
+          renderFleet(cars);
+        }
+      }
+
+      async function seedDefaultCars() {
+        const defaultCars = [
+          { name: "Toyota Corolla", category: "Sedan", priceDaily: 120, plate: "RAK A 12345", year: 2023, status: "Available", description: "Standard reliable economic everyday user model", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600" },
+          { name: "Nissan Sunny", category: "Economy", priceDaily: 80, plate: "RAK B 23456", year: 2022, status: "Available", description: "Super efficient micro vehicle for urban runs", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&q=80&w=600" },
+          { name: "Hyundai Accent", category: "Economy", priceDaily: 90, plate: "RAK C 34567", year: 2023, status: "Available", description: "Smooth riding micro compact standard", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&q=80&w=600" },
+          { name: "Toyota Camry", category: "Sedan", priceDaily: 150, plate: "RAK D 45678", year: 2023, status: "Rented", description: "Executive cruise comfort, very spacious", deposit: 1500, imageUrl: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600" },
+          { name: "Mitsubishi Pajero", category: "SUV", priceDaily: 200, plate: "RAK E 56789", year: 2022, status: "Available", description: "V6 strong desert terrain warrior", deposit: 2000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
+          { name: "Toyota Land Cruiser", category: "SUV", priceDaily: 350, plate: "RAK F 67890", year: 2022, status: "Available", description: "Premium massive ultimate highway crawler", deposit: 3000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
+          { name: "Nissan Patrol", category: "SUV", priceDaily: 380, plate: "RAK G 78901", year: 2023, status: "Reserved", description: "The King of family dunes and state VIP cruiser", deposit: 3000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
+          { name: "Kia Sportage", category: "SUV", priceDaily: 180, plate: "RAK H 89012", year: 2023, status: "Available", description: "Modern crossover featuring backup cameras and great audio", deposit: 1500, imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600" },
+          { name: "BMW 3 Series", category: "Luxury", priceDaily: 280, plate: "RAK I 90123", year: 2022, status: "Available", description: "Ultimate sports handling setup, M-Sport styling", deposit: 2500, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600" },
+          { name: "Mercedes C-Class", category: "Luxury", priceDaily: 320, plate: "RAK J 01234", year: 2023, status: "Available", description: "Cockpit luxury cruise with modern technology features", deposit: 2500, imageUrl: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600" },
+          { name: "Toyota Hiace Van", category: "Van", priceDaily: 250, plate: "RAK K 11111", year: 2022, status: "Rented", description: "High efficiency commuter passenger van with 12 seats", deposit: 2000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" }
+        ];
+        for (const car of defaultCars) {
+          await window.saveToFirestore("cars", car);
+        }
+        const cars = await window.getFromFirestore("cars");
+        renderFleet(cars);
+      }
+
+      function renderFleet(cars) {
+        localStorage.setItem("speedrental_cars", JSON.stringify(cars));
+        if (typeof window.renderFleet === "function") window.renderFleet();
+      }
+      function renderOffers(offers) {
+        localStorage.setItem("speedrental_offers", JSON.stringify(offers));
+        if (typeof window.renderOffers === "function") window.renderOffers();
+      }
+      function renderAnnouncementBar() {
+        if (typeof window.renderAnnouncementBar === "function") window.renderAnnouncementBar();
+      }
+      function renderReviews(reviews) {
+        localStorage.setItem("speedrental_reviews", JSON.stringify(reviews));
+        if (typeof window.renderReviews === "function") window.renderReviews();
+      }
+      function renderFAQs(faqs) {
+        localStorage.setItem("speedrental_faqs", JSON.stringify(faqs));
+        if (typeof window.renderFAQs === "function") window.renderFAQs();
+      }
+      function applyBusinessSettings(settings) {
+        localStorage.setItem("speedrental_settings", JSON.stringify(settings));
+        if (typeof window.applyBusinessSettings === "function") window.applyBusinessSettings();
+      }
+
+      async function loadOffersFromFirestore() {
+        const offers = await window.getFromFirestore("offers");
+        renderOffers(offers);
+      }
+      async function loadAnnouncementsFromFirestore() {
+        const ann = await window.getFromFirestore("announcements");
+        localStorage.setItem("speedrental_announcements", JSON.stringify(ann));
+        renderAnnouncementBar();
+      }
+      async function loadReviewsFromFirestore() {
+        const reviews = await window.getFromFirestore("reviews");
+        renderReviews(reviews);
+      }
+      async function loadFAQsFromFirestore() {
+        const faqs = await window.getFromFirestore("faqs");
+        renderFAQs(faqs);
+      }
+      async function loadSettingsFromFirestore() {
+        const settings = await window.getSingleDoc("settings", "main");
+        if (settings) {
+          applyBusinessSettings(settings);
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
