@@ -71,28 +71,29 @@
         }
       }
     </script>
+    <!-- Modern Firebase JS SDK (v10.7.1) -->
     <script type="module">
-      // Import Firebase SDKs from CDN
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
       import { 
         getFirestore, 
         collection, 
-        doc,
+        doc, 
         addDoc, 
-        setDoc,
-        getDoc,
-        getDocs, 
         updateDoc, 
-        deleteDoc,
-        onSnapshot,
-        query,
-        orderBy,
-        where,
+        deleteDoc, 
+        getDoc, 
+        getDocs, 
+        setDoc, 
+        onSnapshot, 
+        query, 
+        orderBy, 
+        where, 
+        limit,
         serverTimestamp,
-        limit
+        increment
       } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-      // Initialize Firebase
+      // Initialize Firebase using dedicated database ID with standard Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
         authDomain: "speed-rental-rak.firebaseapp.com",
@@ -104,73 +105,14 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app, "ai-studio-0ab0de5f-dc97-42bd-b8f6-8e174be9b1c9");
-
-      // Make db and Firebase functions available globally
       window.db = db;
-      window.fbCollection = collection;
-      window.fbDoc = doc;
-      window.fbAddDoc = addDoc;
-      window.fbSetDoc = setDoc;
-      window.fbGetDoc = getDoc;
-      window.fbGetDocs = getDocs;
-      window.fbUpdateDoc = updateDoc;
-      window.fbDeleteDoc = deleteDoc;
-      window.fbOnSnapshot = onSnapshot;
-      window.fbQuery = query;
-      window.fbOrderBy = orderBy;
-      window.fbWhere = where;
-      window.fbServerTimestamp = serverTimestamp;
-      window.fbLimit = limit;
 
-      // Offline cache/fallback helpers
-      function cacheToLocalStorage(collectionName, data, id) {
-        const key = "fb_cache_" + collectionName;
-        try {
-          const cached = JSON.parse(localStorage.getItem(key) || "[]");
-          const existingIdx = cached.findIndex(item => item.firestoreId === id);
-          if (existingIdx !== -1) {
-            cached[existingIdx] = { firestoreId: id, ...data };
-          } else {
-            cached.unshift({ firestoreId: id, ...data });
-          }
-          localStorage.setItem(key, JSON.stringify(cached.slice(0, 200)));
-        } catch(e) {}
-      }
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // FIRESTORE HELPER FUNCTIONS
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-      function saveToLocalStorageFallback(collectionName, data) {
-        const id = "local_" + Date.now();
-        try {
-          const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
-          pending.push({ action: "create", collection: collectionName, data, tempId: id });
-          localStorage.setItem("fb_pending_writes", JSON.stringify(pending));
-          cacheToLocalStorage(collectionName, data, id);
-        } catch(e) {}
-        return id;
-      }
-
-      function updateLocalStorageCache(collectionName, docId, data) {
-        const key = "fb_cache_" + collectionName;
-        try {
-          const cached = JSON.parse(localStorage.getItem(key) || "[]");
-          const idx = cached.findIndex(item => item.firestoreId === docId);
-          if (idx !== -1) {
-            cached[idx] = { ...cached[idx], ...data };
-            localStorage.setItem(key, JSON.stringify(cached));
-          }
-        } catch(e) {}
-      }
-
-      function removeFromLocalStorageCache(collectionName, docId) {
-        const key = "fb_cache_" + collectionName;
-        try {
-          const cached = JSON.parse(localStorage.getItem(key) || "[]");
-          const updated = cached.filter(item => item.firestoreId !== docId);
-          localStorage.setItem(key, JSON.stringify(updated));
-        } catch(e) {}
-      }
-
-      // Master Firebase Helper Functions
-      async function saveToFirestore(collectionName, data) {
+      // ADD a new document — returns the new document ID
+      async function dbAdd(collectionName, data) {
         try {
           const colRef = collection(db, collectionName);
           const docRef = await addDoc(colRef, {
@@ -178,230 +120,555 @@
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
           });
-          cacheToLocalStorage(collectionName, data, docRef.id);
+          console.log("Added to " + collectionName + " with ID: " + docRef.id);
+          saveToCache(collectionName, { id: docRef.id, ...data });
           return docRef.id;
-        } catch(error) {
-          console.error("Firestore save error:", error);
-          return saveToLocalStorageFallback(collectionName, data);
+        } catch (error) {
+          console.error("dbAdd error in " + collectionName + ":", error);
+          return saveToCache(collectionName, data);
         }
       }
 
-      async function updateInFirestore(collectionName, docId, data) {
+      // UPDATE an existing document by Firestore ID
+      async function dbUpdate(collectionName, docId, data) {
         try {
           const docRef = doc(db, collectionName, docId);
           await updateDoc(docRef, {
             ...data,
             updatedAt: serverTimestamp()
           });
-          updateLocalStorageCache(collectionName, docId, data);
+          console.log("Updated " + docId + " in " + collectionName);
+          updateCache(collectionName, docId, data);
           return true;
-        } catch(error) {
-          console.error("Firestore update error:", error);
+        } catch (error) {
+          console.error("dbUpdate error:", error);
           return false;
         }
       }
 
-      async function deleteFromFirestore(collectionName, docId) {
+      // DELETE a document by Firestore ID
+      async function dbDelete(collectionName, docId) {
         try {
           const docRef = doc(db, collectionName, docId);
           await deleteDoc(docRef);
-          removeFromLocalStorageCache(collectionName, docId);
+          console.log("Deleted " + docId + " from " + collectionName);
+          deleteFromCache(collectionName, docId);
           return true;
-        } catch(error) {
-          console.error("Firestore delete error:", error);
+        } catch (error) {
+          console.error("dbDelete error:", error);
           return false;
         }
       }
 
-      async function getFromFirestore(collectionName, orderByField) {
+      // GET ALL documents from a collection (one time fetch)
+      async function dbGetAll(collectionName, orderByField, orderDir) {
         try {
           const colRef = collection(db, collectionName);
-          const q = orderByField 
-            ? query(colRef, orderBy(orderByField, "asc"))
-            : colRef;
+          let q = colRef;
+          if (orderByField) {
+            q = query(colRef, orderBy(orderByField, orderDir || "asc"));
+          }
           const snapshot = await getDocs(q);
-          const data = [];
+          const results = [];
           snapshot.forEach(docSnap => {
-            data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+            results.push({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
           });
-          localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(data));
-          return data;
-        } catch(error) {
-          console.error("Firestore get error:", error);
-          const cached = localStorage.getItem("fb_cache_" + collectionName);
+          localStorage.setItem("cache_" + collectionName, JSON.stringify(results));
+          localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(results));
+          return results;
+        } catch (error) {
+          console.error("dbGetAll error for " + collectionName + ":", error);
+          const cached = localStorage.getItem("cache_" + collectionName);
           return cached ? JSON.parse(cached) : [];
         }
       }
 
-      async function getSingleDoc(collectionName, docId) {
+      // GET a single document by ID
+      async function dbGetOne(collectionName, docId) {
         try {
           const docRef = doc(db, collectionName, docId);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            return { firestoreId: docSnap.id, ...docSnap.data() };
+            return { id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() };
           }
           return null;
-        } catch(error) {
-          console.error("Firestore get single error:", error);
-          const cached = localStorage.getItem("fb_cache_" + collectionName + "_" + docId);
-          return cached ? JSON.parse(cached) : null;
+        } catch (error) {
+          console.error("dbGetOne error:", error);
+          return null;
         }
       }
 
-      async function setSingleDoc(collectionName, docId, data) {
+      // SET a single document (creates or overwrites)
+      async function dbSet(collectionName, docId, data) {
         try {
           const docRef = doc(db, collectionName, docId);
           await setDoc(docRef, {
             ...data,
             updatedAt: serverTimestamp()
           }, { merge: true });
+          localStorage.setItem("cache_" + collectionName + "_" + docId, JSON.stringify(data));
           localStorage.setItem("fb_cache_" + collectionName + "_" + docId, JSON.stringify(data));
           return true;
-        } catch(error) {
-          console.error("Firestore set doc error:", error);
+        } catch (error) {
+          console.error("dbSet error:", error);
           return false;
         }
       }
 
-      function listenToCollection(collectionName, callback, orderByField) {
+      // REAL TIME LISTENER — calls callback every time data changes
+      function dbListen(collectionName, callback, orderByField, orderDir) {
         try {
           const colRef = collection(db, collectionName);
-          const q = orderByField
-            ? query(colRef, orderBy(orderByField, "asc"))
-            : colRef;
+          let q = colRef;
+          if (orderByField) {
+            q = query(colRef, orderBy(orderByField, orderDir || "asc"));
+          }
           return onSnapshot(q, (snapshot) => {
-            const data = [];
+            const results = [];
             snapshot.forEach(docSnap => {
-              data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+              results.push({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
             });
-            callback(data);
+            localStorage.setItem("cache_" + collectionName, JSON.stringify(results));
+            localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(results));
+            callback(results);
           }, (error) => {
-            console.error("Firestore listener error:", error);
+            console.error("dbListen error for " + collectionName + ":", error);
+            const cached = localStorage.getItem("cache_" + collectionName);
+            if (cached) callback(JSON.parse(cached));
           });
-        } catch(error) {
-          console.error("Firestore listen error:", error);
+        } catch (error) {
+          console.error("dbListen setup error:", error);
         }
       }
 
-      function listenToDoc(collectionName, docId, callback) {
+      // REAL TIME LISTENER — single document
+      function dbListenDoc(collectionName, docId, callback) {
         try {
           const docRef = doc(db, collectionName, docId);
           return onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
-              callback({ firestoreId: docSnap.id, ...docSnap.data() });
+              callback({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
             }
+          }, (error) => {
+            console.error("dbListenDoc error:", error);
           });
-        } catch(error) {
-          console.error("Firestore doc listen error:", error);
+        } catch (error) {
+          console.error("dbListenDoc setup error:", error);
         }
       }
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // CACHE HELPERS (localStorage backup)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      function saveToCache(collectionName, data) {
+        const key = "cache_" + collectionName;
+        const existing = JSON.parse(localStorage.getItem(key) || "[]");
+        const newId = "local_" + Date.now();
+        existing.unshift({ id: newId, firestoreId: newId, ...data });
+        localStorage.setItem(key, JSON.stringify(existing.slice(0, 500)));
+        return newId;
+      }
+
+      function updateCache(collectionName, docId, data) {
+        const key = "cache_" + collectionName;
+        const existing = JSON.parse(localStorage.getItem(key) || "[]");
+        const index = existing.findIndex(item => item.id === docId);
+        if (index !== -1) {
+          existing[index] = { ...existing[index], ...data };
+          localStorage.setItem(key, JSON.stringify(existing));
+        }
+      }
+
+      function deleteFromCache(collectionName, docId) {
+        const key = "cache_" + collectionName;
+        const existing = JSON.parse(localStorage.getItem(key) || "[]");
+        const filtered = existing.filter(item => item.id !== docId);
+        localStorage.setItem(key, JSON.stringify(filtered));
+      }
+
+      function getFromCache(collectionName) {
+        const cached = localStorage.getItem("cache_" + collectionName);
+        return cached ? JSON.parse(cached) : [];
+      }
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ACTIVITY LOG
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      async function logActivity(action, details) {
+        try {
+          const colRef = collection(db, "activity_log");
+          await addDoc(colRef, {
+            action: action,
+            details: details,
+            timestamp: new Date().toISOString(),
+            createdAt: serverTimestamp()
+          });
+        } catch(error) {
+          console.warn("Could not log activity:", error);
+        }
+      }
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ANALYTICS INCREMENT
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
       async function incrementAnalytic(field, amount) {
         try {
-          const current = await getSingleDoc("analytics", "main") || {};
-          current[field] = (Number(current[field]) || 0) + amount;
-          await setSingleDoc("analytics", "main", current);
-        } catch(e) {
-          console.error("Analytics error:", e);
+          const docRef = doc(db, "analytics", "main");
+          await setDoc(docRef, {
+            [field]: increment(amount || 1),
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+        } catch(error) {
+          console.warn("Analytics increment failed:", error);
         }
       }
 
-      async function processPendingWrites() {
-        try {
-          const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
-          if (pending.length === 0) return;
-          localStorage.setItem("fb_pending_writes", "[]");
-          for (const item of pending) {
-            if (item.action === "create") {
-              await saveToFirestore(item.collection, item.data);
-            }
-          }
-        } catch(e) {}
-      }
-
-      // Expose globally
-      window.saveToFirestore = saveToFirestore;
-      window.updateInFirestore = updateInFirestore;
-      window.deleteFromFirestore = deleteFromFirestore;
-      window.getFromFirestore = getFromFirestore;
-      window.getSingleDoc = getSingleDoc;
-      window.setSingleDoc = setSingleDoc;
-      window.listenToCollection = listenToCollection;
-      window.listenToDoc = listenToDoc;
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // COMPAT ALIASES & GLOBAL EXPOSURE
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      window.dbAdd = dbAdd;
+      window.dbUpdate = dbUpdate;
+      window.dbDelete = dbDelete;
+      window.dbGetAll = dbGetAll;
+      window.dbGetOne = dbGetOne;
+      window.dbSet = dbSet;
+      window.dbListen = dbListen;
+      window.dbListenDoc = dbListenDoc;
+      window.logActivity = logActivity;
       window.incrementAnalytic = incrementAnalytic;
-      window.processPendingWrites = processPendingWrites;
 
-      window.addEventListener("online", () => {
-        processPendingWrites();
-      });
+      // Backward compatibility aliases
+      window.saveToFirestore = dbAdd;
+      window.updateInFirestore = dbUpdate;
+      window.deleteFromFirestore = dbDelete;
+      window.getFromFirestore = dbGetAll;
+      window.getSingleDoc = dbGetOne;
+      window.setSingleDoc = dbSet;
+      window.listenToCollection = dbListen;
+      window.listenToDoc = dbListenDoc;
 
       // Signal ready
       window.firebaseReady = true;
       document.dispatchEvent(new Event("firebaseReady"));
     </script>
+
     <script>
-      // Load all dynamic content from Firestore once Firebase is ready
-      document.addEventListener("firebaseReady", async function() {
-        await initWebsite();
-        try {
-          await window.incrementAnalytic("pageViews", 1);
-        } catch(e) {}
+      // Wait for page to fully load
+      window.addEventListener("load", function() {
+        initWebsite();
+        incrementAnalytic("pageViews", 1);
       });
 
       async function initWebsite() {
-        await Promise.all([
-          loadFleetFromFirestore(),
-          loadOffersFromFirestore(),
-          loadAnnouncementsFromFirestore(),
-          loadReviewsFromFirestore(),
-          loadFAQsFromFirestore(),
-          loadSettingsFromFirestore()
-        ]);
+        // Load all data from Firestore
+        await loadFleet();
+        await loadOffers();
+        await loadAnnouncements();
+        await loadReviews();
+        await loadFAQs();
+        await loadBusinessSettings();
         
-        // Listeners for live backend updates
-        window.listenToCollection("cars", renderFleet);
-        window.listenToCollection("offers", renderOffers);
-        window.listenToCollection("announcements", (ann) => {
-          localStorage.setItem("speedrental_announcements", JSON.stringify(ann));
-          renderAnnouncementBar();
+        // Set up real time listeners so website updates instantly
+        dbListen("cars", function(cars) {
+          const visible = cars.filter(c => 
+            c.status !== "Under Maintenance" && 
+            c.status !== "Retired"
+          );
+          renderFleet(visible);
+        }, "createdAt", "desc");
+
+        dbListen("offers", function(offers) {
+          const active = offers.filter(o => o.active === true);
+          renderOffers(active);
         });
-        window.listenToCollection("reviews", (reviews) => {
-          renderReviews(reviews.filter(r => r.visible !== false));
+
+        dbListen("announcements", function(items) {
+          renderAnnouncementBar(items.filter(a => a.active === true));
         });
-        window.listenToCollection("faqs", (faqs) => {
-          renderFAQs(faqs.filter(f => f.visible !== false).sort((a,b) => (Number(a.order)||0)-(Number(b.order)||0)));
+
+        dbListen("reviews", function(reviews) {
+          const visible = reviews
+            .filter(r => r.visible !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderReviews(visible);
         });
-        window.listenToDoc("settings", "main", applyBusinessSettings);
+
+        dbListen("faqs", function(faqs) {
+          const visible = faqs
+            .filter(f => f.visible !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+          renderFAQs(visible);
+        });
+
+        dbListenDoc("settings", "main", function(settings) {
+          applyBusinessSettings(settings);
+        });
       }
 
-      async function loadFleetFromFirestore() {
-        const cars = await window.getFromFirestore("cars", "createdAt");
+      // LOAD FLEET
+      async function loadFleet() {
+        const cars = await dbGetAll("cars", "createdAt", "desc");
         if (cars.length === 0) {
-          await seedDefaultCars();
+          await seedDefaultCarsToFirestore();
         } else {
-          renderFleet(cars);
+          const visible = cars.filter(c => 
+            c.status !== "Under Maintenance" && 
+            c.status !== "Retired"
+          );
+          renderFleet(visible);
         }
       }
 
-      async function seedDefaultCars() {
+      // SEED DEFAULT CARS — runs only once when Firestore is empty
+      async function seedDefaultCarsToFirestore() {
+        console.log("Seeding default cars to Firestore...");
         const defaultCars = [
-          { name: "Toyota Corolla", category: "Sedan", priceDaily: 120, plate: "RAK A 12345", year: 2023, status: "Available", description: "Standard reliable economic everyday user model", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600" },
-          { name: "Nissan Sunny", category: "Economy", priceDaily: 80, plate: "RAK B 23456", year: 2022, status: "Available", description: "Super efficient micro vehicle for urban runs", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&q=80&w=600" },
-          { name: "Hyundai Accent", category: "Economy", priceDaily: 90, plate: "RAK C 34567", year: 2023, status: "Available", description: "Smooth riding micro compact standard", deposit: 1000, imageUrl: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&q=80&w=600" },
-          { name: "Toyota Camry", category: "Sedan", priceDaily: 150, plate: "RAK D 45678", year: 2023, status: "Rented", description: "Executive cruise comfort, very spacious", deposit: 1500, imageUrl: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600" },
-          { name: "Mitsubishi Pajero", category: "SUV", priceDaily: 200, plate: "RAK E 56789", year: 2022, status: "Available", description: "V6 strong desert terrain warrior", deposit: 2000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
-          { name: "Toyota Land Cruiser", category: "SUV", priceDaily: 350, plate: "RAK F 67890", year: 2022, status: "Available", description: "Premium massive ultimate highway crawler", deposit: 3000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
-          { name: "Nissan Patrol", category: "SUV", priceDaily: 380, plate: "RAK G 78901", year: 2023, status: "Reserved", description: "The King of family dunes and state VIP cruiser", deposit: 3000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" },
-          { name: "Kia Sportage", category: "SUV", priceDaily: 180, plate: "RAK H 89012", year: 2023, status: "Available", description: "Modern crossover featuring backup cameras and great audio", deposit: 1500, imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600" },
-          { name: "BMW 3 Series", category: "Luxury", priceDaily: 280, plate: "RAK I 90123", year: 2022, status: "Available", description: "Ultimate sports handling setup, M-Sport styling", deposit: 2500, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600" },
-          { name: "Mercedes C-Class", category: "Luxury", priceDaily: 320, plate: "RAK J 01234", year: 2023, status: "Available", description: "Cockpit luxury cruise with modern technology features", deposit: 2500, imageUrl: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600" },
-          { name: "Toyota Hiace Van", category: "Van", priceDaily: 250, plate: "RAK K 11111", year: 2022, status: "Rented", description: "High efficiency commuter passenger van with 12 seats", deposit: 2000, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600" }
+          { brand:"Toyota", model:"Corolla", year:2023, 
+            category:"Sedan", color:"White", plateNumber:"RAK A 12345",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:120, weeklyPrice:720, monthlyPrice:3000,
+            securityDeposit:500, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true, 
+                       rearCamera:true, parkingSensors:false, 
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"Nissan", model:"Sunny", year:2022,
+            category:"Economy", color:"Silver", plateNumber:"RAK B 23456",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:80, weeklyPrice:480, monthlyPrice:2000,
+            securityDeposit:300, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:false, usbCharging:true,
+                       rearCamera:false, parkingSensors:false,
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"Hyundai", model:"Accent", year:2023,
+            category:"Economy", color:"White", plateNumber:"RAK C 34567",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:90, weeklyPrice:540, monthlyPrice:2250,
+            securityDeposit:300, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:false, usbCharging:true,
+                       rearCamera:false, parkingSensors:false,
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"Toyota", model:"Camry", year:2023,
+            category:"Sedan", color:"Black", plateNumber:"RAK D 45678",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:150, weeklyPrice:900, monthlyPrice:3750,
+            securityDeposit:700, mileageLimit:"Unlimited",
+            status:"Rented", imageUrl:"https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"Mitsubishi", model:"Pajero", year:2022,
+            category:"SUV", color:"White", plateNumber:"RAK E 56789",
+            seats:7, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:200, weeklyPrice:1200, monthlyPrice:5000,
+            securityDeposit:1000, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:true, childSeat:false } },
+          { brand:"Toyota", model:"Land Cruiser", year:2022,
+            category:"SUV", color:"White", plateNumber:"RAK F 67890",
+            seats:7, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:350, weeklyPrice:2100, monthlyPrice:8750,
+            securityDeposit:1500, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:true, childSeat:false } },
+          { brand:"Nissan", model:"Patrol", year:2023,
+            category:"SUV", color:"Black", plateNumber:"RAK G 78901",
+            seats:7, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:380, weeklyPrice:2280, monthlyPrice:9500,
+            securityDeposit:1500, mileageLimit:"Unlimited",
+            status:"Reserved", imageUrl:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:true, childSeat:false } },
+          { brand:"Kia", model:"Sportage", year:2023,
+            category:"SUV", color:"Gray", plateNumber:"RAK H 89012",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:180, weeklyPrice:1080, monthlyPrice:4500,
+            securityDeposit:800, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"BMW", model:"3 Series", year:2022,
+            category:"Luxury", color:"Black", plateNumber:"RAK I 90123",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:280, weeklyPrice:1680, monthlyPrice:7000,
+            securityDeposit:1500, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:true, childSeat:false } },
+          { brand:"Mercedes", model:"C-Class", year:2023,
+            category:"Luxury", color:"White", plateNumber:"RAK J 01234",
+            seats:5, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:320, weeklyPrice:1920, monthlyPrice:8000,
+            securityDeposit:1500, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:true, childSeat:false } },
+          { brand:"Toyota", model:"Hiace Van", year:2022,
+            category:"Van", color:"White", plateNumber:"RAK K 11111",
+            seats:12, doors:4, transmission:"Manual", fuelType:"Diesel",
+            dailyPrice:250, weeklyPrice:1500, monthlyPrice:6250,
+            securityDeposit:1000, mileageLimit:"Unlimited",
+            status:"Rented", imageUrl:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:false, usbCharging:true,
+                       rearCamera:true, parkingSensors:false,
+                       bluetooth:true, ac:true, sunroof:false,
+                       leatherSeats:false, childSeat:false } },
+          { brand:"GMC", model:"Yukon", year:2023,
+            category:"SUV", color:"Black", plateNumber:"RAK L 22222",
+            seats:7, doors:4, transmission:"Automatic", fuelType:"Petrol",
+            dailyPrice:420, weeklyPrice:2520, monthlyPrice:10500,
+            securityDeposit:2000, mileageLimit:"Unlimited",
+            status:"Available", imageUrl:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600", additionalImages:[],
+            features:{ appleCarplay:true, usbCharging:true,
+                       rearCamera:true, parkingSensors:true,
+                       bluetooth:true, ac:true, sunroof:true,
+                       leatherSeats:true, childSeat:false } }
         ];
+
         for (const car of defaultCars) {
-          await window.saveToFirestore("cars", car);
+          await dbAdd("cars", car);
         }
-        const cars = await window.getFromFirestore("cars");
-        renderFleet(cars);
+        
+        await seedDefaultOffers();
+        await seedDefaultReviews();
+        await seedDefaultFAQs();
+        await seedDefaultAnnouncements();
+        await seedDefaultSettings();
+        
+        console.log("Default data seeded to Firestore successfully");
+        const cars = await dbGetAll("cars");
+        const visible = cars.filter(c => 
+          c.status !== "Under Maintenance" && c.status !== "Retired"
+        );
+        renderFleet(visible);
+      }
+
+      async function seedDefaultOffers() {
+        const offers = [
+          { emoji:"🚗", title:"Book 7+ Days — Get 1 Day FREE",
+            description:"Rent any car for 7 days or more and get one extra day completely free.",
+            promoCode:"", validUntil:"", active:true },
+          { emoji:"💰", title:"First Time? Get 10% OFF",
+            description:"New customers get 10% discount on their first rental.",
+            promoCode:"SPEED10", validUntil:"", active:true }
+        ];
+        for (const offer of offers) await dbAdd("offers", offer);
+      }
+
+      async function seedDefaultReviews() {
+        const reviews = [
+          { name:"Anup Rajput", stars:5, visible:true, order:1, source:"Google",
+            text:"Amazing Service, special thanks to Suhail — makes everything comfortable. All cars well maintained. Highly recommend!",
+            date:"2022-01-01" },
+          { name:"Shihab", stars:5, visible:true, order:2, source:"Google",
+            text:"Affordable price. Very helpful employees — Ajmal and Ubaida.",
+            date:"2022-03-01" },
+          { name:"Ramees Al Zabi", stars:5, visible:true, order:3, source:"Google",
+            text:"Best price and experience, truly unique.",
+            date:"2022-05-01" },
+          { name:"Juma Juma", stars:5, visible:true, order:4, source:"Google",
+            text:"Excellent service and management; considerate and kind. Recommended!",
+            date:"2022-07-01" },
+          { name:"Amany Mosa", stars:5, visible:true, order:5, source:"Google",
+            text:"The best rental office, characterized by high professionalism.",
+            date:"2022-09-01" }
+        ];
+        for (const review of reviews) await dbAdd("reviews", review);
+      }
+
+      async function seedDefaultFAQs() {
+        const faqs = [
+          { question:"What documents do I need to rent a car?",
+            answer:"UAE/Emirates ID or valid passport + valid driving license (UAE, GCC, or International).",
+            category:"Documents", visible:true, order:1 },
+          { question:"Is there a minimum age to rent?",
+            answer:"Yes, minimum age is 21 years.",
+            category:"General", visible:true, order:2 },
+          { question:"Do you offer free delivery?",
+            answer:"Yes, free delivery within RAK city limits.",
+            category:"General", visible:true, order:3 },
+          { question:"What are your operating hours?",
+            answer:"We are open until 12 AM midnight, 7 days a week.",
+            category:"General", visible:true, order:4 },
+          { question:"Is insurance included?",
+            answer:"Yes, all our cars come with full insurance coverage.",
+            category:"Policies", visible:true, order:5 },
+          { question:"Can I pay by credit card?",
+            answer:"Yes, we accept cash and all major credit/debit cards.",
+            category:"Pricing", visible:true, order:6 },
+          { question:"What happens if I am involved in an accident?",
+            answer:"Contact us immediately on 050 602 4221. Our team handles everything.",
+            category:"Policies", visible:true, order:7 },
+          { question:"Can I extend my rental?",
+            answer:"Yes, contact us before your return date to extend.",
+            category:"Policies", visible:true, order:8 },
+          { question:"Is there a deposit required?",
+            answer:"A refundable security deposit is required at time of pickup.",
+            category:"Pricing", visible:true, order:9 },
+          { question:"Do you offer airport pickup/dropoff?",
+            answer:"Yes, we can arrange airport delivery with advance booking.",
+            category:"General", visible:true, order:10 },
+          { question:"Can tourists rent a car?",
+            answer:"Yes, tourists with a valid international license are welcome.",
+            category:"Documents", visible:true, order:11 },
+          { question:"What fuel policy applies?",
+            answer:"Cars are provided with a full tank and must be returned full.",
+            category:"Policies", visible:true, order:12 }
+        ];
+        for (const faq of faqs) await dbAdd("faqs", faq);
+      }
+
+      async function seedDefaultAnnouncements() {
+        const items = [
+          { emoji:"🚗", text:"FREE Delivery in RAK City", active:true, order:1 },
+          { emoji:"📞", text:"Call Now: 050 602 4221", active:true, order:2 },
+          { emoji:"⭐", text:"Rated 4.3/5 on Google", active:true, order:3 },
+          { emoji:"🕐", text:"Open Until Midnight", active:true, order:4 }
+        ];
+        for (const item of items) await dbAdd("announcements", item);
+      }
+
+      async function seedDefaultSettings() {
+        await dbSet("settings", "main", {
+          businessName: "Speed Rental RAK",
+          tagline: "Drive with Confidence",
+          phone: "050 602 4221",
+          whatsapp: "971506024221",
+          email: "speedrentalrak@gmail.com",
+          address: "2 Al Nuwawir St, Al Juwais, Ras Al Khaimah, UAE",
+          operatingHours: "Open Daily — Closes 12 AM Midnight",
+          heroHeadline1: "DRIVE IN",
+          heroHeadline2: "LUXURY",
+          heroSubheading: "Premium Car Rentals in Ras Al Khaimah — From AED 80/Day",
+          footerTagline: "Speed Rental RAK — Drive with Confidence",
+          copyrightText: "© 2024 Speed Rental RAK. All Rights Reserved.",
+          announcementBarEnabled: true,
+          contactFormEnabled: true,
+          googleReviewsUrl: "https://g.page/r/speed-rental-rak/review"
+        });
       }
 
       function renderFleet(cars) {
@@ -412,7 +679,8 @@
         localStorage.setItem("speedrental_offers", JSON.stringify(offers));
         if (typeof window.renderOffers === "function") window.renderOffers();
       }
-      function renderAnnouncementBar() {
+      function renderAnnouncementBar(ann) {
+        localStorage.setItem("speedrental_announcements", JSON.stringify(ann));
         if (typeof window.renderAnnouncementBar === "function") window.renderAnnouncementBar();
       }
       function renderReviews(reviews) {
@@ -428,25 +696,31 @@
         if (typeof window.applyBusinessSettings === "function") window.applyBusinessSettings();
       }
 
-      async function loadOffersFromFirestore() {
-        const offers = await window.getFromFirestore("offers");
-        renderOffers(offers);
+      async function loadOffers() {
+        const offers = await dbGetAll("offers");
+        const active = offers.filter(o => o.active === true);
+        renderOffers(active);
       }
-      async function loadAnnouncementsFromFirestore() {
-        const ann = await window.getFromFirestore("announcements");
-        localStorage.setItem("speedrental_announcements", JSON.stringify(ann));
-        renderAnnouncementBar();
+      async function loadAnnouncements() {
+        const ann = await dbGetAll("announcements");
+        renderAnnouncementBar(ann.filter(a => a.active === true));
       }
-      async function loadReviewsFromFirestore() {
-        const reviews = await window.getFromFirestore("reviews");
-        renderReviews(reviews);
+      async function loadReviews() {
+        const reviews = await dbGetAll("reviews");
+        const visible = reviews
+          .filter(r => r.visible !== false)
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        renderReviews(visible);
       }
-      async function loadFAQsFromFirestore() {
-        const faqs = await window.getFromFirestore("faqs");
-        renderFAQs(faqs);
+      async function loadFAQs() {
+        const faqs = await dbGetAll("faqs");
+        const visible = faqs
+          .filter(f => f.visible !== false)
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        renderFAQs(visible);
       }
-      async function loadSettingsFromFirestore() {
-        const settings = await window.getSingleDoc("settings", "main");
+      async function loadBusinessSettings() {
+        const settings = await dbGetOne("settings", "main");
         if (settings) {
           applyBusinessSettings(settings);
         }

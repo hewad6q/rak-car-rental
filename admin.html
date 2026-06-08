@@ -25,11 +25,11 @@
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            background: '#0A0A0A',
-            panel: '#111111',
-            card: '#1A1A1A',
-            border: '#2E2E2E',
-            muted: '#AAAAAA',
+            background: '#F5F5F5',
+            panel: '#FFFFFF',
+            card: '#FFFFFF',
+            border: '#E8E8E8',
+            muted: '#999999',
           }
         },
       }
@@ -38,13 +38,266 @@
 
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0A0A0A; }
-    ::-webkit-scrollbar-thumb { background: #2E2E2E; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #444444; }
+    ::-webkit-scrollbar-track { background: #F5F5F5; }
+    ::-webkit-scrollbar-thumb { background: #D0D0D0; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #999999; }
     
-    .active-nav { background-color: #FFFFFF !important; color: #000000 !important; border-left: 3px solid #FFFFFF; }
-    body { background-color: #0A0A0A; color: #FFFFFF; overflow-x: hidden; }
+    /* CSS Root theme variables */
+    :root {
+      --bg-page:      #F5F5F5;
+      --bg-sidebar:   #0A0A0A;
+      --bg-card:      #FFFFFF;
+      --bg-input:     #F7F7F7;
+      --bg-table-row: #FFFFFF;
+      --bg-table-alt: #FAFAFA;
+      --bg-header:    #FFFFFF;
+      --text-primary: #0A0A0A;
+      --text-secondary:#555555;
+      --text-muted:   #999999;
+      --text-sidebar: #AAAAAA;
+      --border:       #E8E8E8;
+      --border-dark:  #D0D0D0;
+      --accent:       #0A0A0A;
+      --btn-primary-bg:   #0A0A0A;
+      --btn-primary-text: #FFFFFF;
+      --btn-outline-border: #E0E0E0;
+      --btn-outline-text:   #0A0A0A;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    body {
+      background-color: #F5F5F5 !important;
+      color: #0A0A0A !important;
+      overflow-x: hidden;
+    }
+
+    /* Left Sidebar Overrides to Keep it Dark */
+    #main-sidebar {
+      background-color: #0A0A0A !important;
+      color: #AAAAAA !important;
+      border-right: 1px solid #1A1A1A !important;
+    }
+    #main-sidebar .nav-label-text {
+      color: #AAAAAA !important;
+    }
+    #main-sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    #main-sidebar button:hover .nav-label-text,
+    #main-sidebar button:hover i {
+      color: #FFFFFF !important;
+    }
     
+    /* Active sidebar item */
+    .active-nav {
+      background-color: #FFFFFF !important;
+      color: #000000 !important;
+      border-left: 3px solid #000000 !important;
+    }
+    .active-nav * {
+      color: #000000 !important;
+    }
+
+    /* Unread badge for notifications in sidebar */
+    #notif-sidebar-badge {
+      background-color: #EF4444 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Top Header Overrides */
+    header {
+      background-color: #FFFFFF !important;
+      border-bottom: 1px solid #E8E8E8 !important;
+    }
+    #header-breadcrumb, #header-title, #live-time {
+      color: #0A0A0A !important;
+    }
+    #shortcuts-trigger {
+      border: 1px solid #E0E0E0 !important;
+      color: #0A0A0A !important;
+      background-color: #FFFFFF !important;
+    }
+    #shortcuts-trigger:hover {
+      background-color: #0A0A0A !important;
+      color: #FFFFFF !important;
+      border-color: #0A0A0A !important;
+    }
+
+    /* Content Area and General Layout Adjustments */
+    #content-container {
+      background-color: #F5F5F5 !important;
+    }
+    #content-container .bg-card, 
+    #content-container .bg-panel,
+    #content-container .bg-neutral-900, 
+    #content-container .bg-neutral-900\/60,
+    #content-container .bg-stone-900 {
+      background-color: #FFFFFF !important;
+      color: #0A0A0A !important;
+      border-color: #E8E8E8 !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+    }
+    #content-container select,
+    #content-container input,
+    #content-container textarea {
+      background-color: #F7F7F7 !important;
+      color: #0A0A0A !important;
+      border: 1px solid #E8E8E8 !important;
+    }
+    #content-container select:focus,
+    #content-container input:focus,
+    #content-container textarea:focus {
+      border-color: #0A0A0A !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Convert elements with white-text class on dark layout into black-text */
+    #content-container .text-white,
+    #content-container .text-stone-100,
+    #content-container .text-stone-200,
+    #content-container .text-stone-300,
+    #content-container .text-zinc-100,
+    #content-container .text-zinc-200,
+    #content-container .text-zinc-300,
+    #content-container .text-neutral-200 {
+      color: #0A0A0A !important;
+    }
+    #content-container h1, 
+    #content-container h2, 
+    #content-container h3, 
+    #content-container h4, 
+    #content-container h5, 
+    #content-container h6 {
+      color: #0A0A0A !important;
+    }
+    #content-container .bg-white\/5 {
+      background-color: #F5F5F5 !important;
+    }
+    #content-container .border-border,
+    #content-container .border-border\/50,
+    #content-container .border-stone-800 {
+      border-color: #E8E8E8 !important;
+    }
+
+    /* Modal Overrides */
+    #dynamic-system-modal {
+      background-color: rgba(0, 0, 0, 0.5) !important;
+      backdrop-filter: blur(4px) !important;
+    }
+    #dynamic-modal-card {
+      background-color: #FFFFFF !important;
+      color: #0A0A0A !important;
+      border: 1px solid #E8E8E8 !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+    }
+    #dynamic-system-modal .bg-panel {
+      background-color: #FFFFFF !important;
+    }
+    #dynamic-system-modal h4,
+    #dynamic-system-modal label,
+    #dynamic-system-modal input,
+    #dynamic-system-modal select,
+    #dynamic-system-modal textarea,
+    #dynamic-system-modal span,
+    #dynamic-system-modal p {
+      color: #0A0A0A !important;
+    }
+    #dynamic-system-modal input,
+    #dynamic-system-modal select,
+    #dynamic-system-modal textarea {
+      background-color: #F7F7F7 !important;
+      border: 1px solid #E8E8E8 !important;
+    }
+    #dynamic-system-modal input:focus,
+    #dynamic-system-modal select:focus,
+    #dynamic-system-modal textarea:focus {
+      border-color: #0A0A0A !important;
+      outline: none !important;
+    }
+    #dynamic-system-modal .modal-close-btn {
+      color: #999999 !important;
+    }
+    #dynamic-system-modal .modal-close-btn:hover {
+      color: #0A0A0A !important;
+    }
+    #dynamic-system-modal .border-border,
+    #dynamic-system-modal .border-t,
+    #dynamic-system-modal .border-b {
+      border-color: #E8E8E8 !important;
+    }
+
+    /* Button adjustments */
+    #content-container button.bg-white,
+    #dynamic-system-modal button#m-save-btn,
+    button.btn-primary {
+      background-color: #0A0A0A !important;
+      color: #FFFFFF !important;
+      border: 1px solid #0A0A0A !important;
+    }
+    #content-container button.bg-white:hover,
+    #dynamic-system-modal button#m-save-btn:hover,
+    button.btn-primary:hover {
+      background-color: #222222 !important;
+      color: #FFFFFF !important;
+    }
+    #content-container button:not(.bg-white, #logout-btn, .btn-primary, .notif-tab),
+    #dynamic-system-modal button:not(#m-save-btn, #m-wa-btn) {
+      background-color: #FFFFFF !important;
+      color: #0A0A0A !important;
+      border: 1px solid #E0E0E0 !important;
+    }
+    #content-container button:not(.bg-white, #logout-btn, .btn-primary, .notif-tab):hover,
+    #dynamic-system-modal button:not(#m-save-btn, #m-wa-btn):hover {
+      background-color: #F5F5F5 !important;
+      color: #0A0A0A !important;
+      border-color: #D0D0D0 !important;
+    }
+
+    /* Notifications tab styles */
+    .notif-tab {
+      background-color: #FFFFFF !important;
+      color: #888888 !important;
+      border: 1px solid #E8E8E8 !important;
+      border-radius: 6px !important;
+    }
+    .notif-tab.active-notif {
+      background-color: #0A0A0A !important;
+      color: #FFFFFF !important;
+      border-color: #0A0A0A !important;
+    }
+
+    /* System warnings / login portal dark overlay resets */
+    #session-warning, #forgot-modal, #shortcuts-modal {
+      background-color: rgba(0,0,0,0.5) !important;
+    }
+    #forgot-modal .bg-card, #shortcuts-modal .bg-card {
+      background-color: #FFFFFF !important;
+      color: #0A0A0A !important;
+      border-color: #E8E8E8 !important;
+    }
+    #forgot-modal *, #shortcuts-modal * {
+      color: #0A0A0A !important;
+    }
+
+    #login-panel {
+      background-color: #F5F5F5 !important;
+    }
+    #login-panel .bg-[#111111] {
+      background-color: #FFFFFF !important;
+      border-color: #E8E8E8 !important;
+    }
+    #login-panel * {
+      color: #0A0A0A !important;
+    }
+    #login-panel input {
+      background-color: #F7F7F7 !important;
+      color: #0A0A0A !important;
+      border: 1px solid #E8E8E8 !important;
+    }
+
     @media print {
       body * { visibility: hidden; }
       #print-zone, #print-zone * { visibility: visible; }
@@ -100,28 +353,29 @@
     }
   }
   -->
+  <!-- Modern Firebase JS SDK (v10.7.1) -->
   <script type="module">
-    // Import Firebase SDKs from CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { 
       getFirestore, 
       collection, 
-      doc,
+      doc, 
       addDoc, 
-      setDoc,
-      getDoc,
-      getDocs, 
       updateDoc, 
-      deleteDoc,
-      onSnapshot,
-      query,
-      orderBy,
-      where,
+      deleteDoc, 
+      getDoc, 
+      getDocs, 
+      setDoc, 
+      onSnapshot, 
+      query, 
+      orderBy, 
+      where, 
+      limit,
       serverTimestamp,
-      limit
+      increment
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Initialize Firebase
+    // Initialize Firebase using dedicated database ID with standard Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
       authDomain: "speed-rental-rak.firebaseapp.com",
@@ -133,73 +387,14 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app, "ai-studio-0ab0de5f-dc97-42bd-b8f6-8e174be9b1c9");
-
-    // Make db and Firebase functions available globally
     window.db = db;
-    window.fbCollection = collection;
-    window.fbDoc = doc;
-    window.fbAddDoc = addDoc;
-    window.fbSetDoc = setDoc;
-    window.fbGetDoc = getDoc;
-    window.fbGetDocs = getDocs;
-    window.fbUpdateDoc = updateDoc;
-    window.fbDeleteDoc = deleteDoc;
-    window.fbOnSnapshot = onSnapshot;
-    window.fbQuery = query;
-    window.fbOrderBy = orderBy;
-    window.fbWhere = where;
-    window.fbServerTimestamp = serverTimestamp;
-    window.fbLimit = limit;
 
-    // Offline cache/fallback helpers
-    function cacheToLocalStorage(collectionName, data, id) {
-      const key = "fb_cache_" + collectionName;
-      try {
-        const cached = JSON.parse(localStorage.getItem(key) || "[]");
-        const existingIdx = cached.findIndex(item => item.firestoreId === id);
-        if (existingIdx !== -1) {
-          cached[existingIdx] = { firestoreId: id, ...data };
-        } else {
-          cached.unshift({ firestoreId: id, ...data });
-        }
-        localStorage.setItem(key, JSON.stringify(cached.slice(0, 200)));
-      } catch(e) {}
-    }
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // FIRESTORE HELPER FUNCTIONS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    function saveToLocalStorageFallback(collectionName, data) {
-      const id = "local_" + Date.now();
-      try {
-        const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
-        pending.push({ action: "create", collection: collectionName, data, tempId: id });
-        localStorage.setItem("fb_pending_writes", JSON.stringify(pending));
-        cacheToLocalStorage(collectionName, data, id);
-      } catch(e) {}
-      return id;
-    }
-
-    function updateLocalStorageCache(collectionName, docId, data) {
-      const key = "fb_cache_" + collectionName;
-      try {
-        const cached = JSON.parse(localStorage.getItem(key) || "[]");
-        const idx = cached.findIndex(item => item.firestoreId === docId);
-        if (idx !== -1) {
-          cached[idx] = { ...cached[idx], ...data };
-          localStorage.setItem(key, JSON.stringify(cached));
-        }
-      } catch(e) {}
-    }
-
-    function removeFromLocalStorageCache(collectionName, docId) {
-      const key = "fb_cache_" + collectionName;
-      try {
-        const cached = JSON.parse(localStorage.getItem(key) || "[]");
-        const updated = cached.filter(item => item.firestoreId !== docId);
-        localStorage.setItem(key, JSON.stringify(updated));
-      } catch(e) {}
-    }
-
-    // Master Firebase Helper Functions
-    async function saveToFirestore(collectionName, data) {
+    // ADD a new document — returns the new document ID
+    async function dbAdd(collectionName, data) {
       try {
         const colRef = collection(db, collectionName);
         const docRef = await addDoc(colRef, {
@@ -207,162 +402,235 @@
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
-        cacheToLocalStorage(collectionName, data, docRef.id);
+        console.log("Added to " + collectionName + " with ID: " + docRef.id);
+        saveToCache(collectionName, { id: docRef.id, ...data });
         return docRef.id;
-      } catch(error) {
-        console.error("Firestore save error:", error);
-        return saveToLocalStorageFallback(collectionName, data);
+      } catch (error) {
+        console.error("dbAdd error in " + collectionName + ":", error);
+        return saveToCache(collectionName, data);
       }
     }
 
-    async function updateInFirestore(collectionName, docId, data) {
+    // UPDATE an existing document by Firestore ID
+    async function dbUpdate(collectionName, docId, data) {
       try {
         const docRef = doc(db, collectionName, docId);
         await updateDoc(docRef, {
           ...data,
           updatedAt: serverTimestamp()
         });
-        updateLocalStorageCache(collectionName, docId, data);
+        console.log("Updated " + docId + " in " + collectionName);
+        updateCache(collectionName, docId, data);
         return true;
-      } catch(error) {
-        console.error("Firestore update error:", error);
+      } catch (error) {
+        console.error("dbUpdate error:", error);
         return false;
       }
     }
 
-    async function deleteFromFirestore(collectionName, docId) {
+    // DELETE a document by Firestore ID
+    async function dbDelete(collectionName, docId) {
       try {
         const docRef = doc(db, collectionName, docId);
         await deleteDoc(docRef);
-        removeFromLocalStorageCache(collectionName, docId);
+        console.log("Deleted " + docId + " from " + collectionName);
+        deleteFromCache(collectionName, docId);
         return true;
-      } catch(error) {
-        console.error("Firestore delete error:", error);
+      } catch (error) {
+        console.error("dbDelete error:", error);
         return false;
       }
     }
 
-    async function getFromFirestore(collectionName, orderByField) {
+    // GET ALL documents from a collection (one time fetch)
+    async function dbGetAll(collectionName, orderByField, orderDir) {
       try {
         const colRef = collection(db, collectionName);
-        const q = orderByField 
-          ? query(colRef, orderBy(orderByField, "asc"))
-          : colRef;
+        let q = colRef;
+        if (orderByField) {
+          q = query(colRef, orderBy(orderByField, orderDir || "asc"));
+        }
         const snapshot = await getDocs(q);
-        const data = [];
+        const results = [];
         snapshot.forEach(docSnap => {
-          data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+          results.push({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
         });
-        localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(data));
-        return data;
-      } catch(error) {
-        console.error("Firestore get error:", error);
-        const cached = localStorage.getItem("fb_cache_" + collectionName);
+        localStorage.setItem("cache_" + collectionName, JSON.stringify(results));
+        localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(results));
+        return results;
+      } catch (error) {
+        console.error("dbGetAll error for " + collectionName + ":", error);
+        const cached = localStorage.getItem("cache_" + collectionName);
         return cached ? JSON.parse(cached) : [];
       }
     }
 
-    async function getSingleDoc(collectionName, docId) {
+    // GET a single document by ID
+    async function dbGetOne(collectionName, docId) {
       try {
         const docRef = doc(db, collectionName, docId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          return { firestoreId: docSnap.id, ...docSnap.data() };
+          return { id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() };
         }
         return null;
-      } catch(error) {
-        console.error("Firestore get single error:", error);
-        const cached = localStorage.getItem("fb_cache_" + collectionName + "_" + docId);
-        return cached ? JSON.parse(cached) : null;
+      } catch (error) {
+        console.error("dbGetOne error:", error);
+        return null;
       }
     }
 
-    async function setSingleDoc(collectionName, docId, data) {
+    // SET a single document (creates or overwrites)
+    async function dbSet(collectionName, docId, data) {
       try {
         const docRef = doc(db, collectionName, docId);
         await setDoc(docRef, {
           ...data,
           updatedAt: serverTimestamp()
         }, { merge: true });
+        localStorage.setItem("cache_" + collectionName + "_" + docId, JSON.stringify(data));
         localStorage.setItem("fb_cache_" + collectionName + "_" + docId, JSON.stringify(data));
         return true;
-      } catch(error) {
-        console.error("Firestore set doc error:", error);
+      } catch (error) {
+        console.error("dbSet error:", error);
         return false;
       }
     }
 
-    function listenToCollection(collectionName, callback, orderByField) {
+    // REAL TIME LISTENER — calls callback every time data changes
+    function dbListen(collectionName, callback, orderByField, orderDir) {
       try {
         const colRef = collection(db, collectionName);
-        const q = orderByField
-          ? query(colRef, orderBy(orderByField, "asc"))
-          : colRef;
+        let q = colRef;
+        if (orderByField) {
+          q = query(colRef, orderBy(orderByField, orderDir || "asc"));
+        }
         return onSnapshot(q, (snapshot) => {
-          const data = [];
+          const results = [];
           snapshot.forEach(docSnap => {
-            data.push({ firestoreId: docSnap.id, ...docSnap.data() });
+            results.push({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
           });
-          callback(data);
+          localStorage.setItem("cache_" + collectionName, JSON.stringify(results));
+          localStorage.setItem("fb_cache_" + collectionName, JSON.stringify(results));
+          callback(results);
         }, (error) => {
-          console.error("Firestore listener error:", error);
+          console.error("dbListen error for " + collectionName + ":", error);
+          const cached = localStorage.getItem("cache_" + collectionName);
+          if (cached) callback(JSON.parse(cached));
         });
-      } catch(error) {
-        console.error("Firestore listen error:", error);
+      } catch (error) {
+        console.error("dbListen setup error:", error);
       }
     }
 
-    function listenToDoc(collectionName, docId, callback) {
+    // REAL TIME LISTENER — single document
+    function dbListenDoc(collectionName, docId, callback) {
       try {
         const docRef = doc(db, collectionName, docId);
         return onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
-            callback({ firestoreId: docSnap.id, ...docSnap.data() });
+            callback({ id: docSnap.id, firestoreId: docSnap.id, ...docSnap.data() });
           }
+        }, (error) => {
+          console.error("dbListenDoc error:", error);
         });
-      } catch(error) {
-        console.error("Firestore doc listen error:", error);
+      } catch (error) {
+        console.error("dbListenDoc setup error:", error);
       }
     }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // CACHE HELPERS (localStorage backup)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    function saveToCache(collectionName, data) {
+      const key = "cache_" + collectionName;
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
+      const newId = "local_" + Date.now();
+      existing.unshift({ id: newId, firestoreId: newId, ...data });
+      localStorage.setItem(key, JSON.stringify(existing.slice(0, 500)));
+      return newId;
+    }
+
+    function updateCache(collectionName, docId, data) {
+      const key = "cache_" + collectionName;
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
+      const index = existing.findIndex(item => item.id === docId);
+      if (index !== -1) {
+        existing[index] = { ...existing[index], ...data };
+        localStorage.setItem(key, JSON.stringify(existing));
+      }
+    }
+
+    function deleteFromCache(collectionName, docId) {
+      const key = "cache_" + collectionName;
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
+      const filtered = existing.filter(item => item.id !== docId);
+      localStorage.setItem(key, JSON.stringify(filtered));
+    }
+
+    function getFromCache(collectionName) {
+      const cached = localStorage.getItem("cache_" + collectionName);
+      return cached ? JSON.parse(cached) : [];
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ACTIVITY LOG
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    async function logActivity(action, details) {
+      try {
+        const colRef = collection(db, "activity_log");
+        await addDoc(colRef, {
+          action: action,
+          details: details,
+          timestamp: new Date().toISOString(),
+          createdAt: serverTimestamp()
+        });
+      } catch(error) {
+        console.warn("Could not log activity:", error);
+      }
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ANALYTICS INCREMENT
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     async function incrementAnalytic(field, amount) {
       try {
-        const current = await getSingleDoc("analytics", "main") || {};
-        current[field] = (Number(current[field]) || 0) + amount;
-        await setSingleDoc("analytics", "main", current);
-      } catch(e) {
-        console.error("Analytics error:", e);
+        const docRef = doc(db, "analytics", "main");
+        await setDoc(docRef, {
+          [field]: increment(amount || 1),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch(error) {
+        console.warn("Analytics increment failed:", error);
       }
     }
 
-    async function processPendingWrites() {
-      try {
-        const pending = JSON.parse(localStorage.getItem("fb_pending_writes") || "[]");
-        if (pending.length === 0) return;
-        localStorage.setItem("fb_pending_writes", "[]");
-        for (const item of pending) {
-          if (item.action === "create") {
-            await saveToFirestore(item.collection, item.data);
-          }
-        }
-      } catch(e) {}
-    }
-
-    // Expose globally
-    window.saveToFirestore = saveToFirestore;
-    window.updateInFirestore = updateInFirestore;
-    window.deleteFromFirestore = deleteFromFirestore;
-    window.getFromFirestore = getFromFirestore;
-    window.getSingleDoc = getSingleDoc;
-    window.setSingleDoc = setSingleDoc;
-    window.listenToCollection = listenToCollection;
-    window.listenToDoc = listenToDoc;
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // COMPAT ALIASES & GLOBAL EXPOSURE
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    window.dbAdd = dbAdd;
+    window.dbUpdate = dbUpdate;
+    window.dbDelete = dbDelete;
+    window.dbGetAll = dbGetAll;
+    window.dbGetOne = dbGetOne;
+    window.dbSet = dbSet;
+    window.dbListen = dbListen;
+    window.dbListenDoc = dbListenDoc;
+    window.logActivity = logActivity;
     window.incrementAnalytic = incrementAnalytic;
-    window.processPendingWrites = processPendingWrites;
 
-    window.addEventListener("online", () => {
-      processPendingWrites();
-    });
+    // Backward compatibility aliases
+    window.saveToFirestore = dbAdd;
+    window.updateInFirestore = dbUpdate;
+    window.deleteFromFirestore = dbDelete;
+    window.getFromFirestore = dbGetAll;
+    window.getSingleDoc = dbGetOne;
+    window.setSingleDoc = dbSet;
+    window.listenToCollection = dbListen;
+    window.listenToDoc = dbListenDoc;
 
     // Signal ready
     window.firebaseReady = true;
@@ -665,20 +933,7 @@
 
           <button id="shortcuts-trigger" class="px-2.5 py-1 bg-neutral-900 border border-border rounded text-[9px] uppercase font-bold text-muted hover:text-white flex items-center gap-1.5 cursor-pointer"><i class="fa-solid fa-keyboard"></i> <span>Shortcuts</span></button>
 
-          <!-- Bell notification dropdown widget -->
-          <div class="relative">
-            <button id="notification-bell" class="relative w-8 h-8 rounded border border-border hover:bg-white/5 flex items-center justify-center text-xs text-muted hover:text-white cursor-pointer select-none">
-              <i class="fa-solid fa-bell"></i>
-              <span id="notification-badge" class="absolute -top-1 -right-0.5 bg-red-500 text-white font-bold text-[8px] w-4 h-4 rounded-full flex items-center justify-center leading-none hidden">0</span>
-            </button>
-            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 bg-card border border-border w-80 rounded overflow-hidden shadow-2xl z-50 text-left text-xs no-print">
-              <div class="p-3 border-b border-border bg-panel flex items-center justify-between">
-                <span class="font-bold">Notifications Log</span>
-                <button id="notifications-clear" class="text-[9px] font-bold uppercase text-muted hover:text-white cursor-pointer hover:underline">Clear Unread</button>
-              </div>
-              <div id="notifications-list" class="max-h-60 overflow-y-auto divide-y divide-border"></div>
-            </div>
-          </div>
+
 
           <div class="w-8 h-8 rounded bg-white text-black font-extrabold text-xs flex items-center justify-center border border-border select-none">AD</div>
         </div>
@@ -1137,20 +1392,26 @@
       { id: 'customers', label: 'Customers', icon: 'fa-users' },
       { id: 'pricing', label: 'Pricing & Offers', icon: 'fa-tags' },
       { id: 'media', label: 'Media Manager', icon: 'fa-photo-film' },
-      { id: 'reviews', label: 'Yelp & Reviews', icon: 'fa-star' },
+      { id: 'reviews', label: 'Reviews Manager', icon: 'fa-star' },
       { id: 'faqs', label: 'FAQ Manager', icon: 'fa-circle-question' },
       { id: 'announcements', label: 'Announcements', icon: 'fa-scroll' },
       { id: 'business', label: 'Business Profile', icon: 'fa-heading' },
       { id: 'security', label: 'Security & Logs', icon: 'fa-key' },
-      { id: 'analytics', label: 'Analytics Report', icon: 'fa-chart-line' }
+      { id: 'analytics', label: 'Analytics Report', icon: 'fa-chart-line' },
+      { id: 'notifications', label: 'Notifications', icon: 'fa-bell' }
     ];
 
     function renderSidebar() {
       const nav = document.getElementById('sidebar-nav');
       nav.innerHTML = menuItems.map(item => `
-        <button id="nav-${item.id}" class="w-full text-left px-4 py-3 rounded flex items-center gap-3 transition duration-200 cursor-pointer ${currentNav === item.id ? 'active-nav' : 'text-muted hover:bg-white/5 hover:text-white'}">
-          <i class="fa-solid ${item.icon} text-sm w-5 text-center shrink-0"></i>
-          <span class="nav-label-text transition-opacity duration-300 ${sidebarCollapsed ? 'opacity-0 md:hidden' : 'opacity-100'}">${item.label}</span>
+        <button id="nav-${item.id}" class="w-full text-left px-4 py-3 rounded flex items-center justify-between transition duration-200 cursor-pointer ${currentNav === item.id ? 'active-nav' : 'text-muted hover:bg-white/5 hover:text-white'}">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid ${item.icon} text-sm w-5 text-center shrink-0"></i>
+            <span class="nav-label-text transition-opacity duration-300 ${sidebarCollapsed ? 'opacity-0 md:hidden' : 'opacity-100'}">${item.label}</span>
+          </div>
+          ${item.id === 'notifications' ? `
+            <span id="notif-sidebar-badge" class="bg-red-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded-full flex items-center justify-center min-w-[16px] h-4 leading-none" style="display: none;">0</span>
+          ` : ''}
         </button>
       `).join('');
 
@@ -1158,6 +1419,10 @@
         const btn = document.getElementById(`nav-${item.id}`);
         if (btn) btn.onclick = () => navigate(item.id);
       });
+      
+      if (typeof updateNotificationBadge === 'function') {
+        updateNotificationBadge();
+      }
     }
 
     // Toggle Collapsed Sidebar Left Panel
@@ -1754,6 +2019,7 @@
         case 'business': renderBusiness(cont); break;
         case 'security': renderSecurity(cont); break;
         case 'analytics': renderAnalytics(cont); break;
+        case 'notifications': renderNotificationsPage(cont); break;
       }
     }
 
@@ -4877,35 +5143,320 @@
 
 
     // ==================== SYSTEM BOOTSTRAP INITIALIZATION ====================
-    function renderHeaderWidgets() {
-      const count = notifications.filter(n => !n.seen).length;
-      const bBadge = document.getElementById('notification-badge');
-      if (count > 0) {
-        bBadge.innerText = count;
-        bBadge.classList.remove('hidden');
-      } else bBadge.classList.add('hidden');
+    // Define global variable to trace active filtered notifications type
+    let activeNotifFilter = 'all';
 
-      const nList = document.getElementById('notifications-list');
-      nList.innerHTML = notifications.length > 0 ? notifications.map(n => `
-        <div class="p-3 hover:bg-neutral-900 transition flex flex-col gap-1 leading-normal ${n.seen ? 'opacity-55' : ''}">
-          <p class="text-[11px] font-sans pr-1 text-stone-200">${n.text}</p>
-          <span class="text-[8px] font-mono text-zinc-600 block">${n.date}</span>
-        </div>
-      `).join('') : '<p class="text-muted p-4 text-center italic">No audit alerts dispatched.</p>';
+    function addNotification(notif) {
+      const existing = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      // avoid duplicate notifications (same bookingId/id + type + within 1 hour)
+      const isDuplicate = existing.some(n => 
+        n.bookingId === notif.bookingId && n.type === notif.type &&
+        (new Date() - new Date(n.time)) < 60 * 60 * 1000
+      );
+      if (isDuplicate) return;
+      
+      existing.unshift(notif);
+      
+      // keep only last 50
+      localStorage.setItem(
+        "admin_notifications", 
+        JSON.stringify(existing.slice(0, 50))
+      );
+      
+      updateNotificationBadge();
+      
+      if (notif.urgent) {
+        showToast(notif.title + ": " + notif.message.substring(0, 60) + "...", "success");
+      }
+      
+      // If we are currently looking at notifications tab, dynamic refresh it
+      if (currentNav === 'notifications') {
+        renderFilteredNotifications();
+      }
     }
 
-    document.getElementById('notification-bell').onclick = (e) => {
-      e.stopPropagation();
-      const drop = document.getElementById('notification-dropdown');
-      drop.classList.toggle('hidden');
-    };
+    function updateNotificationBadge() {
+      const all = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      const unread = all.filter(n => !n.read).length;
+      const badge = document.getElementById("notif-sidebar-badge");
+      if (badge) {
+        badge.textContent = unread;
+        badge.style.display = unread > 0 ? "inline-flex" : "none";
+      }
+    }
 
-    document.getElementById('notifications-clear').onclick = () => {
-      notifications.forEach(n => n.seen = true);
-      saveState(KEYS.NOTIFICATIONS, notifications);
-      renderHeaderWidgets();
-      showToast("Cleared active alerts count!");
-    };
+    // Relative time formatting helper
+    function getRelativeTime(timeStr) {
+      const now = new Date();
+      const past = new Date(timeStr);
+      const diffMs = now - past;
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDays = Math.floor(diffHr / 24);
+
+      if (diffSec < 45) return "Just now";
+      if (diffSec < 90) return "1 minute ago";
+      if (diffMin < 45) return `${diffMin} minutes ago`;
+      if (diffMin < 90) return "1 hour ago";
+      if (diffHr < 22) return `${diffHr} hours ago`;
+      if (diffHr < 36) return "Yesterday";
+      
+      const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+      const timePart = past.toLocaleTimeString('en-US', options);
+      if (diffDays === 1) return `Yesterday at ${timePart}`;
+      
+      const datePart = past.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return `${datePart} at ${timePart}`;
+    }
+
+    // Render Notifications page body
+    function renderNotificationsPage(cont) {
+      cont.innerHTML = `
+        <div id="page-notifications" class="space-y-6">
+          <!-- Page header row -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-4">
+            <div>
+              <h2 class="text-lg font-bold text-black flex items-center gap-2">
+                <i class="fa-solid fa-bell text-black"></i> Notifications Center
+              </h2>
+              <p class="text-[11px] text-muted">Manage system alerts, web requests, and time-sensitive reminders.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="markAllNotificationsAsRead()" class="px-3.5 py-1.5 border border-border text-[10px] uppercase font-bold text-stone-200 hover:text-white rounded transition cursor-pointer bg-neutral-900/60 hover:bg-neutral-850">Mark All Read</button>
+              <button onclick="clearAllNotifications()" class="px-3.5 py-1.5 border border-border text-[10px] uppercase font-bold text-stone-200 hover:text-white rounded transition cursor-pointer bg-neutral-900/60 hover:bg-neutral-850">Clear All</button>
+            </div>
+          </div>
+
+          <!-- Filter tabs -->
+          <div class="flex flex-wrap items-center gap-2 select-none" id="notif-filters">
+            <button onclick="setNotifFilter('all')" class="notif-tab px-3.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer active-notif" id="notif-tab-all">All</button>
+            <button onclick="setNotifFilter('new_booking')" class="notif-tab px-3.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer" id="notif-tab-new_booking">New Bookings</button>
+            <button onclick="setNotifFilter('new_inquiry')" class="notif-tab px-3.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer" id="notif-tab-new_inquiry">Inquiries</button>
+            <button onclick="setNotifFilter('reminder')" class="notif-tab px-3.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer" id="notif-tab-reminder">Reminders</button>
+            <button onclick="setNotifFilter('urgent')" class="notif-tab px-3.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer" id="notif-tab-urgent">Urgent</button>
+          </div>
+
+          <!-- Notifications Cards list container -->
+          <div id="notifications-cards-list" class="space-y-3">
+            <!-- Dynamic notifications -->
+          </div>
+        </div>
+      `;
+      
+      // Auto trigger upcoming check whenever they load the page
+      if (typeof checkUpcomingDeadlines === 'function') {
+        checkUpcomingDeadlines();
+      }
+      
+      // Render
+      renderFilteredNotifications();
+    }
+
+    function setNotifFilter(filter) {
+      activeNotifFilter = filter;
+      renderFilteredNotifications();
+    }
+
+    function renderFilteredNotifications() {
+      const allNotifs = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+
+      // Filter logic
+      const filtered = allNotifs.filter(n => {
+        if (activeNotifFilter === 'all') return true;
+        if (activeNotifFilter === 'urgent') return n.urgent === true;
+        if (activeNotifFilter === 'reminder') {
+          return ['pickup_soon', 'pickup_today', 'return_soon', 'return_today', 'overdue'].includes(n.type);
+        }
+        return n.type === activeNotifFilter;
+      });
+
+      // Update active style on filter buttons
+      document.querySelectorAll('.notif-tab').forEach(btn => {
+        btn.classList.remove('active-notif');
+      });
+      const actBtn = document.getElementById(`notif-tab-${activeNotifFilter}`);
+      if (actBtn) actBtn.classList.add('active-notif');
+
+      const listContainer = document.getElementById('notifications-cards-list');
+      if (!listContainer) return;
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-12 bg-white border border-border rounded-xl">
+            <p class="text-xs text-muted italic">No notifications found under this view.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map((n, idx) => {
+        // Color border by type
+        let borderLeftColor = '#0A0A0A'; // Black default
+        if (n.type === 'new_inquiry') borderLeftColor = '#555555'; // Dark gray
+        if (n.type === 'pickup_today' || n.type === 'return_today') borderLeftColor = '#AAAAAA'; // Gray
+        if (n.urgent) borderLeftColor = '#0A0A0A';
+
+        // Unread vs read styling
+        const cardStyle = n.read 
+          ? 'background-color: #FFFFFF; opacity: 0.7; border-color: #E8E8E8;' 
+          : 'background-color: #FAFAFA; border-color: #CCCCCC; font-weight: 500;';
+
+        const circleStyle = n.urgent
+          ? 'background-color: #0A0A0A; color: #FFFFFF;'
+          : 'background-color: #F5F5F5; color: #0A0A0A;';
+
+        // Action buttons logic
+        let actionButtons = '';
+        if (n.type === 'new_booking') {
+          actionButtons = `
+            <button onclick="handleNotifAction('view_booking', '${n.bookingId}', ${idx})" class="px-3 py-1 bg-black text-white rounded text-[10px] font-bold uppercase hover:bg-neutral-800 transition cursor-pointer font-sans leading-none">View Booking</button>
+          `;
+        } else if (n.type === 'new_inquiry') {
+          actionButtons = `
+            <button onclick="handleNotifAction('view_inquiry', '${n.bookingId}', ${idx}, '${n.title}', '${n.message}')" class="px-3 py-1 bg-black text-white rounded text-[10px] font-bold uppercase hover:bg-neutral-800 transition cursor-pointer font-sans leading-none mr-2">View Inquiry</button>
+            ${n.phone ? `
+              <button onclick="handleNotifAction('whatsapp', '${n.phone}', ${idx})" class="px-3 py-1 border border-border text-black rounded text-[10px] font-bold uppercase hover:bg-[var(--bg-page)] transition cursor-pointer font-sans leading-none"><i class="fa-brands fa-whatsapp"></i> Chat</button>
+            ` : ''}
+          `;
+        } else if (['pickup_soon', 'pickup_today', 'return_soon', 'return_today', 'overdue'].includes(n.type)) {
+          actionButtons = `
+            <button onclick="handleNotifAction('view_booking', '${n.bookingId}', ${idx})" class="px-3 py-1 bg-black text-white rounded text-[10px] font-bold uppercase hover:bg-neutral-800 transition cursor-pointer font-sans leading-none mr-2">View Booking</button>
+            ${n.phone || n.customerPhone || n.message.includes('📞') ? `
+              <button onclick="handleNotifAction('call', '${n.phone || n.customerPhone || ''}', ${idx})" class="px-3 py-1 border border-border text-black rounded text-[10px] font-bold uppercase hover:bg-[var(--bg-page)] transition cursor-pointer font-sans leading-none inline-flex items-center gap-1"><i class="fa-solid fa-phone"></i> Call Customer</button>
+            ` : ''}
+          `;
+        }
+
+        // Convert the timestamp
+        const dispTime = getRelativeTime(n.time);
+
+        return `
+          <div class="border rounded-xl flex gap-4 p-4 shadow-sm items-start justify-between" style="border-left: 4px solid ${borderLeftColor}; ${cardStyle}">
+            <div class="flex gap-4 items-start">
+              <div class="w-11 h-11 rounded-full flex items-center justify-center text-xl shrink-0" style="${circleStyle}">
+                ${n.icon || '🔔'}
+              </div>
+              <div class="text-left font-sans">
+                <span style="font-size: 10px; font-weight: 700; color: #999999; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 2px;">${n.type.replace('_', ' ')}</span>
+                <h4 style="font-size: 14px; font-weight: 700; color: #0A0A0A; margin: 0;">${n.title}</h4>
+                <p style="font-size: 13px; color: #555555; line-height: 1.5; margin-top: 4px; margin-bottom: 8px;">${n.message}</p>
+                <span style="font-size: 11px; color: #AAAAAA;">${dispTime}</span>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0 self-center">
+              <div class="flex flex-col items-end gap-2.5">
+                <div class="flex items-center gap-2">
+                  ${actionButtons}
+                  ${!n.read ? `
+                    <button onclick="toggleSingleNotifRead(${idx})" title="Mark as read" class="w-6 h-6 border border-border hover:bg-neutral-100 rounded flex items-center justify-center transition cursor-pointer font-sans leading-none text-xs"><i class="fa-solid fa-check"></i></button>
+                  ` : `
+                    <button onclick="toggleSingleNotifRead(${idx})" title="Mark as unread" class="w-6 h-6 border border-border hover:bg-neutral-100 rounded flex items-center justify-center transition cursor-pointer font-sans leading-none text-xs opacity-50"><i class="fa-solid fa-envelope"></i></button>
+                  `}
+                  <button onclick="deleteSingleNotif(${idx})" title="Delete" class="w-6 h-6 border border-border hover:bg-red-50 hover:text-red-500 text-neutral-400 rounded flex items-center justify-center transition cursor-pointer font-sans leading-none text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleSingleNotifRead(idx) {
+      const allNotifs = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      if (allNotifs[idx]) {
+        allNotifs[idx].read = !allNotifs[idx].read;
+        localStorage.setItem("admin_notifications", JSON.stringify(allNotifs));
+        updateNotificationBadge();
+        renderFilteredNotifications();
+      }
+    }
+
+    function deleteSingleNotif(idx) {
+      const allNotifs = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      allNotifs.splice(idx, 1);
+      localStorage.setItem("admin_notifications", JSON.stringify(allNotifs));
+      updateNotificationBadge();
+      renderFilteredNotifications();
+    }
+
+    function markAllNotificationsAsRead() {
+      const allNotifs = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      allNotifs.forEach(n => n.read = true);
+      localStorage.setItem("admin_notifications", JSON.stringify(allNotifs));
+      updateNotificationBadge();
+      renderFilteredNotifications();
+      showToast("All notifications marked as read!");
+    }
+
+    function clearAllNotifications() {
+      localStorage.removeItem("admin_notifications");
+      updateNotificationBadge();
+      renderFilteredNotifications();
+      showToast("Cleared all notification records!");
+    }
+
+    async function handleNotifAction(action, dataId, idx, title = '', msg = '') {
+      // Mark as read when action clicked
+      const allNotifs = JSON.parse(
+        localStorage.getItem("admin_notifications") || "[]"
+      );
+      if (allNotifs[idx]) {
+        allNotifs[idx].read = true;
+        localStorage.setItem("admin_notifications", JSON.stringify(allNotifs));
+        updateNotificationBadge();
+      }
+
+      if (action === 'view_booking') {
+        bookingQuery = dataId.toLowerCase();
+        navigate('bookings');
+      } else if (action === 'view_inquiry') {
+        // Show inquiry details in beautiful dynamic modal
+        openModal({
+          title: title || "Inquiry Detail",
+          bodyHtml: `
+            <div class="space-y-4 text-xs font-sans">
+              <div class="p-4 bg-muted/5 border border-border rounded-xl">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-muted font-mono block mb-1">Details</span>
+                <p class="text-sm font-sans" style="color:#000000;">${msg}</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-[#F7F7F7] border border-border rounded-lg">
+                  <span class="text-[8px] font-mono uppercase font-bold text-muted">ID Reference</span>
+                  <span class="font-bold text-xs mt-0.5 block">${dataId || 'N/A'}</span>
+                </div>
+                <div class="p-3 bg-[#F7F7F7] border border-border rounded-lg text-black">
+                  <span class="text-[8px] font-mono uppercase font-bold text-muted">Platform Channel</span>
+                  <span class="font-bold text-xs mt-0.5 block text-black">Web Form</span>
+                </div>
+              </div>
+            </div>
+          `
+        });
+      } else if (action === 'call') {
+        window.location.href = `tel:${dataId}`;
+      } else if (action === 'whatsapp') {
+        let cleanPh = dataId.replace(/\s+/g, '').replace(/[+-]/g, '');
+        if (!cleanPh.startsWith('971') && cleanPh.length === 9) cleanPh = '971' + cleanPh;
+        window.open(`https://wa.me/${cleanPh}`, '_blank');
+      }
+    }
+
+    function renderHeaderWidgets() {
+      updateNotificationBadge();
+    }
 
     document.getElementById('shortcuts-trigger').onclick = () => {
       document.getElementById('shortcuts-modal').classList.remove('hidden');
@@ -5065,18 +5616,182 @@
 
         // Live Firestore listener for Bookings collection to dynamically receive new bookings from web inquiries in real-time
         try {
+          let bookingsInited = false;
           window.listenToCollection("bookings", (updatedBookings) => {
             if (updatedBookings && updatedBookings.length > 0) {
+              const prevBookings = [...bookings];
+              
               bookings = updatedBookings;
               localStorage.setItem("speedrental_bookings", JSON.stringify(bookings));
+              
+              if (bookingsInited && prevBookings.length > 0) {
+                updatedBookings.forEach(b => {
+                  const exists = prevBookings.some(pb => pb.id === b.id || pb.bookingId === b.bookingId);
+                  if (!exists) {
+                    if (b.status === "Active" || b.status === "Reserved" || b.source === "Website Booking Widget") {
+                      addNotification({
+                        type: "new_booking",
+                        icon: "🚗",
+                        title: "New Booking Request",
+                        message: `${b.customerName || 'Customer'} wants to book ${b.carName || 'car'} from ${b.pickupDate || ''} to ${b.returnDate || ''}`,
+                        bookingId: b.bookingId || b.id || "BK-UNKNOWN",
+                        time: new Date().toISOString(),
+                        read: false
+                      });
+                    }
+                  }
+                });
+              }
+              
+              bookingsInited = true;
+
               if (currentNav === 'bookings' && typeof renderActiveView === 'function') {
-                renderActiveView();
+                const cont = document.getElementById('content-container');
+                if (cont) renderActiveView(currentNav, cont);
               }
             }
           }, "date");
         } catch(e) {
           console.error("Booking snapshot sync error:", e);
         }
+
+        // Live Firestore listener for Contact Inquiries
+        try {
+          let inquiriesInited = false;
+          window.listenToCollection("contact_inquiries", (updatedInquiries) => {
+            if (updatedInquiries && updatedInquiries.length > 0) {
+              if (inquiriesInited) {
+                updatedInquiries.forEach(inq => {
+                  if (inq.status === "New") {
+                    addNotification({
+                      type: "new_inquiry",
+                      icon: "📩",
+                      title: "New Customer Inquiry",
+                      message: `${inq.name || 'Customer'} sent a message: ${(inq.message || '').substring(0, 60)}...`,
+                      phone: inq.phone || '',
+                      time: new Date().toISOString(),
+                      bookingId: inq.id || "INQ-UNKNOWN",
+                      read: false
+                    });
+                  }
+                });
+              }
+              inquiriesInited = true;
+            } else {
+              inquiriesInited = true;
+            }
+          });
+        } catch(e) {
+          console.error("Contact inquiries sync error:", e);
+        }
+
+        // Define TYPE 3 deadlines checking function
+        window.checkUpcomingDeadlines = function() {
+          if (!bookings || bookings.length === 0) return;
+          const now = new Date();
+          const next24h = new Date(now.getTime() + 24*60*60*1000);
+          const next2h  = new Date(now.getTime() + 2*60*60*1000);
+
+          bookings.forEach(booking => {
+            if (booking.status !== "Active") return;
+
+            const pickupDateTime = new Date(
+              booking.pickupDate + " " + (booking.pickupTime || "10:00")
+            );
+            const returnDateTime = new Date(
+              booking.returnDate + " " + (booking.returnTime || "10:00")
+            );
+
+            // ALERT 1: Pickup due within 2 hours
+            if (pickupDateTime > now && pickupDateTime <= next2h) {
+              addNotification({
+                type: "pickup_soon",
+                icon: "⏰",
+                title: "Pickup Due Very Soon",
+                message: (booking.customerName || "Customer") + " is picking up " 
+                         + (booking.carName || "car") + " at " 
+                         + (booking.pickupTime || "10:00") + " today. "
+                         + "📞 " + (booking.customerPhone || ""),
+                urgent: true,
+                bookingId: booking.bookingId || booking.id,
+                time: new Date().toISOString(),
+                read: false
+              });
+            }
+
+            // ALERT 2: Pickup due today (within 24h)
+            else if (pickupDateTime > now && pickupDateTime <= next24h) {
+              addNotification({
+                type: "pickup_today",
+                icon: "📅",
+                title: "Pickup Scheduled Today",
+                message: (booking.customerName || "Customer") + " picking up " 
+                         + (booking.carName || "car") 
+                         + " at " + (booking.pickupTime || "10:00") 
+                         + ". Location: " + (booking.pickupLocation || ""),
+                urgent: false,
+                bookingId: booking.bookingId || booking.id,
+                time: new Date().toISOString(),
+                read: false
+              });
+            }
+
+            // ALERT 3: Return due within 2 hours
+            if (returnDateTime > now && returnDateTime <= next2h) {
+              addNotification({
+                type: "return_soon",
+                icon: "🔄",
+                title: "Car Return Due Very Soon",
+                message: (booking.carName || "car") + " rented by " 
+                         + (booking.customerName || "Customer") 
+                         + " is due back at " + (booking.returnTime || "10:00") 
+                         + " today. " 
+                         + "📞 " + (booking.customerPhone || ""),
+                urgent: true,
+                bookingId: booking.bookingId || booking.id,
+                time: new Date().toISOString(),
+                read: false
+              });
+            }
+
+            // ALERT 4: Return due today
+            else if (returnDateTime > now && returnDateTime <= next24h) {
+              addNotification({
+                type: "return_today",
+                icon: "📤",
+                title: "Car Return Due Today",
+                message: (booking.customerName || "Customer") + " must return " 
+                         + (booking.carName || "car") 
+                         + " by " + (booking.returnTime || "10:00") + " today.",
+                urgent: false,
+                bookingId: booking.bookingId || booking.id,
+                time: new Date().toISOString(),
+                read: false
+              });
+            }
+
+            // ALERT 5: Return OVERDUE (past return date)
+            if (returnDateTime < now && booking.status === "Active") {
+              addNotification({
+                type: "overdue",
+                icon: "🚨",
+                title: "OVERDUE — Car Not Returned",
+                message: (booking.customerName || "Customer") + " was supposed to return " 
+                         + (booking.carName || "car") + " on " + booking.returnDate 
+                         + ". Please contact them immediately! "
+                         + "📞 " + (booking.customerPhone || ""),
+                urgent: true,
+                bookingId: booking.bookingId || booking.id,
+                time: new Date().toISOString(),
+                read: false
+              });
+            }
+          });
+        };
+
+        // Run on load and every 30 minutes
+        setTimeout(() => { if (typeof checkUpcomingDeadlines === 'function') checkUpcomingDeadlines(); }, 3000);
+        setInterval(() => { if (typeof checkUpcomingDeadlines === 'function') checkUpcomingDeadlines(); }, 30 * 60 * 1000);
       }
 
       // 2. Start global tickers
