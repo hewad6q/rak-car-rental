@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
@@ -14,6 +14,9 @@ const firebaseConfig = {
 // Initialize Firebase production app
 const app = initializeApp(firebaseConfig);
 
-// Force Firestore to look inside your specific 'default' data vault
-export const db = getFirestore(app, "(default)");
+// 🛠️ The correct way to force the 'default' database container in this version:
+export const db = initializeFirestore(app, {
+  databaseId: '(default)'
+});
+
 export const auth = getAuth(app);
