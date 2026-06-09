@@ -4,6 +4,8 @@
  */
 
 import React, { useState } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 import { Car } from '../types';
 
 interface FleetSectionProps {
@@ -30,25 +32,51 @@ export default function FleetSection({ cars, selectedCategory, setSelectedCatego
     setSubmitSuccess(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeModalCar) return;
 
-    onBookNowSubmit({
-      name: formData.name,
-      phone: formData.phone,
+    // Prepare booking payload
+    const booking = {
+      carName: activeModalCar.name,
       carId: activeModalCar.id,
+      customerName: formData.name,
+      phone: formData.phone,
       pickupDate: formData.pickupDate,
       returnDate: formData.returnDate,
-      notes: formData.notes || `Booking request for ${activeModalCar.name}`
-    });
+      notes: formData.notes || `Booking request for ${activeModalCar.name}`,
+      createdAt: serverTimestamp(),
+    };
 
-    setSubmitSuccess(true);
-    setTimeout(() => {
-      setActiveModalCar(null);
-      setFormData({ name: '', phone: '', pickupDate: '', returnDate: '', notes: '' });
-      setSubmitSuccess(false);
-    }, 2000);
+    try {
+      // Save to Cloud Firestore collection 'bookings'
+      await addDoc(collection(db, 'bookings'), booking);
+
+      // Keep existing callback for other side-effects
+      onBookNowSubmit({
+        name: formData.name,
+        phone: formData.phone,
+        carId: activeModalCar.id,
+        pickupDate: formData.pickupDate,
+        returnDate: formData.returnDate,
+        notes: booking.notes,
+      });
+
+      // Show success modal
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setActiveModalCar(null);
+        setFormData({ name: '', phone: '', pickupDate: '', returnDate: '', notes: '' });
+        setSubmitSuccess(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save booking to Firestore:', error);
+      // Basic user feedback on failure
+      // (Could be replaced by a nicer inline UI later)
+      // Keep modal open so user can retry
+      // eslint-disable-next-line no-alert
+      alert(isRtl ? 'حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.' : 'Failed to submit booking. Please try again.');
+    }
   };
 
   const getStatusBadgeColor = (status: Car['status']) => {
