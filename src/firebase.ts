@@ -6,14 +6,18 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+const firebaseConfig = {
+  apiKey: "AIzaSyCXU3AiLSSl2RPBrJP6s0dOgs_T0Sb1FjY",
+  authDomain: "speed-rental-rak.firebaseapp.com",
+  projectId: "speed-rental-rak",
+  storageBucket: "speed-rental-rak.firebasestorage.app",
+  messagingSenderId: "917938638656",
+  appId: "1:917938638656:web:6ec6435de59818f28fb4a5"
+};
 
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firestore with the database ID key from configuration for multi-database compatibility
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app);
 export const auth = getAuth(app);
-
 // OPERATION TYPES DEFINITIONS FOR ERROR MANAGEMENT
 export enum OperationType {
   CREATE = 'create',
